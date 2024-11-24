@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle } from "react-icons/fa";
+import { FaFacebook, FaGoogle } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
 import { useLoginUserMutation } from "../redux/store";
+import useExtract from "../hooks/useExtract";
 
 const Login = () => {
 	const [message, setMessage] = useState("");
+	const execute = useExtract();
+
 	const [loginUser, { isLoading, isError }] = useLoginUserMutation();
-	const { /*loginUser*/ _, signInWithGoogle } = useAuth();
+	const { signInWithFaceBook, signInWithGoogle } = useAuth();
 	const navigate = useNavigate();
 	const {
 		register,
@@ -28,37 +32,61 @@ const Login = () => {
 	//         console.error(error)
 	//     }
 	//   }
+
 	const onSubmit = async (data) => {
 		try {
 			await loginUser(data).unwrap();
 			Swal.fire({
-				title: "Book added",
-				text: "Your book is uploaded successfully!",
+				title: "Logged in successfully!",
 				icon: "success",
-				showCancelButton: true,
-				confirmButtonColor: "#3085d6",
-				cancelButtonColor: "#d33",
-				confirmButtonText: "Yes, It's Okay!",
+				timer: 3000,
+				timerProgressBar: true,
+				// showCancelButton: true
 			});
-			//   reset();
-			//   setimageFileName('')
-			//   setimageFile(null);
+			navigate("/");
 		} catch (error) {
 			console.error(error);
-			alert("Failed to add book. Please try again.");
+			alert("Failed to Login. Please try again.");
 		}
 	};
 
 	const handleGoogleSignIn = async () => {
 		try {
-			await signInWithGoogle();
-			alert("Login successful!");
-			navigate("/");
+			// Extract user data
+			const userData = await execute.extractData(signInWithGoogle);
+			console.log("🚀 ~ handleGoogleSignIn ~ userData:", userData)
+
+			if (userData) {
+				await loginUser({provider:'google',...userData}).unwrap();
+				alert("Login successful!");
+				navigate("/");
+			} else {
+				throw new Error("No user data extracted!");
+			}
 		} catch (error) {
-			alert("Google sign in failed!");
-			console.error(error);
+			console.error("Error details:", error);
+			alert(`Google sign-in failed: ${error.message}`);
 		}
 	};
+
+	const handleFacebookSignIn = async () => {
+		try {
+			// Extract user data
+			const userData = await execute.extractData(signInWithFaceBook);
+
+			if (userData) {
+				await loginUser(userData).unwrap();
+				alert("Login successful!");
+				navigate("/");
+			} else {
+				throw new Error("No user data extracted!");
+			}
+		} catch (error) {
+			console.error("Error details:", error);
+			alert(`FaceBook sign-in failed: ${error.message}`);
+		}
+	};
+
 	return (
 		<div className="h-[calc(100vh-120px)] flex justify-center items-center ">
 			<div className="w-full max-w-sm mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -116,8 +144,18 @@ const Login = () => {
 					<button
 						onClick={handleGoogleSignIn}
 						className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
-						<FaGoogle className="mr-2" />
+						<FcGoogle className="mr-2" />
 						Sign in with Google
+					</button>
+				</div>
+
+				{/* facebook sign in */}
+				<div className="mt-4">
+					<button
+						onClick={handleFacebookSignIn}
+						className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
+						<FaFacebook className="mr-2" />
+						Sign in with FaceBook
 					</button>
 				</div>
 

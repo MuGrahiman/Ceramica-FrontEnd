@@ -5,15 +5,7 @@ import { getAuth } from "firebase/auth"
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-// const firebaseConfig = {
-//   apiKey: import.meta.env.VITE_API_KEY,
-//   authDomain: import.meta.env.VITE_Auth_Domain,
-//   projectId: import.meta.env.VITE_PROJECT_ID,
-//   storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-//   messagingSenderId: import.meta.env.VITE_MESSAGING_SENDERID,
-//   appId: import.meta.env.VITE_APPID
-// };
-
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAB2mRonwD2u2Y7HTjPr6QZi10N4Gxl0AU",
   authDomain: "book-store-7c43a.firebaseapp.com",
