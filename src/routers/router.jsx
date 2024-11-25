@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import Home from "../pages/home/Home";
-import  Login from "../pages/auth/Login";
+import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import AdminLogin from "../pages/auth/Auth";
 // import Login from "../components/Login";
@@ -19,6 +19,7 @@ import ManageBooks from "../pages/dashboard/manageBooks/ManageBooks";
 import AddBook from "../pages/dashboard/addBook/AddBook";
 import UpdateBook from "../pages/dashboard/EditBook/UpdateBook";
 import UserDashboard from "../pages/dashboard/users/UserDashboard";
+import OTP from "../pages/auth/OTP";
 
 const router = createBrowserRouter([
 	{
@@ -34,28 +35,32 @@ const router = createBrowserRouter([
 				element: <Home />,
 			},
 			{
-				path: "/orders",
-				element: (
-					<PrivateRoute>
-						<OrderPage />
-					</PrivateRoute>
-				),
-			},
-			{
-				path: "/about",
-				element: <div>About</div>,
+				path: "/register",
+				element: <Register />,
 			},
 			{
 				path: "/login",
 				element: <Login />,
 			},
 			{
-				path: "/register",
-				element: <Register />,
+				path: "/otp",
+				element: <OTP />,
+			},
+			{
+				path: "/about",
+				element: <div>About</div>,
 			},
 			{
 				path: "/cart",
 				element: <CartPage />,
+			},
+			{
+				path: "/orders",
+				element: (
+					<PrivateRoute>
+						<OrderPage />
+					</PrivateRoute>
+				),
 			},
 			{
 				path: "/checkout",

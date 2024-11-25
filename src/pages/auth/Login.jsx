@@ -7,6 +7,7 @@ import useExtract from "../../hooks/useExtract";
 import { useLoginUserMutation } from "../../redux/store";
 import AuthForm from "../../components/AuthForm";
 import Swal from "sweetalert2";
+import AuthLayout from "../../components/AuthLayout";
 
 const Login = () => {
 	const execute = useExtract();
@@ -68,44 +69,44 @@ const Login = () => {
 	};
 
 	return (
-		<div className="h-[calc(100vh-120px)]  flex justify-center items-center ">
-			<div className="w-full max-w-md mx-auto bg-white  shadow-2xl shadow-black rounded-lg px-8 pt-6 pb-8 mb-4">
-				<h2 className="text-xl font-semibold mb-4 text-center"> Login</h2>
+		<AuthLayout>
+			<h2 className="text-xl font-semibold mb-4 text-center"> Login</h2>
 
-				<AuthForm onSubmit={submitFN} btnText={"Login"} />
+			<AuthForm onSubmit={submitFN} btnText={"Login"} />
 
-				<p className="align-baseline font-medium mt-4 text-sm">
-					haven't an account? Please{" "}
-					<Link to="/register" className="text-blue-500 hover:text-blue-700">
-						Register
-					</Link>
-				</p>
+			<p className="align-baseline font-medium mt-4 text-sm">
+				<Link to="/otp" className="text-blue-500 hover:text-blue-700">
+					Forgotten Password ?
+				</Link>
+			</p>
 
-				{/* google sign in */}
-				<div className="mt-4">
-					<button
-						onClick={handleGoogleSignIn}
-						className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
-						<FcGoogle className="mr-2" />
-						Sign in with Google
-					</button>
-				</div>
+			<p className="align-baseline font-medium mt-4 text-sm">
+				haven't an account? Please{" "}
+				<Link to="/register" className="text-blue-500 hover:text-blue-700">
+					Register
+				</Link>
+			</p>
 
-				{/* facebook sign in */}
-				<div className="mt-4">
-					<button
-						onClick={handleFacebookSignIn}
-						className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
-						<FaFacebook className="mr-2" />
-						Sign in with FaceBook
-					</button>
-				</div>
-
-				<p className="mt-5 text-center text-gray-500 text-xs">
-					©2025 Book Store. All rights reserved.
-				</p>
+			{/* google sign in */}
+			<div className="mt-4">
+				<button
+					onClick={handleGoogleSignIn}
+					className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
+					<FcGoogle className="mr-2" />
+					Sign in with Google
+				</button>
 			</div>
-		</div>
+
+			{/* facebook sign in */}
+			<div className="mt-4">
+				<button
+					onClick={handleFacebookSignIn}
+					className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
+					<FaFacebook className="mr-2" />
+					Sign in with FaceBook
+				</button>
+			</div>
+		</AuthLayout>
 	);
 };
 

@@ -2,6 +2,7 @@ import AuthForm from "../../components/AuthForm";
 import { Link, useNavigate } from "react-router-dom";
 import { useRegisterUserMutation } from "../../redux/store";
 import Swal from "sweetalert2";
+import AuthLayout from "../../components/AuthLayout";
 
 const Register = () => {
 	const [registerUser] = useRegisterUserMutation();
@@ -20,7 +21,6 @@ const Register = () => {
 			await registerUser(data).unwrap();
 			showMessage();
 			navigate("/");
-
 		} catch (error) {
 			console.error(error);
 			alert("Failed to sign up. Please try again.");
@@ -28,12 +28,10 @@ const Register = () => {
 	};
 
 	return (
-    <div className="h-[calc(100vh-120px)]  flex justify-center items-center ">
-    <div className="w-full max-w-md mx-auto bg-white  shadow-2xl shadow-black rounded-lg px-8 pt-6 pb-8 mb-4">
-   
-      <h2 className="text-xl font-semibold mb-4 text-center"> Register</h2>
+		<AuthLayout>
+			<h2 className="text-xl font-semibold mb-4 text-center"> Register</h2>
 
-				{/* <form onSubmit={handleSubmit(onSubmit)}>
+			{/* <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
@@ -74,20 +72,15 @@ const Register = () => {
         </div>
       </form> */}
 
-				<AuthForm onSubmit={submitFN} btnText={"Register"} />
+			<AuthForm onSubmit={submitFN} btnText={"Register"} />
 
-				<p className="align-baseline font-medium mt-4 text-sm">
-					Have an account? Please {' '}
-					<Link to="/login" className="text-blue-500 hover:text-blue-700">
-						Login
-					</Link>
-				</p>
-
-				<p className="mt-5 text-center text-gray-500 text-xs">
-					©2025 Book Store. All rights reserved.
-				</p>
-			</div>
-		</div>
+			<p className="align-baseline font-medium mt-4 text-sm">
+				Have an account? Please{" "}
+				<Link to="/login" className="text-blue-500 hover:text-blue-700">
+					Login
+				</Link>
+			</p>
+		</AuthLayout>
 	);
 };
 
