@@ -8,7 +8,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { HiOutlineUser } from "react-icons/hi";
 
 import avatarImg from "../assets/avatar.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useAuth } from "../context/AuthContext";
 
@@ -30,9 +30,29 @@ const Navbar = () => {
 	};
 
 	const token = localStorage.getItem("token");
+	const [isScrolled, setIsScrolled] = useState(false);
+
+	const handleScroll = () => {
+		const offset = window.scrollY;
+		if (offset > 5) {
+			setIsScrolled(true);
+		} else {
+			setIsScrolled(false);
+		}
+	};
+
+	useEffect(() => {
+		window.addEventListener("scroll", handleScroll);
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+		};
+	}, []);
 
 	return (
-		<header className="max-w-screen-2xl mx-auto px-4 py-6">
+		<header
+			className={`max-w-screen-2xl mx-auto px-4 py-6 ${
+				isScrolled ? "bg-white shadow-md " : "bg-transparent "
+			}   sticky top-0 `}>
 			<nav className="flex justify-between items-center">
 				{/* left side */}
 				<div className="flex items-center md:gap-16 gap-4">
