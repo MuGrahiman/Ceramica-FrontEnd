@@ -74,13 +74,13 @@ const Login = () => {
 
 			<AuthForm onSubmit={submitFN} btnText={"Login"} />
 
-			<p className="align-baseline font-medium mt-4 text-sm">
-				<Link to="/otp" className="text-blue-500 hover:text-blue-700">
+			<p className="align-baseline font-medium my-4 text-center text-sm">
+				<Link to="/mail" className="text-blue-500 hover:text-blue-700">
 					Forgotten Password ?
 				</Link>
 			</p>
 
-			<p className="align-baseline font-medium mt-4 text-sm">
+			<p className="align-baseline font-medium mt-4 text-center text-sm">
 				haven't an account? Please{" "}
 				<Link to="/register" className="text-blue-500 hover:text-blue-700">
 					Register

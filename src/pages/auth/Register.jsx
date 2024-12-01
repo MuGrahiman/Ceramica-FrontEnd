@@ -8,9 +8,9 @@ const Register = () => {
 	const [registerUser] = useRegisterUserMutation();
 	const navigate = useNavigate();
 
-	const showMessage = () =>
+	const showMessage = (message) =>
 		Swal.fire({
-			title: "Logged in successfully!",
+			title: message,
 			icon: "success",
 			timer: 3000,
 			timerProgressBar: true,
@@ -18,59 +18,30 @@ const Register = () => {
 
 	const submitFN = async (data) => {
 		try {
-			await registerUser(data).unwrap();
-			showMessage();
-			navigate("/");
+			const { success, message, userId } = await registerUser(data).unwrap();
+			console.log(
+				"🚀 ~ submitFN ~ success, message, userId:",
+				success,
+				message,
+				userId
+			);
+
+			if (!success) throw new Error(message);
+
+			showMessage(message);
+			navigate(`/otp/${userId}`);
 		} catch (error) {
 			console.error(error);
-			alert("Failed to sign up. Please try again.");
+			alert(
+				"Failed to sign up. Please try again. " +
+					(error?.data?.message || error?.data || error)
+			);
 		}
 	};
 
 	return (
 		<AuthLayout>
 			<h2 className="text-xl font-semibold mb-4 text-center"> Register</h2>
-
-			{/* <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="email">
-            Email
-          </label>
-          <input
-            {...register("email", { required: true })}
-            type="email"
-            name="email"
-            id="email"
-            placeholder="Email Address"
-            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow"
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="password">
-            Password
-          </label>
-          <input
-            {...register("password", { required: true })}
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Password"
-            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow"
-          />
-        </div>
-        {message && (
-          <p className="text-red-500 text-xs italic mb-3">{message}</p>
-        )}
-        <div>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded focus:outline-none">
-            Register
-          </button>
-        </div>
-      </form> */}
 
 			<AuthForm onSubmit={submitFN} btnText={"Register"} />
 

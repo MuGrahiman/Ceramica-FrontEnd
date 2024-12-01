@@ -20,6 +20,7 @@ import AddBook from "../pages/dashboard/addBook/AddBook";
 import UpdateBook from "../pages/dashboard/EditBook/UpdateBook";
 import UserDashboard from "../pages/dashboard/users/UserDashboard";
 import OTP from "../pages/auth/OTP";
+import Mail from "../pages/auth/Mail";
 
 const router = createBrowserRouter([
 	{
@@ -41,9 +42,12 @@ const router = createBrowserRouter([
 			{
 				path: "/login",
 				element: <Login />,
+			},{
+				path: "/mail",
+				element: <Mail />,
 			},
 			{
-				path: "/otp",
+				path: "/otp/:userId",
 				element: <OTP />,
 			},
 			{
