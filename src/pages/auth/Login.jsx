@@ -8,30 +8,40 @@ import { useLoginUserMutation } from "../../redux/store";
 import AuthForm from "../../components/AuthForm";
 import Swal from "sweetalert2";
 import AuthLayout from "../../components/AuthLayout";
+import useToast from "../../hooks/useToast";
 
 const Login = () => {
 	const execute = useExtract();
 	const { signInWithFaceBook, signInWithGoogle } = useAuth();
 
-	const [loginUser] = useLoginUserMutation();
+	const [loginUser,loginResult] = useLoginUserMutation();
 	const navigate = useNavigate();
 
-	const showMessage = () =>
-		Swal.fire({
-			title: "Logged in successfully!",
-			icon: "success",
-			timer: 3000,
-			timerProgressBar: true,
-		});
+	const showToast = useToast();
 
 	const submitFN = async (data) => {
+		if (!data) {
+			showToast("Please enter the credentials", "warning");
+			return;
+		}
 		try {
-			await loginUser({ provider: "mail", ...data }).unwrap();
-			showMessage();
-			navigate("/");
+			const loginData = await loginUser({ provider: "mail", ...data }).unwrap();
+			if (loginData.success) {
+				showToast(loginData && loginData?.message, "success");
+				navigate("/");
+				return;
+			}
+			if (loginData.success) {
+				throw new Error(loginData.message);
+			}
 		} catch (error) {
 			console.error(error);
-			alert("Failed to Login. Please try again.");
+			showToast(
+				`Google sign-in failed: ${
+					error?.data?.message || error?.data || error?.message
+				}`,
+				"error"
+			);
 		}
 	};
 
@@ -39,15 +49,29 @@ const Login = () => {
 		try {
 			const userData = await execute.extractData(signInWithGoogle);
 			if (userData) {
-				await loginUser({ provider: "google", ...userData }).unwrap();
-				showMessage();
-				navigate("/");
+				const loginData = await loginUser({
+					provider: "google",
+					...userData,
+				}).unwrap();
+				if (loginData.success) {
+					showToast(loginData && loginData?.message, "success");
+					navigate("/");
+					return;
+				}
+				if (loginData.success) {
+					throw new Error(loginData.message);
+				}
 			} else {
 				throw new Error("No user data extracted!");
 			}
 		} catch (error) {
 			console.error("Error details:", error);
-			alert(`Google sign-in failed: ${error.message}`);
+			showToast(
+				`Google sign-in failed: ${
+					error?.data?.message || error?.data || error?.message
+				}`,
+				"error"
+			);
 		}
 	};
 
@@ -56,15 +80,30 @@ const Login = () => {
 			const userData = await execute.extractData(signInWithFaceBook);
 
 			if (userData) {
-				await loginUser({ provider: "facebook", ...userData }).unwrap();
-				showMessage();
-				navigate("/");
+				const loginData = await loginUser({
+					provider: "facebook",
+					...userData,
+				}).unwrap();
+				if (loginData.success) {
+					showToast(loginData && loginData?.message, "success");
+					navigate("/");
+					return;
+				}
+				if (loginData.success) {
+					throw new Error(loginData.message);
+				}
 			} else {
 				throw new Error("No user data extracted!");
 			}
 		} catch (error) {
 			console.error("Error details:", error);
-			alert(`FaceBook sign-in failed: ${error.message}`);
+
+			showToast(
+				`FaceBook sign-in failed: ${
+					error?.data?.message || error?.data || error?.message
+				}`,
+				"error"
+			);
 		}
 	};
 
@@ -72,7 +111,7 @@ const Login = () => {
 		<AuthLayout>
 			<h2 className="text-xl font-semibold mb-4 text-center"> Login</h2>
 
-			<AuthForm onSubmit={submitFN} btnText={"Login"} />
+			<AuthForm onSubmit={submitFN} btnText={"Login"} isLoading={loginResult.isLoading}/>
 
 			<p className="align-baseline font-medium my-4 text-center text-sm">
 				<Link to="/mail" className="text-blue-500 hover:text-blue-700">
@@ -82,7 +121,7 @@ const Login = () => {
 
 			<p className="align-baseline font-medium mt-4 text-center text-sm">
 				haven't an account? Please{" "}
-				<Link to="/register" className="text-blue-500 hover:text-blue-700">
+				<Link  to="/register" className="text-blue-500 hover:text-blue-700">
 					Register
 				</Link>
 			</p>

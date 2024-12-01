@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { useForm } from "react-hook-form";
 
-const AuthForm = ({ onSubmit, btnText }) => {
+const AuthForm = ({ onSubmit, btnText ,isLoading}) => {
 	const [message, setMessage] = useState("");
 	const {
 		register,
@@ -45,7 +45,7 @@ const AuthForm = ({ onSubmit, btnText }) => {
 			</div>
 			{message && <p className="text-red-500 text-xs italic mb-3">{message}</p>}
 			<div>
-				<button className="w-full flex flex-wrap gap-1 items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded focus:outline-none">
+				<button disabled={isLoading} className="w-full flex flex-wrap gap-1 items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded focus:outline-none">
 					{btnText}
 				</button>
 			</div>

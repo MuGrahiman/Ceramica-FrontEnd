@@ -7,6 +7,7 @@ import {
 } from "../../redux/store";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../components/Loading";
+import useToast from "../../hooks/useToast";
 
 // Constants
 const OTP_LENGTH = 4;
@@ -26,6 +27,13 @@ const OTP = () => {
 	const inputs = useRef([]);
 
 	const navigate = useNavigate();
+	const showToast = useToast();
+
+	useEffect(() => {
+		console.log("🚀 ~ OTP ~ data:", data);
+		if (data?.success)showToast(data?.message, 'success');
+		if (!data?.success)showToast(data?.message, 'error');
+	}, [data]);
 
 	// Timer logic
 	useEffect(() => {
@@ -100,17 +108,17 @@ const OTP = () => {
 
 	const handleResendOTP = async () => {
 		const verified = await resendOTP(data.otpId).unwrap();
-		if (verified && verified.success) alert(verified.message);
-		else throw new Error(verified.message);
-
-		setTime(19);
+		if (verified && verified?.success) {
+			showToast(verified.message, 'success');
+			setTime(19);
+		} else showToast(verified.message, 'error');
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const otpCode = value.join("");
 		if (!otpCode || otpCode.length !== OTP_LENGTH) {
-			alert("Please enter the OTP");
+			showToast("Please enter the OTP",'warning');
 			return;
 		}
 
@@ -119,16 +127,15 @@ const OTP = () => {
 				otpId: data.otpId,
 				otp: otpCode,
 			}).unwrap();
-			if (verified.success) alert(verified.message);
+			if (verified.success) showToast(verified.message,'success');
 			else throw new Error(verified.message);
 			navigate("/login");
 			console.log("Verified:", verified);
 		} catch (err) {
 			console.error("Error verifying OTP:", err);
-			alert(err?.data?.message || "Verification failed. Please try again.");
+			showToast((err?.data?.message || "Verification failed. Please try again."),'error');
 		}
 	};
-
 
 	// Conditional Rendering
 	if (isLoading) return <Loading />;

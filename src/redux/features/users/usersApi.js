@@ -42,6 +42,14 @@ const usersApi = createApi({
 			}),
 			invalidatesTags: ["Users"],
 		}),
+		forgotUser: builder.mutation({
+			query: (userMail) => ({
+				url: `/forgot`,
+				method: "POST",
+				body: userMail,
+			}),
+			invalidatesTags: ["Users"],
+		}),
 		updateUser: builder.mutation({
 			query: ({ id, ...rest }) => ({
 				url: `/edit/${id}`,
@@ -68,6 +76,7 @@ export const {
 	useFetchUserByIdQuery,
 	useLoginUserMutation,
 	useRegisterUserMutation,
+	useForgotUserMutation,
 	useUpdateUserMutation /*useDeleteUserMutation*/,
 } = usersApi;
 export default usersApi;
