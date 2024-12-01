@@ -1,9 +1,9 @@
 import { useState } from "react";
 
 const useExtract = () => {
+	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState(null);
 	const [error, setError] = useState(null);
-	const [loading, setLoading] = useState(false);
 
 	const extractData = async (fn, ...args) => {
 		setLoading(true);

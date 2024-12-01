@@ -1,32 +1,27 @@
 import { useCallback } from "react";
 import { toast } from "react-toastify";
 
+/**
+ * A hook for displaying toast notifications.
+ * @returns {Function} - Function to display toast messages.
+ */
 const useToast = () => {
-	const showToast = useCallback((message, type = 'default') => {
-		if (typeof message !== 'string') {
-			console.error('Toast message must be a string');
-			return;
-		}
+    const showToast = useCallback((message, type = "default") => {
+      
+        const toastTypes = {
+            success: toast.success,
+            error: toast.error,
+            warning: toast.warning,
+            info: toast.info,
+            default: toast,
+        };
 
-		switch (type) {
-			case 'success':
-				toast.success(message);
-				break;
-			case 'error':
-				toast.error(message);
-				break;
-			case 'warning':
-				toast.warning(message);
-				break;
-			case 'info':
-				toast.info(message);
-				break;
-			default:
-				toast(message);
-		}
-	}, []);
+        // Call appropriate toast method
+        const toastMethod = toastTypes[type] || toast;
+        toastMethod(message);
+    }, []);
 
-	return showToast;
+    return showToast;
 };
 
 export default useToast;

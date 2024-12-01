@@ -11,49 +11,42 @@ import useToast from "../../hooks/useToast";
 
 // Constants
 const OTP_LENGTH = 4;
+const INITIAL_TIMER = 19;
 
 const OTP = () => {
 	// Hooks
-	const { userId } = useParams(); // Get userId from URL params
+	const { userId } = useParams();
 	const { data, error, isLoading } = useSendOTPQuery(userId);
 	const [verifyOTP, result] = useVerifyOTPMutation();
 	const [resendOTP, resendResult] = useResendOTPMutation();
+	const navigate = useNavigate();
+	const showToast = useToast();
 
+	// States
 	const [value, setValue] = useState(Array(OTP_LENGTH).fill(""));
-	const [time, setTime] = useState(19); // Initial timer
+	const [time, setTime] = useState(INITIAL_TIMER);
 
 	// Refs
 	const buttonRef = useRef(null);
 	const inputs = useRef([]);
 
-	const navigate = useNavigate();
-	const showToast = useToast();
-
+	// Effects
 	useEffect(() => {
-		console.log("🚀 ~ OTP ~ data:", data);
-		if (data?.success)showToast(data?.message, 'success');
-		if (!data?.success)showToast(data?.message, 'error');
+		if (data) {
+			const toastType = data.success ? "success" : "error";
+			showToast(data.message, toastType);
+		}
 	}, [data]);
 
-	// Timer logic
 	useEffect(() => {
 		const timerId = setInterval(() => {
-			setTime((prev) => {
-				if (prev === 0) {
-					clearInterval(timerId);
-					return 0;
-				}
-				return prev - 1;
-			});
+			setTime((prev) => (prev > 0 ? prev - 1 : prev));
+			if (time === 0) clearInterval(timerId);
 		}, 1000);
-
 		return () => clearInterval(timerId);
 	}, [time]);
 
-	const minutes = Math.floor(time / 60);
-	const seconds = time % 60;
-
-	// Utility Functions
+	// Helper Methods
 	const insertValue = (index, value) =>
 		setValue((prev) => {
 			const updatedValue = [...prev];
@@ -70,10 +63,9 @@ const OTP = () => {
 
 	// Event Handlers
 	const handleKeyDown = (e, index) => {
-		if (e.key === "Backspace" || e.key === "Delete") {
-			if (inputs.current[index].value) {
-				removeValue(index);
-			} else if (index > 0) {
+		if (["Backspace", "Delete"].includes(e.key)) {
+			if (inputs.current[index].value) removeValue(index);
+			else if (index > 0) {
 				inputs.current[index - 1].focus();
 				removeValue(index - 1);
 			}
@@ -83,11 +75,8 @@ const OTP = () => {
 	const handleInput = (e, index) => {
 		if (e.target.value) {
 			insertValue(index, e.target.value);
-			if (index < OTP_LENGTH - 1) {
-				inputs.current[index + 1].focus();
-			} else {
-				buttonRef.current.focus();
-			}
+			if (index < OTP_LENGTH - 1) inputs.current[index + 1].focus();
+			else buttonRef.current.focus();
 		}
 	};
 
@@ -107,33 +96,32 @@ const OTP = () => {
 	};
 
 	const handleResendOTP = async () => {
-		const verified = await resendOTP(data.otpId).unwrap();
-		if (verified && verified?.success) {
-			showToast(verified.message, 'success');
-			setTime(19);
-		} else showToast(verified.message, 'error');
+		try {
+			const response = await resendOTP(data.otpId).unwrap();
+			const toastType = response.success ? "success" : "error";
+			showToast(response.message, toastType);
+			if (response.success) setTime(INITIAL_TIMER);
+		} catch (error) {
+			showToast("Failed to resend OTP", "error");
+		}
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const otpCode = value.join("");
-		if (!otpCode || otpCode.length !== OTP_LENGTH) {
-			showToast("Please enter the OTP",'warning');
+		if (otpCode.length !== OTP_LENGTH) {
+			showToast("Please enter a valid OTP", "warning");
 			return;
 		}
 
 		try {
-			const verified = await verifyOTP({
-				otpId: data.otpId,
-				otp: otpCode,
-			}).unwrap();
-			if (verified.success) showToast(verified.message,'success');
-			else throw new Error(verified.message);
-			navigate("/login");
-			console.log("Verified:", verified);
+			const verified = await verifyOTP({ otpId: data.otpId, otp: otpCode }).unwrap();
+			if (verified.success) {
+				showToast(verified.message, "success");
+				navigate("/login");
+			} else throw new Error(verified.message);
 		} catch (err) {
-			console.error("Error verifying OTP:", err);
-			showToast((err?.data?.message || "Verification failed. Please try again."),'error');
+			showToast(err?.data?.message || "Verification failed", "error");
 		}
 	};
 
@@ -181,18 +169,17 @@ const OTP = () => {
 				</form>
 				<div className="text-sm text-slate-500 mt-4">
 					Didn't receive code?{" "}
-					{minutes === 0 && seconds === 0 ? (
+					{time === 0 ? (
 						<button
 							disabled={resendResult.isLoading}
 							onClick={handleResendOTP}
-							className="font-medium text-indigo-500 hover:text-indigo-600"
-							href="#">
+							className="font-medium text-indigo-500 hover:text-indigo-600">
 							Resend
 						</button>
 					) : (
-						<small className="font-bold text-indigo-500">
-							{minutes} : {seconds} s
-						</small>
+						<span className="font-bold text-indigo-500">
+							{Math.floor(time / 60)}:{time % 60}s
+						</span>
 					)}
 				</div>
 			</div>

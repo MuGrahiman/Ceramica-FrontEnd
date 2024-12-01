@@ -9,8 +9,9 @@ import { HiOutlineUser } from "react-icons/hi";
 
 import avatarImg from "../assets/avatar.png";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../context/AuthContext";
+import { removeUser } from "../redux/store";
 
 const navigation = [
 	{ name: "Dashboard", href: "/user-dashboard" },
@@ -21,24 +22,22 @@ const navigation = [
 
 const Navbar = () => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-	const cartItems = useSelector((state) => state.cart.cartItems);
-
-	const { currentUser, logout } = useAuth();
-
-	const handleLogOut = async () => {
-		logout();
-	};
-
-	const token = localStorage.getItem("token");
 	const [isScrolled, setIsScrolled] = useState(false);
+	const [role, setRole] = useState(null);
+	const cartItems = useSelector((state) => state.cart.cartItems);
+	const currentUser = useSelector((state) => state.auth.currentUser);
+	const dispatch = useDispatch();
 
+	// Handle scroll behavior
 	const handleScroll = () => {
 		const offset = window.scrollY;
-		if (offset > 5) {
-			setIsScrolled(true);
-		} else {
-			setIsScrolled(false);
-		}
+		setIsScrolled(offset > 5);
+	};
+
+	// Handle user logout
+	const handleLogOut = async () => {
+		dispatch(removeUser());
+		setIsDropdownOpen(false);
 	};
 
 	useEffect(() => {
@@ -48,19 +47,23 @@ const Navbar = () => {
 		};
 	}, []);
 
+	useEffect(() => {
+		setRole(currentUser?.Role || null);
+	}, [currentUser]);
+
 	return (
 		<header
 			className={`max-w-screen-2xl mx-auto px-4 py-6 ${
 				isScrolled ? "bg-white shadow-md " : "bg-transparent "
 			}   sticky top-0 `}>
 			<nav className="flex justify-between items-center">
-				{/* left side */}
+				{/* Left side */}
 				<div className="flex items-center md:gap-16 gap-4">
 					<Link to="/">
 						<HiMiniBars3CenterLeft className="size-6" />
 					</Link>
 
-					{/* search input */}
+					{/* Search input */}
 					<div className="relative sm:w-72 w-40 space-x-2">
 						<IoSearchOutline className="absolute inline-block left-3 inset-y-2" />
 
@@ -72,10 +75,10 @@ const Navbar = () => {
 					</div>
 				</div>
 
-				{/* rigth side */}
+				{/* Right side */}
 				<div className="relative flex items-center md:space-x-3 space-x-2">
 					<div>
-						{currentUser ? (
+						{role === "client" ? (
 							<>
 								<button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
 									<img
@@ -86,7 +89,7 @@ const Navbar = () => {
 										}`}
 									/>
 								</button>
-								{/* show dropdowns */}
+								{/* Show dropdown */}
 								{isDropdownOpen && (
 									<div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md z-40">
 										<ul className="py-2">
@@ -112,18 +115,18 @@ const Navbar = () => {
 									</div>
 								)}
 							</>
-						) : token ? (
+						) : role === "admin" ? (
 							<Link to="/dashboard" className="border-b-2 border-primary">
 								Dashboard
 							</Link>
 						) : (
 							<Link to="/login">
-								{" "}
 								<HiOutlineUser className="size-6" />
 							</Link>
 						)}
 					</div>
 
+					{/* Other Icons */}
 					<button className="hidden sm:block">
 						<HiOutlineHeart className="size-6" />
 					</button>
@@ -131,14 +134,10 @@ const Navbar = () => {
 					<Link
 						to="/cart"
 						className="bg-primary p-1 sm:px-6 px-2 flex items-center rounded-sm">
-						<HiOutlineShoppingCart className="" />
-						{cartItems.length > 0 ? (
-							<span className="text-sm font-semibold sm:ml-1">
-								{cartItems.length}
-							</span>
-						) : (
-							<span className="text-sm font-semibold sm:ml-1">0</span>
-						)}
+						<HiOutlineShoppingCart />
+						<span className="text-sm font-semibold sm:ml-1">
+							{cartItems.length > 0 ? cartItems.length : 0}
+						</span>
 					</Link>
 				</div>
 			</nav>
