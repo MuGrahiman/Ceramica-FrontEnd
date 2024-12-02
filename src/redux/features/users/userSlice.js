@@ -13,7 +13,7 @@ const AuthSlice = createSlice({
 	reducers: {
 		addUser: (state, action) => {
 			localStorage.setItem(
-				"STORE-APP-USER",
+				APP,
 				JSON.stringify(action.payload)
 			);
 			state.currentUser = action.payload;

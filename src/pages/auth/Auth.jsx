@@ -4,8 +4,15 @@ import axios from "axios";
 import getBaseUrl from "../../utils/baseURL";
 import AuthLayout from "../../components/AuthLayout";
 import AuthForm from "../../components/AuthForm";
+import useToast from "../../hooks/useToast";
+import { addUser, removeUser } from "../../redux/store";
+import { useDispatch } from "react-redux";
 
 const Auth = () => {
+const APP = "STORE-APP-USER"
+const showToast = useToast();
+const dispatch = useDispatch();
+
 	// ** State and Hooks **
 	const [message, setMessage] = useState("");
 	const navigate = useNavigate();
@@ -27,16 +34,16 @@ const Auth = () => {
 
 			if (auth.token) {
 				// Save token and set expiration timeout
-				localStorage.setItem("token", auth.token);
+				dispatch(addUser({Token: auth.token,Role:'admin'}));
 				setTimeout(() => {
-					localStorage.removeItem("token");
+					dispatch(removeUser());
 					alert("Token has expired! Please login again.");
 					navigate("/");
-				}, 3600 * 1000); // Token expires in 1 hour
+				}, 3600 * 10000); // Token expires in 1 hour
 			}
 
-			alert("Admin Login successful!");
 			navigate("/dashboard");
+			showToast("Admin Login successful!",'success');
 		} catch (error) {
 			setMessage("Please provide a valid email and password");
 			console.error("Login Error:", error);
