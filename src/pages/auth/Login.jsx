@@ -10,7 +10,7 @@ import useToast from "../../hooks/useToast";
 import AuthForm from "../../components/AuthForm";
 import AuthLayout from "../../components/AuthLayout";
 
-const Login = () => {
+const Login  = () => {
 	// ** Hooks and State **
 	const { signInWithFaceBook, signInWithGoogle } = useAuth();
 	const [loginUser, loginResult] = useLoginUserMutation();
@@ -150,4 +150,4 @@ const Login = () => {
 	);
 };
 
-export default Login;
+export default Login ;

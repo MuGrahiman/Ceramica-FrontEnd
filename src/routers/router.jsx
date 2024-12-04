@@ -3,10 +3,10 @@ import App from "../App";
 import Home from "../pages/home/Home";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
-import AdminLogin from "../pages/auth/Auth";
+import Auth from "../pages/auth/Auth";
 // import Login from "../components/Login";
 // import Register from "../components/Register";
-// import AdminLogin from "../components/AdminLogin";
+// import Auth from "../components/Auth";
 import CartPage from "../pages/books/CartPage";
 import CheckoutPage from "../pages/books/CheckoutPage";
 import SingleBook from "../pages/books/SingleBook";
@@ -21,6 +21,7 @@ import UpdateBook from "../pages/dashboard/EditBook/UpdateBook";
 import UserDashboard from "../pages/dashboard/users/UserDashboard";
 import OTP from "../pages/auth/OTP";
 import Mail from "../pages/auth/Mail";
+import AdminLayout from "../components/AdminLayout";
 
 const router = createBrowserRouter([
 	{
@@ -90,13 +91,13 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "/admin",
-		element: <AdminLogin />,
+		element: <Auth />,
 	},
 	{
 		path: "/dashboard",
 		element: (
 			<AdminRoute>
-				<DashboardLayout />
+				<AdminLayout />
 			</AdminRoute>
 		),
 		children: [
