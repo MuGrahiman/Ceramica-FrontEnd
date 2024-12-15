@@ -22,16 +22,19 @@ import UserDashboard from "../pages/dashboard/users/UserDashboard";
 import OTP from "../pages/auth/OTP";
 import Mail from "../pages/auth/Mail";
 import AdminLayout from "../components/AdminLayout";
+import DemoPage from "../pages/demo/DemoPage";
+import Inventory from "../pages/inventory/Inventory";
+import AddToInventory from "../pages/inventory/AddToInventory";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <App />,
 		children: [
-			// {
-			// 	path: "/demo",
-			// 	element: <UserLogin/>,
-			// },
+			{
+				path: "/demo",
+				element: <DemoPage/>,
+			},
 			{
 				path: "/",
 				element: <Home />,
@@ -106,6 +109,22 @@ const router = createBrowserRouter([
 				element: (
 					<AdminRoute>
 						<Dashboard />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "inventory",
+				element: (
+					<AdminRoute>
+						<Inventory />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "add-to-inventory",
+				element: (
+					<AdminRoute>
+						<AddToInventory />
 					</AdminRoute>
 				),
 			},

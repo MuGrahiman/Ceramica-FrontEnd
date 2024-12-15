@@ -28,6 +28,10 @@ const navigationItems = [
 		path: "/dashboard/add-new-book",
 		icon: <MdOutlineInventory className="h-6 w-6" />,
 	},
+	// <MdOutlinePendingActions /><MdOutlineFactCheck />MdOutlineGrading<MdShoppingCart />
+
+
+
 	{
 		label: "Category",
 		path: "/dashboard/manage-books",
@@ -76,7 +80,7 @@ const AdminLayout = () => {
 				      transition-transform duration-700 ease-in-out`}>
 				<div className="flex justify-between items-center  mx-4 mt-4 ">
 					<Link
-						href="/"
+						to="/"
 						className="inline-flex items-center content-center  gap-5 p-3  h-20 rounded-lg  ">
 						<img src="/fav-icon.png" alt="Logo" />
 						<span className="sm:hidden md:block m-0">
@@ -113,7 +117,7 @@ const AdminLayout = () => {
 			</aside>
 
 			<main
-				className={`flex-grow p-6 sm:p-10 space-y-6 ${
+				className={`flex-grow p-6 sm:p-10 space-y-6 overflow-y-auto ${
 					isSidebarOpen ? "hidden sm:block" : "block"
 				}`}>
 				<header className="sm:hidden flex items-center h-20 px-6 sm:px-10 bg-white">
