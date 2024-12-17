@@ -1,47 +1,73 @@
 import { useState } from 'react';
 
+/**
+ * Custom hook for validating and fetching color details from the Color API.
+ * 
+ * @returns {Object} Contains functions and states for validating color values.
+ */
 const useColorValidator = () => {
-    const [color, setColor] = useState('');
-    const [colorLoading, setColorLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [isColorSuccess, setIsColorSuccess] = useState(false);
+    const [ color, setColor ] = useState( "" );
+    const [ colorLoading, setColorLoading ] = useState( false );
+    const [ colorError, setColorError ] = useState( null );
+    const [ colorSuccess, setColorSuccess ] = useState( false );
 
-    const validateColor = async (value) => {
+    /**
+     * Validates the provided color value by fetching details from the Color API.
+     * 
+     * @param {string} value - The color value (hex code) to validate.
+     */
+    const validateColor = async ( value ) => {
+
+        setColorError( null );
+        setColorLoading( true );
+
         const trimmedValue = value.trim();
 
-        // Check if the value is empty
-        if (!trimmedValue) {
-            setError("Enter a valid value");
-            return; // Exit early if the value is invalid
+        if ( !trimmedValue ) {
+        setColorLoading( false );
+        setColorError( "Enter a valid value" );
+            return;
         }
 
-        // Clear previous errors if input is valid
-        setError(null);
-        setColorLoading(true);
 
         try {
             const response = await fetch(
-                `https://www.thecolorapi.com/id?hex=${trimmedValue}&format=json`
+                `https://www.thecolorapi.com/id?hex=${ trimmedValue }&format=json`
             );
             const data = await response.json();
 
-            // Check if the response contains valid color data
-            if (data.name && data.hex.value) {
-                setColor(data.hex.value); // Set the color to the hex value
-                setIsColorSuccess(true);
+            if ( data.name && data.hex?.value ) {
+                setColor( data.hex.value );
+                setColorSuccess( true );
             } else {
-                // Set an error if the fetch is successful but no color is found
-                setError("There is no color with this value");
+                setColorError( "There is no color with this value" );
             }
-        } catch (error) {
-            console.error("Error fetching color:", error);
-            setError("Error fetching color"); // Set error for fetch failure
+        } catch ( error ) {
+            console.error( "Error fetching color:", error );
+            setColorError( "Error fetching color" );
         } finally {
-            setColorLoading(false); // Ensure colorLoading state is cleared
+            setColorLoading( false );
         }
     };
 
-    return { color, colorLoading, error, isColorSuccess, validateColor };
+    /**
+     * Resets the state of the hook to its initial values.
+     */
+    const resetState = () => {
+        setColor( "" );
+        setColorLoading( false );
+        setColorError( null );
+        setColorSuccess( false );
+    };
+
+    return {
+        validateColor,
+        color,
+        colorLoading,
+        colorError,
+        colorSuccess,
+        resetState,
+    };
 };
 
 export default useColorValidator;

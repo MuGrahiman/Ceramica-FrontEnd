@@ -11,21 +11,26 @@ const AddToInventory = () => {
 	} = useForm();
 
 	const onSubmit = (data) => {
-		console.log( data.files.every(({ file })=>["image/jpeg", "image/png", "image/jpg"].includes(file.type)));
+		console.log("🚀 ~ onSubmit ~ data:", data)
+		console.log(
+			data.files.every(({ file }) =>
+				["image/jpeg", "image/png", "image/jpg"].includes(file.type)
+			)
+		);
 		return;
 	};
-		const breadcrumbItems = [
+	const breadcrumbItems = [
 		{ label: "Inventory", to: "/dashboard/inventory" },
 		{ label: Title }, // No `to` for the current page
 	];
 	const defaultValues = {
 		select: "",
 		input: "",
-	  }
-	  
+	};
+
 	return (
 		<InventoryForm
-			ON_SUBMIT={onSubmit}
+			ON_SUBMIT={(data)=>console.log(data)}
 			BREAD_CRUMB_ITEMS={breadcrumbItems}
 			TITLE={Title}
 		/>
