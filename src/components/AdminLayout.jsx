@@ -25,7 +25,7 @@ const navigationItems = [
 
 	{
 		label: "Inventory",
-		path: "/dashboard/add-new-book",
+		path: "/dashboard/inventory",
 		icon: <MdOutlineInventory className="h-6 w-6" />,
 	},
 	// <MdOutlinePendingActions /><MdOutlineFactCheck />MdOutlineGrading<MdShoppingCart />

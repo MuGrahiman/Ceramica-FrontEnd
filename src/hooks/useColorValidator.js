@@ -5,8 +5,8 @@ import { useState } from 'react';
  * 
  * @returns {Object} Contains functions and states for validating color values.
  */
-const useColorValidator = () => {
-    const [ color, setColor ] = useState( "" );
+const useColorValidator = ( defaultColor ) => {
+    const [ colorData, setColor ] = useState( defaultColor );//{ image: null, name: "", hex: "" }
     const [ colorLoading, setColorLoading ] = useState( false );
     const [ colorError, setColorError ] = useState( null );
     const [ colorSuccess, setColorSuccess ] = useState( false );
@@ -16,16 +16,16 @@ const useColorValidator = () => {
      * 
      * @param {string} value - The color value (hex code) to validate.
      */
-    const validateColor = async ( value ) => {
-
+    const validateColor = async ( value, { onSuccess, onError } ) => {
         setColorError( null );
         setColorLoading( true );
 
         const trimmedValue = value.trim();
 
         if ( !trimmedValue ) {
-        setColorLoading( false );
-        setColorError( "Enter a valid value" );
+            setColorLoading( false );
+            setColorError( "Enter a valid value" );
+            if ( onError instanceof Function ) onError( "Enter a valid value" )
             return;
         }
 
@@ -35,16 +35,20 @@ const useColorValidator = () => {
                 `https://www.thecolorapi.com/id?hex=${ trimmedValue }&format=json`
             );
             const data = await response.json();
-
-            if ( data.name && data.hex?.value ) {
-                setColor( data.hex.value );
+            // const {image.bare , name.value, hex.clean  } = data 
+            if ( data && data.name.value && data.hex?.clean && data.image.bare ) {
+                const colorData = { image: data.image.bare, name: data.name.value, hex: data.hex.clean }
+                setColor( colorData );
                 setColorSuccess( true );
+                if ( onSuccess instanceof Function ) onSuccess( colorData )
             } else {
                 setColorError( "There is no color with this value" );
+                if ( onError instanceof Function ) onError( "There is no color with this value" )
             }
         } catch ( error ) {
             console.error( "Error fetching color:", error );
             setColorError( "Error fetching color" );
+            if ( onError instanceof Function ) onError( "Error fetching color" )
         } finally {
             setColorLoading( false );
         }
@@ -53,7 +57,7 @@ const useColorValidator = () => {
     /**
      * Resets the state of the hook to its initial values.
      */
-    const resetState = () => {
+    const resetColor = () => {
         setColor( "" );
         setColorLoading( false );
         setColorError( null );
@@ -62,11 +66,11 @@ const useColorValidator = () => {
 
     return {
         validateColor,
-        color,
+        colorData,
         colorLoading,
         colorError,
         colorSuccess,
-        resetState,
+        resetColor,
     };
 };
 

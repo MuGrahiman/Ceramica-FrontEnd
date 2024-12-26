@@ -1,38 +1,38 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import InventoryForm from "./InventoryForm";
-import { useAddToInventoryMutation } from "../../redux/store";
-import { useNavigate } from "react-router-dom";
+import {
+	useAddToInventoryMutation,
+	useGetInventoryItemByIdQuery,
+	useUpdateInventoryMutation,
+} from "../../redux/store";
+import { useNavigate, useParams } from "react-router-dom";
 import useToast from "../../hooks/useToast";
+import Loading from "../../components/Loading";
 import { createDefaultState } from "../../utils/defaultSuccess";
 
-const AddToInventory = () => {
+const UpdateInventory = () => {
+	const { id } = useParams();
+	const { data, isLoading: fetchLoading } = useGetInventoryItemByIdQuery(id);
+	const [updateInventory, { isLoading: updateLoading }] =
+		useUpdateInventoryMutation();
+
 	const showToast = useToast();
 	const navigate = useNavigate();
-	const [addToInventory, { isLoading }] = useAddToInventoryMutation();
 
-	const Title = "Add To Inventory";
+	const Title = "Update Inventory";
 	const breadcrumbItems = [
 		{ label: "Inventory", to: "/dashboard/inventory" },
 		{ label: Title },
 	];
 
 	const defaultValues = {
-		file: null,
-		image: null,
-		title: "",
-		category: "",
-		shape: "",
-		colorInput: "",
-		color: { image: null, name: "", hex: "" },
-		dimension: "",
-		size: "",
-		stock: "",
-		price: "",
-		description: "",
-		images: null,
-		files: [],
+		colorInput: data?.color.hex,
+		file: data?.coverImage,
+		files: data?.images,
+		...data,
 	};
+
 	const defaultSuccessValue = createDefaultState(
 		[
 			"image",
@@ -47,7 +47,7 @@ const AddToInventory = () => {
 			"description",
 			"images",
 		],
-		false
+		true
 	);
 	const onSubmit = async ({
 		image,
@@ -63,8 +63,8 @@ const AddToInventory = () => {
 			images: files,
 		};
 		try {
-			await addToInventory(newData).unwrap();
-			showToast("Product added to inventory successfully", "success");
+			await updateInventory({ id, newData }).unwrap();
+			showToast("Product updated successfully", "success");
 			navigate("/dashboard/inventory");
 		} catch (error) {
 			console.error(error);
@@ -72,9 +72,17 @@ const AddToInventory = () => {
 		}
 	};
 
+	// Handle loading state
+	if (fetchLoading) {
+		return (
+			<div className="flex items-center justify-center h-screen">
+				<Loading message="Fetching inventory, please wait..." />
+			</div>
+		);
+	}
 	return (
 		<InventoryForm
-			LOADING={isLoading}
+			LOADING={fetchLoading || updateLoading}
 			ON_SUBMIT={onSubmit}
 			BREAD_CRUMB_ITEMS={breadcrumbItems}
 			TITLE={Title}
@@ -84,4 +92,4 @@ const AddToInventory = () => {
 	);
 };
 
-export default AddToInventory;
+export default UpdateInventory;

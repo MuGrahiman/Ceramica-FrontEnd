@@ -34,7 +34,6 @@ const ImageUploader = ({
 			? "bg-green-50 border border-green-500 text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 focus:ring-green-500 focus:border-green-500"
 			: "text-gray-700 dark:text-gray-600";
 	};
-
 	return (
 		<div className="mb-5 w-full">
 			<label
@@ -47,9 +46,9 @@ const ImageUploader = ({
 				className={`dark:bg-white text-sm flex flex-col justify-center items-center font-normal rounded-lg  w-full h-40 p-2.5 ${getDivClassName()}`}>
 				{IS_LOADING ? (
 					// <div className="w-full h-full flex justify-center items-center">
-						<ImSpinner9 className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600" />
-					//{/* </div> */}
+					<ImSpinner9 className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600" />
 				) : (
+					//{/* </div> */}
 					<>
 						{/* Image Preview */}
 						<div className="w-full flex overflow-x-auto space-x-2 flex-nowrap justify-center items-center">

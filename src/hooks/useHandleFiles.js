@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { validateFile } from "../utils/validateImage";
+import { validateFile } from "../utils/fileHandler";
 import { removeFile, uploadFile } from "../utils/cloudinary";
 
 /**
@@ -31,7 +31,7 @@ const useHandleFiles = () => {
         label,
         files,
         clearErrors,
-        maxFiles = 1,
+        maxFiles = 1, minFile = 1,
         currentFields = [],
         onSuccess,
         onError,
@@ -40,35 +40,40 @@ const useHandleFiles = () => {
         // Set loading state for the specific label
         updateLoadingState( label, true )
         clearErrors();
-
         if ( !files || !files.length ) {
             updateLoadingState( label, false )
             return onError( "Please upload a file." );
         }
 
         const filesData = Array.from( files );
-
         // Check max file limit for multiple uploads
         if ( currentFields.length + filesData.length > maxFiles ) {
             updateLoadingState( label, false )
             return onError( `Only ${ maxFiles } files are allowed.` );
         }
 
-        // Process files
+        for ( const file of filesData ) {
+            const validity = validateFile( file );
+            if ( validity !== true ) {
+                updateLoadingState( label, false )
+                return onError( validity );
+            }
+        }
+        // Process files 
         const results = await Promise.all(
             filesData.map( async ( file ) => {
-                const validity = validateFile( file );
-                if ( validity !== true ) {
-                    onError( validity );
-                    return false;
-                }
+                // const validity = validateFile( file );
+                // if ( validity !== true ) {
+                //     onError( validity );
+                //     return false;
+                // }
                 return uploadFile( file )
-                    .then( ( response ) => {
+                    .then( async ( response ) => {
                         if ( !response ) {
                             onError( "Server error" );
                             return false;
                         }
-                        appendData( response );
+                        await appendData( response );
                         return true;
                     } )
                     .catch( () => {
@@ -105,7 +110,6 @@ const useHandleFiles = () => {
     } ) => {
         // Set loading state to true
         updateLoadingState( label, true )
-
         // Clear any existing errors for the field
         clearErrors( label );
 
@@ -133,6 +137,7 @@ const useHandleFiles = () => {
             }
         } catch ( error ) {
             // Handle unexpected errors
+            console.error( " useHandleFiles  error:", error )
             onError( `An error occurred: ${ error.message }` );
         } finally {
 

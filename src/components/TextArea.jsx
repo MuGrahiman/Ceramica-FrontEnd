@@ -26,7 +26,7 @@ const TextArea = ({
 		: "text-gray-700 dark:text-gray-600";
 
 	return (
-		<div className="mb-5">
+		<div className="mb-5 w-full">
 			<label
 				htmlFor={NAME}
 				className={`block mb-2 text-sm font-bold ${labelClass}`}>

@@ -25,6 +25,7 @@ import AdminLayout from "../components/AdminLayout";
 import DemoPage from "../pages/demo/DemoPage";
 import Inventory from "../pages/inventory/Inventory";
 import AddToInventory from "../pages/inventory/AddToInventory";
+import ModifyInventory from "../pages/inventory/UpdateInventory";
 
 const router = createBrowserRouter([
 	{
@@ -125,6 +126,13 @@ const router = createBrowserRouter([
 				element: (
 					<AdminRoute>
 						<AddToInventory />
+					</AdminRoute>
+				),
+			},	{
+				path: "update-inventory/:id",
+				element: (
+					<AdminRoute>
+						<ModifyInventory />
 					</AdminRoute>
 				),
 			},
