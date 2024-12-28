@@ -5,15 +5,22 @@ import useHandleFiles from "./useHandleFiles";
 import useColorValidator from "./useColorValidator";
 import { handleFieldsValidation, iterateFiles } from "../utils/fileHandler";
 
+/**
+ * Custom hook to manage the inventory form.
+ *
+ * @param {Object} params - Parameters for the hook.
+ * @param {Object} params.DEFAULT_VALUES - Default values for the form fields.
+ * @param {Object} params.DEFAULT_SUCCESS_VALUE - Default success states for fields.
+ * @param {Function} params.ON_SUBMIT - Function to handle form submission.
+ * @param {boolean} params.LOADING - Loading state for form submission.
+ * @returns {Object} Hook functions and states for managing the form.
+ */
 const useInventoryFormHandler = ( { DEFAULT_VALUES, DEFAULT_SUCCESS_VALUE, ON_SUBMIT, LOADING } ) => {
-
     const [ isSuccess, setIsSuccess ] = useState( DEFAULT_SUCCESS_VALUE );
-
 
     // Form Hook Configuration
     const {
         handleSubmit,
-        reset,
         control,
         setValue,
         getValues,
@@ -31,106 +38,123 @@ const useInventoryFormHandler = ( { DEFAULT_VALUES, DEFAULT_SUCCESS_VALUE, ON_SU
         name: "files",
     } );
 
-
     // Custom Hooks
     const showToast = useToast();
     const { handleFileChange, handleFileRemove, fileLoading } = useHandleFiles();
     const {
         validateColor,
-        colorData,
+        colorValue,
         colorLoading,
         colorError,
         colorSuccess,
-        resetColor,
+        resetColor
     } = useColorValidator( DEFAULT_VALUES.color );
 
-    const onColorAdd = () => {
-        setValue( "color", {
-            name: colorData.name,
-            hex: colorData.hex,
-            image: colorData.image,
-        } ),
-            setValue( "colorInput", colorData.hex );
-        clearErrors( "colorInput" );
-        setSuccessFn( "colorInput", colorData && !errors[ "colorInput" ] );
-    }
-
-    // Utility Functions
+    // Utility function to set custom error messages
     const setErrorFn = ( label, message ) =>
         setError( label, { type: "custom", message: message } );
 
+    // Utility function to set success state for fields
     const setSuccessFn = ( label, isSucceed ) =>
         setIsSuccess( ( prev ) => ( {
             ...prev,
             [ label ]: isSucceed,
         } ) );
 
-    //  Handle file effects
+    // Function to handle color input and validate it
+    const onColorAdd = () => {
+        const inputColor = getValues( 'colorInput' );
+        clearErrors( "colorInput" );
+        validateColor( inputColor, { onError: ( error ) => setErrorFn( 'colorInput', error ) } );
+    };
+
+    // Effect to handle the images' success state based on file count
     useEffect( () => {
         setSuccessFn( "images", fields.length > 2 && !errors[ "images" ] );
     }, [ errors, fields ] );
 
+    // Effect to update the color field values in the form
+    useEffect( () => {
+        setValue( "color", {
+            name: colorValue.name,
+            hex: colorValue.hex,
+            image: colorValue.image,
+        } );
 
+        setSuccessFn( "colorInput",
+            colorValue.name &&
+            colorValue.hex &&
+            colorValue.image &&
+            !errors[ "colorInput" ]
+        );
+    }, [ colorValue, errors ] );
 
+    // Function to handle removing a single file by its public ID
     const onFileRemove = ( id ) => handleFileRemove( {
         label: "image",
         publicId: id,
         clearErrors: () => clearErrors( "image" ),
-        onSuccess: () => { setValue( "file", null ), setSuccessFn( 'image', false ) },
+        onSuccess: () => {
+            setValue( "file", null );
+            setSuccessFn( 'image', false );
+        },
         onError: ( error ) => setErrorFn( "image", error ),
-    } )
+    } );
 
-
-    const onFilesRemove = ( id, i ) =>
-        handleFileRemove( {
-            label: "images",
-            publicId: id,
-            clearErrors: () => clearErrors( "images" ),
-            onSuccess: () => {
-                const images = getValues( "images" );
-                const filteredImages = Array.from( images ).filter(
-                    ( _, index ) => index !== i
-                );
-                setValue( "images", { ...filteredImages } );
-                remove( i );
-            },
-            onError: ( error ) => setErrorFn( "images", error ),
-        } )
-
+    // Function to handle removing multiple files by their public ID
+    const onFilesRemove = ( id, i ) => handleFileRemove( {
+        label: "images",
+        publicId: id,
+        clearErrors: () => clearErrors( "images" ),
+        onSuccess: () => {
+            const images = getValues( "images" );
+            const filteredImages = Array.from( images ).filter( ( _, index ) => index !== i );
+            setValue( "images", { ...filteredImages } );
+            remove( i );
+        },
+        onError: ( error ) => setErrorFn( "images", error ),
+    } );
 
     // Handle form submission
     const handleForm = ( data ) => {
         clearErrors( "images" );
         const fieldsValidity = handleFieldsValidation( fields );
-        if ( fieldsValidity !== true ) return setErrorFn( "images", fieldsValidity );
-        if ( isDirty && isValid ) return ON_SUBMIT( data );
-        else return showToast( "Please make changes", "info" );
+
+        if ( fieldsValidity !== true ) {
+            return setErrorFn( "images", fieldsValidity );
+        }
+
+        // If form fields are valid, proceed with submission
+        if ( isDirty && isValid ) {
+            return ON_SUBMIT( data );
+        } else {
+            return showToast( "Please make changes", "info" );
+        }
     };
 
 
-    //  Handle validation
+
+    // Validation rules for form fields
     const validationRules = {
-        // image validator rules
+        // Image validation rules
         image: {
             required: "Image is required.",
             accept: ".jpeg, .jpg, .png",
             validate: ( value ) => getValues( "file" ) || value ? true : "Image is required.",
-            onChange: ( e ) =>
-                handleFileChange( {
-                    label: "image",
-                    files: e.target.files,
-                    clearErrors: () => clearErrors( "image" ),
-                    maxFiles: 1,
-                    minFile: 1,
-                    currentFields: getValues( "file" ) ? [ getValues( "file" ) ] : [],
-                    onSuccess: () => setSuccessFn( "image", !errors[ "image" ] ),
-                    onError: ( error ) => setErrorFn( "image", error ),
-                    appendData: ( { public_id, url, type, format } ) =>
-                        setValue( "file", { public_id, url, type: `${ type }/${ format }` } ),
-                } ),
+            onChange: ( e ) => handleFileChange( {
+                label: "image",
+                files: e.target.files,
+                clearErrors: () => clearErrors( "image" ),
+                maxFiles: 1,
+                minFile: 1,
+                currentFields: getValues( "file" ) ? [ getValues( "file" ) ] : [],
+                onSuccess: () => setSuccessFn( "image", !errors[ "image" ] ),
+                onError: ( error ) => setErrorFn( "image", error ),
+                appendData: ( { public_id, url, type, format } ) =>
+                    setValue( "file", { public_id, url, type: `${ type }/${ format }` } ),
+            } ),
         },
-
-        // title validator rules
+        // Title validation rules
         title: {
             required: "Title is required.",
             minLength: {
@@ -140,59 +164,50 @@ const useInventoryFormHandler = ( { DEFAULT_VALUES, DEFAULT_SUCCESS_VALUE, ON_SU
             onChange: ( e ) => {
                 const value = e.target.value;
                 clearErrors( "title" );
-                setSuccessFn( "title", value && value.length >= 3 && !errors[ "title" ] );
+                setSuccessFn( "title", value.length >= 3 && !errors[ "title" ] );
             },
         },
-
-        // category validator rules
+        // Category validation rules
         category: {
             required: "Category is required.",
-            validate: ( value ) =>
-                ( value && value !== "select" ) || "Please select option",
+            validate: ( value ) => ( value && value !== "select" ) || "Please select an option",
             onChange: ( e ) => {
                 const value = e.target.value;
                 clearErrors( "category" );
                 setSuccessFn( "category", value && !errors[ "category" ] );
             },
         },
-
-        // shape validator rules
+        // Shape validation rules
         shape: {
             required: "Shape is required.",
             minLength: 3,
             onChange: ( e ) => {
                 clearErrors( "shape" );
                 const value = e.target.value;
-                setSuccessFn( "shape", value && value.length > 2 && !errors[ "shape" ] );
+                setSuccessFn( "shape", value.length > 2 && !errors[ "shape" ] );
             },
         },
-
-        // color validator rules
+        // Color validation rules
         colorInput: {
             required: "Color is required.",
-            validate: ( value ) => ( value ? true : "Please Select the color" ),
-            // onChange: ( e ) =>
-            //     validateColor( e.target.value, {
-            //         onError: ( error ) => setErrorFn( "colorInput", error ),
-            //     } ),
+            validate: ( value ) => value ? true : "Please select a color",
+            onChange: () => clearErrors( "colorInput" ),
         },
         color: {
             hex: {
                 required: "Color hex value is required.",
-                validate: ( value ) =>
-                    value ? true : "Please Select the color hex value",
+                validate: ( value ) => value ? true : "Please select a color hex value",
             },
             image: {
                 required: "Color image is required.",
-                validate: ( value ) => ( value ? true : "Please Select the color image" ),
+                validate: ( value ) => value ? true : "Please select a color image",
             },
             name: {
                 required: "Color name is required.",
-                validate: ( value ) => ( value ? true : "Please Select the color name" ),
+                validate: ( value ) => value ? true : "Please select a color name",
             },
         },
-
-        // dimension validator rules
+        // Dimension validation rules
         dimension: {
             required: "Dimension is required.",
             onChange: ( e ) => {
@@ -201,8 +216,7 @@ const useInventoryFormHandler = ( { DEFAULT_VALUES, DEFAULT_SUCCESS_VALUE, ON_SU
                 setSuccessFn( "dimension", value && !errors[ "dimension" ] );
             },
         },
-
-        // stock validator rules
+        // Stock validation rules
         stock: {
             required: "Stock is required.",
             valueAsNumber: true,
@@ -212,68 +226,54 @@ const useInventoryFormHandler = ( { DEFAULT_VALUES, DEFAULT_SUCCESS_VALUE, ON_SU
                 setSuccessFn( "stock", value && !errors[ "stock" ] );
             },
         },
-
-        // size validator rules
+        // Size validation rules
         size: {
             required: "Size is required.",
-            validate: ( value ) =>
-                ( value && value !== "select" ) || "Please select option",
+            validate: ( value ) => ( value && value !== "select" ) || "Please select an option",
             onChange: ( e ) => {
                 clearErrors( "size" );
                 const value = e.target.value;
                 setSuccessFn( "size", value && !errors[ "size" ] );
             },
         },
-
-        // price validator rules
+        // Price validation rules
         price: {
             required: "Price is required.",
             valueAsNumber: true,
+            validate:value => value > 0 || 'Price must be greater than 0',
             onChange: ( e ) => {
                 clearErrors( "price" );
                 const value = e.target.value;
                 setSuccessFn( "price", value && !errors[ "price" ] );
             },
         },
-
-        // description validator rules
+        // Description validation rules
         description: {
             required: "Description is required.",
-            validate: ( value ) =>
-                value.trim().length > 200 ||
-                "Description must be at least 200 characters long.",
+            validate: ( value ) => value.trim().length >= 200 || "Description must be at least 200 characters long.",
             onChange: ( e ) => {
                 clearErrors( "description" );
                 const value = e.target.value;
-                setSuccessFn(
-                    "description",
-                    value && value.trim().length >= 200 && !errors[ "description" ]
-                );
+                setSuccessFn( "description", value.trim().length >= 200 && !errors[ "description" ] );
             },
         },
-
-        // Image validation rules
+        // Images validation rules
         images: {
-            validate: ( files ) =>
-                files ? iterateFiles( files ) : handleFieldsValidation( fields ),
-            onChange: ( e ) =>
-                handleFileChange( {
-                    label: "images",
-                    files: e.target.files,
-                    clearErrors: () => clearErrors( "images" ),
-                    maxFiles: 5,
-                    currentFields: fields,
-                    onSuccess: () =>
-                        setSuccessFn( "images", fields.length > 2 && !errors[ "images" ] ),
-                    onError: ( error ) => {
-                        setErrorFn( "images", error );
-                        // return;
-                    },
-                    appendData: ( { public_id, url, type, format } ) =>
-                        append( { public_id, url, type: `${ type }/${ format }` } ),
-                } ),
+            validate: ( files ) => files ? iterateFiles( files ) : handleFieldsValidation( fields ),
+            onChange: ( e ) => handleFileChange( {
+                label: "images",
+                files: e.target.files,
+                clearErrors: () => clearErrors( "images" ),
+                maxFiles: 5,
+                currentFields: fields,
+                onSuccess: () => setSuccessFn( "images", fields.length > 2 && !errors[ "images" ] ),
+                onError: ( error ) => setErrorFn( "images", error ),
+                appendData: ( { public_id, url, type, format } ) =>
+                    append( { public_id, url, type: `${ type }/${ format }` } ),
+            } ),
         },
     };
+
 
     return {
         register,
@@ -296,7 +296,7 @@ const useInventoryFormHandler = ( { DEFAULT_VALUES, DEFAULT_SUCCESS_VALUE, ON_SU
             LOADING
         ),
         imageField: ( getValues( "file" ) ? [ getValues( "file" ) ] : [] ),
-        colorValue: { ...colorData, colorLoading, colorError, colorSuccess, resetColor },
+        colorData: { ...colorValue, colorLoading, colorError, colorSuccess, resetColor },
     };
 }
 

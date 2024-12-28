@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
  */
 const useToast = () => {
     const showToast = useCallback((message, type = "default") => {
-      
         const toastTypes = {
             success: toast.success,
             error: toast.error,
@@ -16,7 +15,7 @@ const useToast = () => {
             default: toast,
         };
 
-        // Call appropriate toast method
+        // Call the appropriate toast method based on the provided type
         const toastMethod = toastTypes[type] || toast;
         toastMethod(message);
     }, []);

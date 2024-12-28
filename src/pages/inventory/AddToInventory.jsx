@@ -1,22 +1,20 @@
 import React from "react";
-import { useForm } from "react-hook-form";
 import InventoryForm from "./InventoryForm";
 import { useAddToInventoryMutation } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import useToast from "../../hooks/useToast";
 import { createDefaultState } from "../../utils/defaultSuccess";
+import { getBreadCrumbItems } from "../../utils/inventory";
 
+// Page Component: Handles adding a product to the inventory
 const AddToInventory = () => {
 	const showToast = useToast();
 	const navigate = useNavigate();
 	const [addToInventory, { isLoading }] = useAddToInventoryMutation();
 
 	const Title = "Add To Inventory";
-	const breadcrumbItems = [
-		{ label: "Inventory", to: "/dashboard/inventory" },
-		{ label: Title },
-	];
 
+	// Default values for the form
 	const defaultValues = {
 		file: null,
 		image: null,
@@ -33,6 +31,8 @@ const AddToInventory = () => {
 		images: null,
 		files: [],
 	};
+
+	// Default success state for form validation
 	const defaultSuccessValue = createDefaultState(
 		[
 			"image",
@@ -49,34 +49,26 @@ const AddToInventory = () => {
 		],
 		false
 	);
-	const onSubmit = async ({
-		image,
-		images,
-		colorInput,
-		file,
-		files,
-		...rest
-	}) => {
-		const newData = {
-			...rest,
-			coverImage: file,
-			images: files,
-		};
+
+	// Handles form submission and API call
+	const handleSubmit = async (formData) => {
+		const { image, images, colorInput, file, files, ...rest } = formData;
+		const newData = { ...rest, coverImage: file, images: files };
+
 		try {
 			await addToInventory(newData).unwrap();
 			showToast("Product added to inventory successfully", "success");
 			navigate("/dashboard/inventory");
 		} catch (error) {
-			console.error(error);
-			alert("Failed to add book. Please try again.");
+			showToast("Failed to add product. Please try again.", "error");
+			console.error("Error adding product:", error);
 		}
 	};
-
 	return (
 		<InventoryForm
 			LOADING={isLoading}
-			ON_SUBMIT={onSubmit}
-			BREAD_CRUMB_ITEMS={breadcrumbItems}
+			ON_SUBMIT={handleSubmit}
+			BREAD_CRUMB_ITEMS={getBreadCrumbItems(Title)}
 			TITLE={Title}
 			DEFAULT_VALUES={defaultValues}
 			DEFAULT_SUCCESS_VALUE={defaultSuccessValue}

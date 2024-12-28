@@ -18,13 +18,16 @@ const Inventory = () => {
 	const [id, setId] = useState(null);
 	const [data, setData] = useState();
 	const showToast = useToast();
-
 	const limit = 5;
-	const { data: productData, isLoading: fetchLoading } =
-		useGetInventoryItemsQuery({
-			page: currentPage,
-			limit,
-		});
+
+	// Fetch inventory items
+	const {
+		data: productData,
+		isLoading: fetchLoading,
+		error: fetchError,
+	} = useGetInventoryItemsQuery({ page: currentPage, limit });
+
+	// Update inventory data when productData changes
 	useEffect(() => {
 		if (productData) {
 			const { products, totalPages } = productData;
@@ -33,10 +36,11 @@ const Inventory = () => {
 		}
 	}, [productData]);
 
+	// Delete inventory item
 	const [deleteInventory, { isLoading: dltLoading }] =
 		useDeleteInventoryMutation();
 
-
+	// Handles the deletion of an inventory item
 	const handleDelete = async (id) => {
 		setId(id);
 		const result = await Swal.fire({
@@ -48,9 +52,9 @@ const Inventory = () => {
 			cancelButtonColor: "#3085d6",
 			confirmButtonText: "Yes, delete it!",
 		});
-	
+
 		if (!result.isConfirmed) return setId(null);
-	
+
 		try {
 			const res = await deleteInventory(id).unwrap();
 			showToast(res.message, res.success ? "success" : "error");
@@ -61,8 +65,6 @@ const Inventory = () => {
 			setId(null);
 		}
 	};
-	
-
 
 	// Key function for row identification
 	const KeyFn = (inventory) => inventory._id;
@@ -131,7 +133,15 @@ const Inventory = () => {
 		return (
 			<div className="flex items-center justify-center h-screen">
 				<Loading message="Fetching inventory, please wait..." />
-				</div>
+			</div>
+		);
+	}
+	// Handle error state
+	if (fetchError) {
+		return (
+			<div className="text-center text-gray-500">
+				<p>Error fetching inventory. Please try again later.</p>
+			</div>
 		);
 	}
 

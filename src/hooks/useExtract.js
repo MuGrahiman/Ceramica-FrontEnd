@@ -1,31 +1,49 @@
 import { useState } from "react";
 
+/**
+ * Custom hook to extract data asynchronously.
+ *
+ * @returns {Object} Object containing the extraction function and states.
+ */
 const useExtract = () => {
-	const [loading, setLoading] = useState(false);
-	const [data, setData] = useState(null);
-	const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [data, setData] = useState(null);
+    const [error, setError] = useState(null);
 
-	const extractData = async (fn, ...args) => {
-		setLoading(true);
-		setError(null);
-		try {
-			const result = await fn(...args).then((res) => res.user); 
-			const extractedData = {
-				email: result.email || result.providerData?.[0]?.email,
-				uid: result.uid,
-			};
-			setData(extractedData);
-			return extractedData;
-		} catch (err) {
-			setError(err);
-			console.error("Error in extracting data:", err);
-			throw err; // Rethrow error to be handled outside
-		} finally {
-			setLoading(false);
-		}
-	};
+    /**
+     * Extracts data by invoking a provided function with given arguments.
+     *
+     * @param {Function} fn - The function to call for data extraction.
+     * @param {...any} args - The arguments to pass to the function.
+     * @returns {Promise<Object>} The extracted data.
+     */
+    const extractData = async (fn, ...args) => {
+        setLoading(true);
+        setError(null);
 
-	return { extractData, data, error, loading }; 
+        try {
+            // Execute the function and retrieve the user data from the response
+            const result = await fn(...args).then((res) => res.user);
+            const extractedData = {
+                email: result.email || result.providerData?.[0]?.email,
+                uid: result.uid,
+            };
+
+            // Save the extracted data to state
+            setData(extractedData);
+            return extractedData;
+        } catch (err) {
+            // Capture any errors during the extraction process
+            setError(err);
+            console.error("Error in extracting data:", err);
+            throw err; // Rethrow error to be handled outside
+        } finally {
+            // Set loading state to false after processing
+            setLoading(false);
+        }
+    };
+
+    return { extractData, data, error, loading };
 };
 
 export default useExtract;

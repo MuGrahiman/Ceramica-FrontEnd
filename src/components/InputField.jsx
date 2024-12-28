@@ -39,7 +39,7 @@ const InputField = ({
 				id={NAME}
 				aria-invalid={ERRORS[NAME] ? "true" : "false"}
 				placeholder={PLACEHOLDER || `Enter ${NAME}`}
-				className={`dark:bg-white text-sm font-normal rounded-lg block w-full p-2.5 ${getInputClass()}`}
+				className={`focus:outline-none dark:bg-white text-sm font-normal rounded-lg block w-full p-2.5 ${getInputClass()}`}
 			/>
 			{ERRORS[NAME] && (
 				<small className="w-full text-center text-xs text-red-600 dark:text-red-500">
