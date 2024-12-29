@@ -7,7 +7,11 @@ import SelectField from "../../components/SelectField";
 import ImageUploader from "../../components/ImageUploader";
 import ColorField from "../../components/ColorField";
 import useInventoryFormHandler from "../../hooks/useInventoryFormHandler";
-import { CATEGORY_OPTIONS, SIZE_OPTIONS } from "../../constants/inventory";
+import {
+	CATEGORY_OPTIONS,
+	SIZE_OPTIONS,
+	STATUS_OPTIONS,
+} from "../../constants/inventory";
 
 //  InventoryForm component
 const InventoryForm = ({
@@ -138,6 +142,17 @@ const InventoryForm = ({
 				PLACEHOLDER: "Enter Price",
 			},
 		},
+		/* Status */
+		{
+			component: SelectField,
+			props: {
+				NAME: "status",
+				LABEL: "Status",
+				// TYPE: "number",
+				PLACEHOLDER: "Select status",
+				OPTIONS: STATUS_OPTIONS,
+			},
+		},
 		/* Description */
 		{
 			component: TextArea,
@@ -180,7 +195,7 @@ const InventoryForm = ({
 						<Component
 							key={index}
 							{...props}
-							IS_SUCCESS={isSuccess[props.NAME]||false}
+							IS_SUCCESS={isSuccess[props.NAME] || false}
 							ERRORS={errors}
 							REGISTER={register}
 							VALIDATION_RULES={validationRules}

@@ -236,11 +236,21 @@ const useInventoryFormHandler = ( { DEFAULT_VALUES, DEFAULT_SUCCESS_VALUE, ON_SU
                 setSuccessFn( "size", value && !errors[ "size" ] );
             },
         },
+        // Status validation rules
+        status: {
+            required: "Status is required.",
+            validate: ( value ) => ( value && value !== "select" ) || "Please select an option",
+            onChange: ( e ) => {
+                const value = e.target.value;
+                clearErrors( "status" );
+                setSuccessFn( "status", value && !errors[ "status" ] );
+            },
+        },
         // Price validation rules
         price: {
             required: "Price is required.",
             valueAsNumber: true,
-            validate:value => value > 0 || 'Price must be greater than 0',
+            validate: value => value > 0 || 'Price must be greater than 0',
             onChange: ( e ) => {
                 clearErrors( "price" );
                 const value = e.target.value;
