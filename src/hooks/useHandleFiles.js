@@ -62,11 +62,6 @@ const useHandleFiles = () => {
         // Process files 
         const results = await Promise.all(
             filesData.map( async ( file ) => {
-                // const validity = validateFile( file );
-                // if ( validity !== true ) {
-                //     onError( validity );
-                //     return false;
-                // }
                 return uploadFile( file )
                     .then( async ( response ) => {
                         if ( !response ) {

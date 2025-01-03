@@ -1,16 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import getBaseUrl from "../../../utils/baseURL";
+import { prepareHeaders, paramsSerializer } from "../../../utils/redux";
+
 
 const baseQuery = fetchBaseQuery( {
 	baseUrl: `${ getBaseUrl() }/api/inventory`,
 	credentials: "include",
-	prepareHeaders: ( Headers ) => {
-		const token = localStorage.getItem( "token" );
-		if ( token ) {
-			Headers.set( "Authorization", `Bearer ${ token }` );
-		}
-		return Headers;
-	},
+	prepareHeaders,
+	paramsSerializer
+
 } );
 
 const inventoryApi = createApi( {
@@ -20,7 +18,23 @@ const inventoryApi = createApi( {
 	endpoints: ( builder ) => ( {
 
 		getInventoryItems: builder.query( {
-			query: ({ page = 1, limit = 10 }) =>  `/get?page=${page}&limit=${limit}`,
+			query: ( {
+				page = 1,
+				limit = 10,
+				category = [],
+				size = [],
+				sort = '',
+				minPrice = '',
+				maxPrice = '', search = ''
+			} ) =>
+			( {
+				url: '/get',
+				method: 'GET',
+				params: {
+					page, limit, category, size, maxPrice, minPrice, sort, search
+				},
+			} )
+			,
 			providesTags: [ "Inventory" ],
 		} ),
 
@@ -49,7 +63,17 @@ const inventoryApi = createApi( {
 			} ),
 			invalidatesTags: [ "Inventory" ],
 		} ),
-
+		patchInventory: builder.mutation( {
+			query: ( { id, status } ) => ( {
+				url: `/edit/${ id }`,
+				method: "PATCH",
+				body: status,
+				headers: {
+					"Content-Type": "application/json",
+				},
+			} ),
+			invalidatesTags: [ "Inventory" ],
+		} ),
 		deleteInventory: builder.mutation( {
 			query: ( id ) => ( {
 				url: `/delete/${ id }`,
@@ -66,6 +90,7 @@ export const {
 	useGetInventoryItemByIdQuery,
 	useAddToInventoryMutation,
 	useUpdateInventoryMutation,
+	usePatchInventoryMutation,
 	useDeleteInventoryMutation
 } = inventoryApi;
 export default inventoryApi;

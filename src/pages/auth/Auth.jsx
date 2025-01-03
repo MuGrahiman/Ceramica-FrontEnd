@@ -30,7 +30,6 @@ const dispatch = useDispatch();
 				}
 			);
 			const auth = response.data;
-			console.log(auth);
 
 			if (auth.token) {
 				// Save token and set expiration timeout

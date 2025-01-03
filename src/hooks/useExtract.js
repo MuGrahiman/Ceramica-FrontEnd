@@ -22,23 +22,19 @@ const useExtract = () => {
         setError(null);
 
         try {
-            // Execute the function and retrieve the user data from the response
             const result = await fn(...args).then((res) => res.user);
             const extractedData = {
                 email: result.email || result.providerData?.[0]?.email,
                 uid: result.uid,
             };
 
-            // Save the extracted data to state
             setData(extractedData);
             return extractedData;
         } catch (err) {
-            // Capture any errors during the extraction process
             setError(err);
             console.error("Error in extracting data:", err);
-            throw err; // Rethrow error to be handled outside
+            throw err; 
         } finally {
-            // Set loading state to false after processing
             setLoading(false);
         }
     };

@@ -26,7 +26,7 @@ function Table({
         `px-6 py-4 ${column.hide ? `hidden ${column.showValue()}` : ""}`;
 
     return (
-        <div className="overflow-x-auto shadow-md my-3 rounded-lg">
+        <div className="overflow-x-auto shadow-md mt-3 rounded-lg">
             <table className="w-full text-sm text-left rtl:text-right dark:text-gray-600">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr className="border-b">
@@ -60,11 +60,7 @@ function Table({
                     ))}
                 </tbody>
             </table>
-            <Pagination
-                currentPage={CURRENT_PAGE}
-                totalPages={TOTAL_PAGES}
-                onPageChange={HANDLE_PAGE_CHANGE}
-            />
+          
         </div>
     );
 }

@@ -1,73 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MdDelete, MdMode, MdOutlineAdd } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { ImEye, ImSpinner9 } from "react-icons/im";
 import Table from "../../components/Table";
 import Loading from "../../components/Loading";
-import {
-	useDeleteInventoryMutation,
-	useGetInventoryItemsQuery,
-} from "../../redux/store";
+import SearchBar from "../../components/SearchBar";
+import FilterForm from "../../components/FilterForm";
+import useInventory from "../../hooks/useInventory";
+import { KeyFn } from "../../utils/generals";
 import img from "../../assets/avatar.png";
-import { ImSpinner9 } from "react-icons/im";
-import Swal from "sweetalert2";
-import useToast from "../../hooks/useToast";
+import Pagination from "../../components/Pagination";
+import Badge from "../../components/Badge";
 
+// Inventory Component
 const Inventory = () => {
-	const [currentPage, setCurrentPage] = useState(1);
-	const [totalPages, setTotalPages] = useState(1);
-	const [id, setId] = useState(null);
-	const [data, setData] = useState();
-	const showToast = useToast();
-	const limit = 5;
+	const [isOpen, setIsOpen] = useState(false);
 
-	// Fetch inventory items
+	// Use custom hook to manage inventory data
 	const {
-		data: productData,
-		isLoading: fetchLoading,
-		error: fetchError,
-	} = useGetInventoryItemsQuery({ page: currentPage, limit });
-
-	// Update inventory data when productData changes
-	useEffect(() => {
-		if (productData) {
-			const { products, totalPages } = productData;
-			setData(products || []);
-			setTotalPages(totalPages || 1);
-		}
-	}, [productData]);
-
-	// Delete inventory item
-	const [deleteInventory, { isLoading: dltLoading }] =
-		useDeleteInventoryMutation();
-
-	// Handles the deletion of an inventory item
-	const handleDelete = async (id) => {
-		setId(id);
-		const result = await Swal.fire({
-			title: "Are you sure?",
-			text: "You won't be able to revert this!",
-			icon: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#b10202",
-			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Yes, delete it!",
-		});
-
-		if (!result.isConfirmed) return setId(null);
-
-		try {
-			const res = await deleteInventory(id).unwrap();
-			showToast(res.message, res.success ? "success" : "error");
-		} catch (err) {
-			showToast(err?.data?.message || "Something went wrong", "error");
-			console.error("Delete inventory error:", err);
-		} finally {
-			setId(null);
-		}
-	};
-
-	// Key function for row identification
-	const KeyFn = (inventory) => inventory._id;
+		fetchLoading,
+		currentPage,
+		fetchError,
+		totalPages,
+		handlePage,
+		dltLoading,
+		handleDelete,
+		data,
+		id,
+		handleFilter,
+		clearFilter,
+		clearSearch,
+		handleSearch,
+		handleStatus,
+		patchLoading,
+	} = useInventory();
 
 	// Table headers configuration
 	const headers = [
@@ -78,7 +44,7 @@ const Inventory = () => {
 				<img
 					className="w-10 h-10 rounded-full"
 					src={inventory.coverImage.url || img}
-					alt={inventory.title || "Book Image"}
+					alt={inventory.title || "Inventory Image"}
 				/>
 			),
 			showValue: () => "lg:table-cell",
@@ -89,15 +55,47 @@ const Inventory = () => {
 		},
 		{
 			hide: true,
-			label: "Category",
-			render: (inventory) => inventory.category,
-			showValue: () => "md:table-cell",
-		},
-		{
-			hide: true,
 			label: "Price",
 			render: (inventory) => `${inventory.price.toFixed(2)}`,
 			showValue: () => "sm:table-cell",
+		},
+		{
+			label: "Availability",
+			render: (inventory) =>
+				patchLoading ? (
+					<ImSpinner9
+						className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600"
+						aria-label="Deleting item..."
+					/>
+				) : (
+					<Badge
+					ON_CLICK={() => handleStatus(inventory)}
+						LABEL={inventory?.status ? "Enabled" : "Disabled"}
+						STATUS={inventory?.status}
+					/>
+				),
+			// inventory?.status ? (
+			// 	<span
+			// 		id="badge-dismiss-green"
+			// 		className="inline-flex items-center px-2 py-1 me-2 text-sm font-medium cursor-pointer text-green-800 bg-green-100 rounded dark:bg-green-300 hover:bg-green-900 hover:text-green-300">
+			// 		Enabled
+			// 	</span>
+			// ) : (
+			// 	<span
+			// 		id="badge-dismiss-red"
+			// 		className="inline-flex items-center px-2 py-1 me-2 text-sm font-medium cursor-pointer text-red-800 bg-red-100 rounded dark:bg-red-300 hover:bg-red-900 hover:text-red-300">
+			// 		Disabled
+			// 	</span>
+			// ),
+		},
+		{
+			label: "Details",
+			render: (inventory) => (
+				<ImEye
+					className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700"
+					aria-label="Details"
+				/>
+			),
 		},
 		{
 			label: "Edit",
@@ -128,6 +126,14 @@ const Inventory = () => {
 		},
 	];
 
+	const onSubmit = (data) => {
+		handleFilter(data);
+		setIsOpen((prev) => !prev);
+	};
+	const onClear = () => {
+		clearFilter();
+		setIsOpen((prev) => !prev);
+	};
 	// Handle loading state
 	if (fetchLoading) {
 		return (
@@ -136,6 +142,7 @@ const Inventory = () => {
 			</div>
 		);
 	}
+
 	// Handle error state
 	if (fetchError) {
 		return (
@@ -146,32 +153,67 @@ const Inventory = () => {
 	}
 
 	return (
-		<section className="sm:py-8 h-full w-full xl:w-8/12 mb-12 xl:mb-0 px-4 mx-auto mt-24">
+		<section className="h-full w-full xl:w-8/12 mb-12  mx-auto">
 			{/* Header Section */}
-			<div className="flex flex-col sm:flex-row items-center justify-between py-4 sm:mb-6">
+			<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
 				<h2 className="text-4xl font-extrabold font-serif text-gray-700">
 					Inventory
 				</h2>
 				<Link
 					to="/dashboard/add-to-inventory"
-					className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 px-5 py-3 text-white bg-gray-600 hover:bg-gray-700 rounded-md shadow-md">
+					className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 
+					px-5 py-3 text-white bg-gray-600 hover:bg-gray-700 
+					rounded-md shadow-md">
 					<MdOutlineAdd className="h-6 w-6" />
 					Add To Inventory
 				</Link>
 			</div>
 
-			{/* Table Section */}
-			<div className="block w-full shadow-lg">
-				{data && (
-					<Table
-						DATA={data}
-						CONFIG={headers}
-						KEYFN={KeyFn}
-						CURRENT_PAGE={currentPage}
-						TOTAL_PAGES={totalPages}
-						HANDLE_PAGE_CHANGE={(page) => setCurrentPage(page)}
-					/>
-				)}
+			{/* Filter and Search Section */}
+			<div className="flex justify-between items-center mt-4 mb-4 gap-10">
+				<button
+					type="button"
+					onClick={() => setIsOpen((prev) => !prev)}
+					className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 px-5 py-2.5 text-white bg-gray-600 hover:bg-gray-700 rounded-md shadow-md">
+					Filter
+				</button>
+				<SearchBar ON_SUBMIT={handleSearch} CLEAR_SEARCH={clearSearch} />
+			</div>
+
+			{/* Inventory Table */}
+			<div className="relative mb-12 min-h-screen">
+				<div
+					className={`w-full shadow-lg transition-all duration-700 ease-in-out ${
+						isOpen ? "opacity-0 -z-50" : "opacity-100 z-50"
+					}`}>
+					{data && (
+						<>
+							<Table
+								DATA={data}
+								CONFIG={headers}
+								KEYFN={KeyFn}
+								CURRENT_PAGE={currentPage}
+								TOTAL_PAGES={totalPages}
+								HANDLE_PAGE_CHANGE={handlePage}
+							/>
+							<Pagination
+								currentPage={currentPage}
+								totalPages={totalPages}
+								onPageChange={handlePage}
+							/>
+						</>
+					)}
+				</div>
+
+				{/* Sidebar - Filter Form */}
+				<aside
+					className={`absolute top-0 left-0 w-full p-4 transition-all duration-700 ease-in-out ${
+						isOpen
+							? "translate-y-0 z-50 opacity-100"
+							: "-translate-y-full opacity-0 -z-50"
+					} bg-gray-800 text-gray-500 text-lg`}>
+					<FilterForm ON_SUBMIT={onSubmit} ON_CLEAR={onClear} />
+				</aside>
 			</div>
 		</section>
 	);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -13,7 +13,7 @@ import BookCard from '../books/BookCard';
 import { useFetchAllBooksQuery } from '../../redux/features/books/booksApi';
 
 
-const Recommened = () => {
+const Recommend = () => {
    
 
     const {data: books = []} = useFetchAllBooksQuery();
@@ -63,4 +63,4 @@ const Recommened = () => {
   )
 }
 
-export default Recommened
+export default Recommend

@@ -3,7 +3,7 @@ import InventoryForm from "./InventoryForm";
 import { useAddToInventoryMutation } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import useToast from "../../hooks/useToast";
-import { createDefaultState } from "../../utils/defaultSuccess";
+import { createDefaultState } from "../../utils/generals";
 import { getBreadCrumbItems } from "../../utils/inventory";
 
 // Page Component: Handles adding a product to the inventory

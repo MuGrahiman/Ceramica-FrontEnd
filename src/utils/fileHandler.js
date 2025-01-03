@@ -37,9 +37,7 @@ export const handleFieldsValidation = ( fields ) => {
 };
 //  Iterate files & validate
 export const iterateFiles = ( files ) => {
-    // if (fields.length) {
-    //     return handleFieldsValidation();
-    // } else {
+  
     if ( !files || !files.length ) {
         return "Upload file";
     }
@@ -51,4 +49,3 @@ export const iterateFiles = ( files ) => {
 
     return true;
 }
-// };

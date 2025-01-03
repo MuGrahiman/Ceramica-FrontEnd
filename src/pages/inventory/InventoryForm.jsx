@@ -12,6 +12,7 @@ import {
 	SIZE_OPTIONS,
 	STATUS_OPTIONS,
 } from "../../constants/inventory";
+import ListOptions from "../../components/ListOptions";
 
 //  InventoryForm component
 const InventoryForm = ({
@@ -191,16 +192,19 @@ const InventoryForm = ({
 					onSubmit={handleFormSubmit}
 					noValidate>
 					{/* Iterate over formFields to render each component */}
-					{formFields.map(({ component: Component, props }, index) => (
-						<Component
-							key={index}
-							{...props}
-							IS_SUCCESS={isSuccess[props.NAME] || false}
-							ERRORS={errors}
-							REGISTER={register}
-							VALIDATION_RULES={validationRules}
-						/>
-					))}
+					<ListOptions
+					OPTIONS={formFields}
+						RENDER_ITEM={({ component: Component, props }, index) => (
+							<Component
+								key={index}
+								{...props}
+								IS_SUCCESS={isSuccess[props.NAME] || false}
+								ERRORS={errors}
+								REGISTER={register}
+								VALIDATION_RULES={validationRules}
+							/>
+						)}
+					/>
 					{/* Submit Button */}
 					<div className="flex gap-1">
 						<button

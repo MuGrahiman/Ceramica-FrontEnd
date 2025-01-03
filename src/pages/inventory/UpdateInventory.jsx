@@ -7,7 +7,7 @@ import {
 import useToast from "../../hooks/useToast";
 import Loading from "../../components/Loading";
 import InventoryForm from "./InventoryForm";
-import { createDefaultState } from "../../utils/defaultSuccess";
+import { createDefaultState } from "../../utils/generals";
 import { getBreadCrumbItems } from "../../utils/inventory";
 
 // Page Component: Handles updating a product in the inventory

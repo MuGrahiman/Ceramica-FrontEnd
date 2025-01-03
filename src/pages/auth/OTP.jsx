@@ -102,6 +102,7 @@ const OTP = () => {
 			showToast(response.message, toastType);
 			if (response.success) setTime(INITIAL_TIMER);
 		} catch (error) {
+			console.error("Resend otp error:", error)
 			showToast("Failed to resend OTP", "error");
 		}
 	};
@@ -125,10 +126,8 @@ const OTP = () => {
 		}
 	};
 
-	// Conditional Rendering
 	if (isLoading) return <Loading />;
 
-	// JSX Rendering
 	return (
 		<AuthLayout>
 			<div className=" text-center">
