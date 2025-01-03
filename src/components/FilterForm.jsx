@@ -115,7 +115,7 @@ const FilterForm = ({ ON_SUBMIT, ON_CLEAR }) => {
 
 	// Reset form fields
 	const clearAll = () => {
-		ON_CLEAR()
+		ON_CLEAR();
 		reset();
 	};
 

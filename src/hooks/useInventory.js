@@ -16,6 +16,7 @@ const useInventory = () => {
     const [ size, setSize ] = useState( [] );
     const [ id, setId ] = useState( null );
     const [ data, setData ] = useState();
+    const [ patchId, setPatchId ] = useState( null );
 
     const limit = 5; // Items per page
     const showToast = useToast(); // Custom toast notification
@@ -50,6 +51,7 @@ const useInventory = () => {
     }, [ productData ] );
 
     const handleStatus = async ( inventory ) => {
+        setPatchId( inventory._id )
         await patchInventory( { id: inventory._id, status: !inventory?.status } )
     }
 
@@ -113,6 +115,7 @@ const useInventory = () => {
         handleDelete,
         data,
         id,
+        patchId,
         handleFilter,
         clearFilter,
         clearSearch,

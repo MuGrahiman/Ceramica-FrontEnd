@@ -64,14 +64,16 @@ const inventoryApi = createApi( {
 			invalidatesTags: [ "Inventory" ],
 		} ),
 		patchInventory: builder.mutation( {
-			query: ( { id, status } ) => ( {
-				url: `/edit/${ id }`,
-				method: "PATCH",
-				body: status,
-				headers: {
-					"Content-Type": "application/json",
-				},
-			} ),
+			query: ( { id, status } ) => {
+				return {
+					url: `/edit/${ id }`,
+					method: "PATCH",
+					body: {status},
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			},
 			invalidatesTags: [ "Inventory" ],
 		} ),
 		deleteInventory: builder.mutation( {

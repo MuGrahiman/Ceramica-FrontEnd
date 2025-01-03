@@ -27,6 +27,7 @@ const Inventory = () => {
 		handleDelete,
 		data,
 		id,
+		patchId,
 		handleFilter,
 		clearFilter,
 		clearSearch,
@@ -61,19 +62,23 @@ const Inventory = () => {
 		},
 		{
 			label: "Availability",
-			render: (inventory) =>
-				patchLoading ? (
+			render: (inventory) => {
+				const handleClick = () => handleStatus(inventory);
+
+				return patchLoading && patchId === inventory._id ? (
 					<ImSpinner9
 						className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600"
 						aria-label="Deleting item..."
 					/>
 				) : (
 					<Badge
-					ON_CLICK={() => handleStatus(inventory)}
+						ON_CLICK={handleClick}
 						LABEL={inventory?.status ? "Enabled" : "Disabled"}
 						STATUS={inventory?.status}
 					/>
-				),
+				);
+			},
+
 			// inventory?.status ? (
 			// 	<span
 			// 		id="badge-dismiss-green"
