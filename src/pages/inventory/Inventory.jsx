@@ -96,10 +96,14 @@ const Inventory = () => {
 		{
 			label: "Details",
 			render: (inventory) => (
-				<ImEye
-					className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700"
-					aria-label="Details"
-				/>
+				<Link
+					to={`/dashboard/inventory-item/${inventory._id}`}
+					aria-label={`Item ${inventory.title}`}>
+					<ImEye
+						className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700"
+						aria-label="Details"
+					/>
+				</Link>
 			),
 		},
 		{
@@ -158,7 +162,7 @@ const Inventory = () => {
 	}
 
 	return (
-		<section className="h-full w-full xl:w-8/12 mb-12  mx-auto">
+		<>
 			{/* Header Section */}
 			<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
 				<h2 className="text-4xl font-extrabold font-serif text-gray-700">
@@ -220,7 +224,7 @@ const Inventory = () => {
 					<FilterForm ON_SUBMIT={onSubmit} ON_CLEAR={onClear} />
 				</aside>
 			</div>
-		</section>
+		</>
 	);
 };
 

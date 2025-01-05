@@ -181,7 +181,7 @@ const InventoryForm = ({
 	];
 
 	return (
-		<section className="w-full xl:w-8/12 mb-12 xl:mb-0 px-4 mx-auto mt-24">
+		<>
 			<BreadCrumb items={BREAD_CRUMB_ITEMS} />
 			<div className="max-w-lg mt-12 mx-auto md:p-6 p-3 bg-gray-300 rounded-lg shadow-lg">
 				<h2 className="text-2xl text-center font-extrabold font-serif text-gray-700 mb-8">
@@ -216,7 +216,7 @@ const InventoryForm = ({
 					</div>
 				</form>
 			</div>
-		</section>
+		</>
 	);
 };
 

@@ -14,6 +14,7 @@ import { getBreadCrumbItems } from "../../utils/inventory";
 const UpdateInventory = () => {
 	const { id } = useParams();
 	const { data, isLoading: fetchLoading } = useGetInventoryItemByIdQuery(id);
+	console.log("🚀 ~ UpdateInventory ~ data:", data);
 	const [updateInventory, { isLoading: updateLoading }] =
 		useUpdateInventoryMutation();
 	const showToast = useToast();
@@ -24,10 +25,10 @@ const UpdateInventory = () => {
 
 	// Default values for the form
 	const defaultValues = {
-		colorInput: data?.color.hex,
-		file: data?.coverImage,
-		files: data?.images,
-		...data,
+		colorInput: data?.product.color.hex,
+		file: data?.product.coverImage,
+		files: data?.product.images,
+		...data?.product,
 	};
 
 	// Create default success state

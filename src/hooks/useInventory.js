@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { useDeleteInventoryMutation, useGetInventoryItemsQuery, usePatchInventoryMutation } from '../redux/store';
 import useToast from './useToast';
+import { useNavigate } from 'react-router-dom';
 
 // Custom hook to manage inventory
 const useInventory = () => {
@@ -38,8 +39,18 @@ const useInventory = () => {
     } );
 
     // Mutation for deleting inventory item
-    const [ deleteInventory, { isLoading: dltLoading } ] = useDeleteInventoryMutation();
-    const [ patchInventory, { isLoading: patchLoading } ] = usePatchInventoryMutation();
+    const [
+        deleteInventory,
+        { isLoading: dltLoading,
+            isError: dltError,
+            isSuccess: dltSuccess }
+    ] = useDeleteInventoryMutation();
+    const [
+        patchInventory,
+        { isLoading: patchLoading,
+            isError: patchError,
+            isSuccess: patchSuccess }
+    ] = usePatchInventoryMutation();
 
     // Update inventory data when productData changes
     useEffect( () => {
@@ -54,6 +65,7 @@ const useInventory = () => {
         setPatchId( inventory._id )
         await patchInventory( { id: inventory._id, status: !inventory?.status } )
     }
+    const navigate = useNavigate();
 
     // Handles the deletion of an inventory item
     const handleDelete = async ( id ) => {
@@ -73,6 +85,8 @@ const useInventory = () => {
         try {
             const res = await deleteInventory( id ).unwrap();
             showToast( res.message, res.success ? "success" : "error" );
+            navigate( "/dashboard/inventory" );
+
         } catch ( err ) {
             showToast( err?.data?.message || "Something went wrong", "error" );
             console.error( "Delete inventory error:", err );
@@ -112,10 +126,10 @@ const useInventory = () => {
         totalPages,
         handlePage,
         dltLoading,
-        handleDelete,
+        handleDelete, dltError, dltSuccess,
         data,
         id,
-        patchId,
+        patchId, patchError, patchSuccess,
         handleFilter,
         clearFilter,
         clearSearch,

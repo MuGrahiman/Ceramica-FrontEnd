@@ -26,6 +26,7 @@ import DemoPage from "../pages/demo/DemoPage";
 import Inventory from "../pages/inventory/Inventory";
 import AddToInventory from "../pages/inventory/AddToInventory";
 import ModifyInventory from "../pages/inventory/UpdateInventory";
+import InventoryItem from "../pages/inventory/InventoryItem";
 
 const router = createBrowserRouter([
 	{
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: "/demo",
-				element: <DemoPage/>,
+				element: <DemoPage />,
 			},
 			{
 				path: "/",
@@ -47,7 +48,8 @@ const router = createBrowserRouter([
 			{
 				path: "/login",
 				element: <Login />,
-			},{
+			},
+			{
 				path: "/mail",
 				element: <Mail />,
 			},
@@ -128,11 +130,20 @@ const router = createBrowserRouter([
 						<AddToInventory />
 					</AdminRoute>
 				),
-			},	{
+			},
+			{
 				path: "update-inventory/:id",
 				element: (
 					<AdminRoute>
 						<ModifyInventory />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "inventory-item/:id",
+				element: (
+					<AdminRoute>
+						<InventoryItem />
 					</AdminRoute>
 				),
 			},

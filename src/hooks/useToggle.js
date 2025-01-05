@@ -1,19 +1,9 @@
 import React, { useState } from 'react';
 
-// Custom hook for handling single toggle functionality
-const useHandleSingleToggle = () => {
-    const [ toggleIndex, setToggleIndex ] = useState( null );
-
-    const toggle = ( index ) => {
-        setToggleIndex( ( prevIndex ) => ( prevIndex === index ? null : index ) );
-    };
-
-    const isToggled = ( index ) => toggleIndex === index;
-
-    return [ toggle, isToggled, toggleIndex ];
-};
-
-// Custom hook for handling multiple toggle functionality
+/**
+ * Custom hook for handling multiple toggle functionality
+ * @returns {Object} toggle functionality
+ */
 const useHandleMultipleToggle = () => {
     const [ toggleIndexes, setToggleIndexes ] = useState( [] );
 
@@ -34,14 +24,13 @@ const useHandleMultipleToggle = () => {
     return [ toggle, isToggled, toggleIndexes ];
 };
 
-// Main toggle hook that decides which toggle hook to use
-const useHandleToggle = ( { multiple = false } ) => {
-
-    const singleToggle = useHandleSingleToggle();
-    const multipleToggle = useHandleMultipleToggle();
-
-    return multiple ? multipleToggle : singleToggle;
+/**
+ * Main toggle hook that decides which toggle hook to use
+ * Currently supports multiple toggles
+ * @returns {Object} toggle functionality
+ */
+const useHandleToggle = () => {
+    return useHandleMultipleToggle();
 };
 
 export default useHandleToggle;
-
