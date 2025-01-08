@@ -79,19 +79,6 @@ const Inventory = () => {
 				);
 			},
 
-			// inventory?.status ? (
-			// 	<span
-			// 		id="badge-dismiss-green"
-			// 		className="inline-flex items-center px-2 py-1 me-2 text-sm font-medium cursor-pointer text-green-800 bg-green-100 rounded dark:bg-green-300 hover:bg-green-900 hover:text-green-300">
-			// 		Enabled
-			// 	</span>
-			// ) : (
-			// 	<span
-			// 		id="badge-dismiss-red"
-			// 		className="inline-flex items-center px-2 py-1 me-2 text-sm font-medium cursor-pointer text-red-800 bg-red-100 rounded dark:bg-red-300 hover:bg-red-900 hover:text-red-300">
-			// 		Disabled
-			// 	</span>
-			// ),
 		},
 		{
 			label: "Details",

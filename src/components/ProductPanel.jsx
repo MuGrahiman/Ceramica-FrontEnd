@@ -1,48 +1,68 @@
-import React from "react";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 import Toggler from "./Toggler";
 import useHandleToggle from "../hooks/useToggle";
 import ListOptions from "./ListOptions";
-
-const ProductPanel = ({ product }) => {
-	const {
-		coverImage,
-		title,
-		category,
-		shape,
-		color,
-		dimension,
-		size,
-		stock,
-		price,
-		status,
-		description,
-		images,
-	} = product;
-
+import fallBackImage from "../assets/defualtimage.png";
+import CoverImage from "./CoverImage";
+const ProductPanel = ({
+	coverImage,
+	title,
+	category,
+	shape,
+	color,
+	dimension,
+	size,
+	stock,
+	price,
+	status,
+	description,
+	images,
+}) => {
 	const [toggle, isToggled] = useHandleToggle();
+	const [currentCoverImage, setCurrentCoverImage] = useState(coverImage);
+	const [currentImages, setCurrentImages] = useState(images);
 
-	// Define the right side content as an array of objects
+	const handleCoverImage = (image) => {
+		const filteredImages = currentImages.filter(
+			(img) => img.public_id !== image.public_id
+		);
+		const updatedImages = [currentCoverImage, ...filteredImages];
+		setCurrentCoverImage(image);
+		setCurrentImages(updatedImages);
+	};
+
+	const handleImageError = (e) => {
+		e.target.src = fallBackImage;
+	};
+
 	const rightSideContent = [
-		{ label: "Category", value: category },
-		{ label: "Shape", value: shape },
+		{ valid: !!category, label: "Category", value: category },
+		{ valid: !!shape, label: "Shape", value: shape },
 		{
+			valid: color && !!color.name && !!color.hex,
 			label: "Color",
 			value: (
 				<span>
-					{color.name}
+					{color?.name}
 					<small
 						className="inline-block w-4 h-4 rounded-full ml-1"
-						style={{ backgroundColor: color.hex }}
+						style={{ backgroundColor: color?.hex }}
 					/>
 				</span>
 			),
 		},
-		{ label: "Dimension", value: dimension },
-		{ label: "Size", value: size },
-		{ label: "Stock", value: stock },
-		{ label: "Price", value: `$${price}` },
-		{ label: "Status", value: status ? "Available" : "Out of Stock" },
+		{ valid: !!dimension, label: "Dimension", value: dimension },
+		{ valid: !!size, label: "Size", value: size },
+		{ valid: Number.isFinite(stock), label: "Stock", value: stock },
+		{ valid: Number.isFinite(price), label: "Price", value: `$${price}` },
 		{
+			valid: typeof status === "boolean",
+			label: "Status",
+			value: status ? "Available" : "Out of Stock",
+		},
+		{
+			valid: !!description,
 			label: "Description",
 			value: (
 				<Toggler
@@ -54,26 +74,32 @@ const ProductPanel = ({ product }) => {
 		},
 	];
 
+	const validContent = rightSideContent.filter((item) => item.valid);
+
 	return (
 		<div className="w-full md:flex p-6 gap-6">
 			{/* Left Side: Images Showcase */}
 			<div className="w-full mb-4">
 				<div className="mb-4">
-					<img
-						src={coverImage.url}
-						alt={coverImage.public_id}
-						className="w-full h-70 object-cover rounded-lg shadow-md transition-transform transform hover:scale-105"
+					<CoverImage
+						IMAGE={currentCoverImage}
+						WIDTH={"100%"}
+						HEIGHT={"100%"}
+						ON_ERROR={handleImageError}
 					/>
 				</div>
 				<div className="flex overflow-x-auto items-center justify-evenly">
 					<ListOptions
-						OPTIONS={images}
+						OPTIONS={currentImages}
 						RENDER_ITEM={(image, index) => (
 							<img
-								key={index}
+								key={image.public_id}
 								src={image.url}
-								alt={`Product Image ${index + 1}`}
-								className="w-12 h-12 sm:w-16 sm:h-16 md:w-[3.6rem] md:h-[3.6rem] lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover rounded-lg m-1 shadow-sm transition-transform transform hover:scale-105"
+								alt={`Image of ${title} - ${index + 1}`} 
+								loading="lazy"
+								onError={handleImageError}
+								onClick={() => handleCoverImage(image)}
+								className="w-12 h-12 sm:w-16 sm:h-16 md:w-[3.6rem] md:h-[3.6rem] lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover rounded-lg m-1 shadow-sm transition-transform transform hover:scale-105 cursor-pointer"
 							/>
 						)}
 					/>
@@ -84,7 +110,7 @@ const ProductPanel = ({ product }) => {
 			<div className="w-full">
 				<h1 className="text-3xl font-bold mb-2 text-gray-800">{title}</h1>
 				<ListOptions
-					OPTIONS={rightSideContent}
+					OPTIONS={validContent}
 					RENDER_ITEM={(item, index) => (
 						<p key={index} className="text-gray-600 mb-1">
 							<strong>{item.label}:</strong> {item.value}
@@ -96,41 +122,34 @@ const ProductPanel = ({ product }) => {
 	);
 };
 
-export default ProductPanel;
+// Define prop types for the individual data
+ProductPanel.propTypes = {
+	coverImage: PropTypes.shape({
+		url: PropTypes.string,
+		public_id: PropTypes.string,
+		type: PropTypes.string,
+	}),
+	title: PropTypes.string,
+	category: PropTypes.string,
+	shape: PropTypes.string,
+	color: PropTypes.shape({
+		name: PropTypes.string,
+		hex: PropTypes.string,
+		image: PropTypes.string,
+	}),
+	dimension: PropTypes.string,
+	size: PropTypes.string,
+	stock: PropTypes.number,
+	price: PropTypes.number,
+	status: PropTypes.bool,
+	description: PropTypes.string,
+	images: PropTypes.arrayOf(
+		PropTypes.shape({
+			url: PropTypes.string,
+			public_id: PropTypes.string,
+			type: PropTypes.string,
+		})
+	),
+};
 
-// <p className="text-gray-600 mb-1">
-// <strong>Category:</strong> {product.category}
-// </p>
-// <p className="text-gray-600 mb-1">
-// <strong>Shape:</strong> {product.shape}
-// </p>
-// <p className="text-gray-600 mb-1">
-// <strong>Color:</strong> {product.color.name}
-// <span
-// 	className="inline-block w-4 h-4 rounded-full ml-1"
-// 	style={{ backgroundColor: product.color.hex }}></span>
-// </p>
-// <p className="text-gray-600 mb-1">
-// <strong>Dimension:</strong> {product.dimension}
-// </p>
-// <p className="text-gray-600 mb-1">
-// <strong>Size:</strong> {product.size}
-// </p>
-// <p className="text-gray-600 mb-1">
-// <strong>Stock:</strong> {product.stock}
-// </p>
-// <p className="text-gray-600 mb-1">
-// <strong>Price:</strong> ${product.price}
-// </p>
-// <p className="text-gray-600 mb-1">
-// <strong>Status:</strong>{" "}
-// {product.status ? "Available" : "Out of Stock"}
-// </p>
-// <p className="text-gray-600 mb-1">
-// <strong>Description:</strong>{" "}
-// <Toggler
-// 	IS_TOG={isToggled("productDetails")}
-// 	TOG={() => toggle("productDetails")}
-// 	TEXT={product.description}
-// />
-// </p>
+export default ProductPanel;
