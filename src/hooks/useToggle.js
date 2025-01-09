@@ -10,7 +10,7 @@ const useHandleMultipleToggle = () => {
     const toggle = ( index ) => {
         setToggleIndexes( ( prevIndexes ) => {
             if ( prevIndexes.includes( index ) ) {
-                // Close the toggle if it's already open
+                // Close the toggle if it's already open 
                 return prevIndexes.filter( ( i ) => i !== index );
             } else {
                 // Open the toggle

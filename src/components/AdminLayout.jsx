@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import logo from '../assets/logo/logo.png'
 import PropTypes from "prop-types";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
@@ -78,7 +79,7 @@ const AdminLayout = () => {
 					<Link
 						to="/"
 						className="inline-flex items-center gap-5 p-3 h-20 rounded-lg">
-						<img src="/fav-icon.png" alt="Logo" />
+						<img src={logo} width={50} alt="Logo" />
 						<span className="sm:hidden md:block m-0">
 							<h1 className="font-serif text-xl m-0">Ceramica</h1>
 							<small className="m-0">Tableware's</small>

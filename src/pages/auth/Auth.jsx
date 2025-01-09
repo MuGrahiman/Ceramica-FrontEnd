@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import getBaseUrl from "../../utils/baseURL";
+import getBaseUrl from "../../utils/baseUrl.js";
 import AuthLayout from "../../components/AuthLayout";
 import AuthForm from "../../components/AuthForm";
 import useToast from "../../hooks/useToast";

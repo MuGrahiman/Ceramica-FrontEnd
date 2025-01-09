@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import CheckComponent from "./CheckComponent";
 import RadioComponent from "./RadioComponent";
 import { AccordionComponent, AccordionWrapper } from "./Accordion";
-import useHandleToggle from "../hooks/useToggle";
+import useToggle from "../hooks/useToggle";
 import {
 	CATEGORIES_OPTIONS,
 	DEFAULT_VALUES,
@@ -84,7 +84,7 @@ PriceInput.propTypes = {
 
 // Main Filter Form Component
 const FilterForm = ({ ON_SUBMIT, ON_CLEAR }) => {
-	const [toggleA, isToggled] = useHandleToggle({ multiple: true });
+	const [toggleA, isToggled] = useToggle({ multiple: true });
 	const { control, handleSubmit, reset } = useForm({
 		defaultValues: DEFAULT_VALUES,
 	});

@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import { AuthProvide } from "./context/AuthContext";
 import { useEffect, useState } from "react";
 import Loading from "./components/Loading";
+import Header from "./components/Header";
 
 function App() {
 	const [loading, setLoading] = useState(true);
@@ -25,7 +26,7 @@ function App() {
 	return (
 		<>
 			<AuthProvide>
-				<Navbar />
+				<Header/>
 				<main className="min-h-screen max-w-screen-2xl mx-auto px-4 py-6 font-primary">
 					<Outlet />
 				</main>

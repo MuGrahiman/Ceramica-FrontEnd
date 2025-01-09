@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import getBaseUrl from "../../../utils/baseURL";
+import getBaseUrl from "../../../utils/baseUrl";
 
 const baseQuery = fetchBaseQuery({
 	baseUrl: `${getBaseUrl()}/api/otp`,

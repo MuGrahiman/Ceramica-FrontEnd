@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Toggler from "./Toggler";
-import useHandleToggle from "../hooks/useToggle";
+import useToggle from "../hooks/useToggle";
 import ListOptions from "./ListOptions";
 import fallBackImage from "../assets/defualtimage.png";
 import CoverImage from "./CoverImage";
@@ -19,7 +19,7 @@ const ProductPanel = ({
 	description,
 	images,
 }) => {
-	const [toggle, isToggled] = useHandleToggle();
+	const [toggle, isToggled] = useToggle();
 	const [currentCoverImage, setCurrentCoverImage] = useState(coverImage);
 	const [currentImages, setCurrentImages] = useState(images);
 
