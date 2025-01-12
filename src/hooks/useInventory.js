@@ -41,9 +41,9 @@ const useInventory = () => {
     // Mutation for deleting inventory item
     const [
         deleteInventory,
-        { isLoading: dltLoading,
-            isError: dltError,
-            isSuccess: dltSuccess }
+        { isLoading: deleteLoading,
+            isError: deleteError,
+            isSuccess: deleteSuccess }
     ] = useDeleteInventoryMutation();
     const [
         patchInventory,
@@ -120,23 +120,38 @@ const useInventory = () => {
     const clearSearch = () => setSearch()
     // Return values and functions for use in components
     return {
+        // Fetching data
         fetchLoading,
-        currentPage,
         fetchError,
-        totalPages,
-        handlePage,
-        dltLoading,
-        handleDelete, dltError, dltSuccess,
         data,
-        id,
-        patchId, patchError, patchSuccess,
+        totalPages,
+        currentPage,
+        handlePage,
+    
+        // Deleting data
+        deleteLoading,
+        deleteError,
+        deleteSuccess,
+        handleDelete,
+    
+        // Patching data
+        patchId,
+        patchError,
+        patchSuccess,
+        handleStatus,
+        patchLoading,
+    
+        // Filters and search
         handleFilter,
         clearFilter,
-        clearSearch,
         handleSearch,
-        handleStatus,
-        patchLoading
+        clearSearch,
+    
+        // Utility
+        id,
     };
+    
+
 };
 
 export default useInventory;

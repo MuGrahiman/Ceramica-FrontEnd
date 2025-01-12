@@ -22,12 +22,12 @@ function App() {
 	if (loading) {
 		return <Loading />;
 	}
-
+//FBF8F1 ,FFFBE9 ,FAFDD6 cowdung,FEFBE7,FCF8E8
 	return (
 		<>
 			<AuthProvide>
 				<Header/>
-				<main className="min-h-screen max-w-screen-2xl mx-auto px-4 py-6 font-primary">
+				<main className="min-h-screen max-w-screen-2xl mx-auto  font-primary">
 					<Outlet />
 				</main>
 				<Footer />

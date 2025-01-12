@@ -18,23 +18,36 @@ const Inventory = () => {
 
 	// Use custom hook to manage inventory data
 	const {
-		fetchLoading,
-		currentPage,
-		fetchError,
-		totalPages,
-		handlePage,
-		dltLoading,
-		handleDelete,
-		data,
-		id,
-		patchId,
-		handleFilter,
-		clearFilter,
-		clearSearch,
-		handleSearch,
-		handleStatus,
-		patchLoading,
-	} = useInventory();
+        // Fetching data
+        fetchLoading,
+        fetchError,
+        data,
+        totalPages,
+        currentPage,
+        handlePage,
+    
+        // Deleting data
+        deleteLoading,
+        deleteError,
+        deleteSuccess,
+        handleDelete,
+    
+        // Patching data
+        patchId,
+        patchError,
+        patchSuccess,
+        handleStatus,
+        patchLoading,
+    
+        // Filters and search
+        handleFilter,
+        clearFilter,
+        handleSearch,
+        clearSearch,
+    
+        // Utility
+        id,
+    }= useInventory();
 
 	// Table headers configuration
 	const headers = [
@@ -78,7 +91,6 @@ const Inventory = () => {
 					/>
 				);
 			},
-
 		},
 		{
 			label: "Details",
@@ -106,7 +118,7 @@ const Inventory = () => {
 		{
 			label: "Delete",
 			render: (inventory) =>
-				dltLoading && inventory._id === id ? (
+				deleteLoading && inventory._id === id ? (
 					<ImSpinner9
 						className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600"
 						aria-label="Deleting item..."
@@ -173,7 +185,12 @@ const Inventory = () => {
 					className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 px-5 py-2.5 text-white bg-gray-600 hover:bg-gray-700 rounded-md shadow-md">
 					Filter
 				</button>
-				<SearchBar ON_SUBMIT={handleSearch} CLEAR_SEARCH={clearSearch} />
+				<SearchBar
+					INPUT_STYLE={`focus:outline-none block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 focus:ring-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 rounded-e-lg rounded-s-lg dark:text-white border border-gray-300 focus:border-gray-500 dark:border-gray-600 dark:focus:border-gray-500`}
+					BUTTON_STYLE={`p-2.5 h-full text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 dark:border-gray-700 dark:text-white rounded-e-lg hover:bg-gray-200 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-800`}
+					ON_SUBMIT={handleSearch}
+					CLEAR_SEARCH={clearSearch}
+				/>
 			</div>
 
 			{/* Inventory Table */}

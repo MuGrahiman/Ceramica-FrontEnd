@@ -51,15 +51,16 @@ const Header = () => {
 						<ListOptions
 							OPTIONS={itemsToDisplay}
 							RENDER_ITEM={(item) => (
-								<li
-									key={item.path}
-									className={`relative cursor-pointer lg:px-4 py-2 transition-all duration-300 ease-in-out ${
-										getActiveItem(item.name)
-											? "dark:text-blue-950 font-semibold after:content-[''] after:block after:h-1 after:bg-blue-950 after:absolute after:w-full after:bottom-0"
-											: "text-gray-600 after:content-[''] after:block after:h-1 after:bg-transparent after:absolute after:w-full after:bottom-0"
-									} hover:after:bg-gray-300`}
-									onClick={() => setSelected(item.name)}>
-									<Link to={item.path}>{item.name}</Link>
+								<li key={item.path} >
+									<Link
+										className={`relative cursor-pointer lg:px-4 py-2 transition-all duration-300 ease-in-out ${
+											getActiveItem(item.name)
+												? "dark:text-blue-950 font-semibold after:content-[''] after:block after:h-1 after:bg-blue-950 after:absolute after:w-full after:bottom-0"
+												: "text-gray-600 after:content-[''] after:block after:h-1 after:bg-transparent after:absolute after:w-full after:bottom-0"
+										} hover:after:bg-gray-300`}
+										to={item.path}>
+										{item.name}
+									</Link>
 								</li>
 							)}
 						/>

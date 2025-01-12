@@ -20,15 +20,16 @@ const CoverImage = ({
 				className="w-full h-full object-cover rounded-lg shadow-lg transition-transform transform hover:scale-105"
 			/>
 			{SHOW_WISHLIST && (
-				<div
-					className="absolute top-2 end-2 flex items-center justify-center bg-slate-50 rounded-full  shadow-md p-1.5 cursor-pointer"
-					onClick={ON_ADD_WISH}>
+				// <div
+				// 	className="absolute top-2 end-2 flex items-center justify-center bg-slate-50 rounded-full  shadow-md p-1.5 cursor-pointer m-1 hover:scale-110"
+				// 	onClick={ON_ADD_WISH}>
 					<button 
-                    className="m-1 hover:scale-110" 
+					onClick={ON_ADD_WISH}
+                    className="absolute top-2 end-2 flex items-center justify-center bg-slate-300 rounded-full   p-1 cursor-pointer " 
                     aria-label="Add to wishlist">
-						<FaHeart className="w-5 h-5  fill-slate-400 " />
+						<FaHeart className="w-5 h-5 m-1 fill-slate-50 hover:scale-110" />
 					</button>
-				</div>
+				// {/* </div> */}
 			)}
 		</div>
 	);

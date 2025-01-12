@@ -29,8 +29,8 @@ const useHandleMultipleToggle = () => {
  * Currently supports multiple toggles
  * @returns {Object} toggle functionality
  */
-const useHandleToggle = () => {
+const useToggle = () => {
     return useHandleMultipleToggle();
 };
 
-export default useHandleToggle;
+export default useToggle;

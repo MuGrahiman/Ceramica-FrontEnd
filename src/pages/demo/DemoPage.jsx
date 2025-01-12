@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Banner from "../../components/Banner";
 import HeroSection from "../../components/Hero";
+import BreadCrumb from "../../components/BreadCrumb";
 
 const Header = () => {
 	return (
@@ -37,10 +38,15 @@ const Header = () => {
 
 import { FaBars, FaShoppingCart, FaTimes, FaUser } from "react-icons/fa";
 import BrandLogo from "../../components/BrandLogo";
+import ProductCard from "../../components/ProductCard";
+import SearchBar from "../../components/SearchBar";
+import useToggle from "../../hooks/useToggle";
+import FilterForm from "../../components/FilterForm";
 
 const AnimatedNavbar = () => {
 	const [selected, setSelected] = useState("Home");
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 
 	return (
 		<>
@@ -146,33 +152,17 @@ const AnimatedNavbar = () => {
 	);
 };
 
-const ProductCard = ({ product }) => {
+const FilterSidebar = ({ isOpen = false }) => {
 	return (
-		<div className="transform transition-transform hover:scale-105 shadow-lg rounded-lg overflow-hidden relative">
-			<img
-				src={product.image}
-				alt={product.name}
-				className="w-full h-48 object-cover"
-			/>
-			<div className="p-4">
-				<h3 className="text-lg font-semibold">{product.name}</h3>
-				<p className="text-gray-600">{product.shortDescription}</p>
-				<p className="mt-2 font-bold">${product.price}</p>
-				<div className="flex items-center">
-					<span className="text-yellow-500">{product.rating} ★</span>
-					<span className="text-gray-400 ml-2">({product.reviewCount})</span>
-				</div>
-				<button className="mt-4 bg-blue-500 text-white p-2 rounded transition-all hover:bg-blue-600">
-					Add to Cart
-				</button>
-			</div>
-		</div>
-	);
-};
-
-const FilterSidebar = () => {
-	return (
-		<aside className="w-1/4 p-4 bg-white  rounded-lg shadow">
+		// <aside
+		// className={`
+		// 	w-full p-4 transition-all duration-700 ease-in-out ${
+		// 	isOpen
+		// 		? "translate-y-0 z-50 opacity-100"
+		// 		: "-translate-y-full opacity-0 -z-50"
+		// } bg-gray-800 text-gray-500 text-lg md:opacity-100 md:-z-0`}>
+		// <aside className="hidden md:block w-1/3 min-h-full p-4 bg-white  rounded-lg shadow">
+		<>
 			<h3 className="font-semibold text-gray-700 mb-4">Filters</h3>
 			<div className="mb-4">
 				<h4 className="text-gray-600 mb-2">Category</h4>
@@ -208,7 +198,7 @@ const FilterSidebar = () => {
 					</li>
 				</ul>
 			</div>
-		</aside>
+		</>
 	);
 };
 
@@ -323,32 +313,79 @@ function DemoPage() {
 			reviewCount: 80,
 		},
 	];
+	const [setIsOpen, isOpen] = useToggle();
+	// const [isOpen, setIsOpen] = useState(false);
 
 	return (
-		<div className="bg-slate-100 min-h-screen">
+		<div className=" min-h-screen">
 			{/* <AnimatedNavbar /> */}
 			<HeroSection
 				title="Welcome to Our Ceramic Store"
 				subtitle="Discover beautiful ceramic tableware"
-				backgroundImage="https://example.com/hero-background.jpg"
+				backgroundImage="https://media.istockphoto.com/id/636013786/photo/tile-samples-in-store.jpg?s=1024x1024&w=is&k=20&c=ZkQcNU9mTkqZcYzjfLS4Glj3ce_6vIv15a2ywRSoslY="
 				buttonText="Shop Now"
 				buttonLink="/products"
 			/>
-			<Banner
+			{/* <Banner
 				title="Welcome to Our Store!"
 				subtitle="Discover New Products and Exciting Offers"
 				buttonText="Shop Now"
 				buttonLink="/shop"
 				backgroundImage="https://demos.codezeel.com/wordpress/WCM08/WCM080183/default/wp-content/plugins/templatemela-plugin-ciramica/layouts/default/img/logo.svg"
-			/>
-			<div className="container mx-auto flex py-6">
-				<FilterSidebar />
-				<div className="flex flex-wrap w-3/4">
-					{products.map((product) => (
-						<div className="w-full sm:w-1/2 md:w-1/3 p-4" key={product.id}>
-							<ProductCard product={product} />
+			/> */}
+			<div className="lg:container mx-auto ">
+				
+				{
+					!(
+						<div className="  flex  justify-between gap-4 py-6">
+							{/* <div className="w-1/3"> */}
+							<aside
+								className={` 
+						 min-h-full w-1/3 bg-white  rounded-lg shadow
+						 p-4 transition-all duration-700 ease-in-out 
+						${isOpen ? "translate-x-full " : "-translate-x-0 opacity-0 z-50"}
+					 text-lg `}>
+								<FilterSidebar />
+							</aside>
+							{/* </div> */}
+							<div
+								className={`w-full  transition-all duration-700 ease-in-out ${
+									isOpen("client-filter")
+										? "opacity-0 -z-50"
+										: "opacity-100 z-50"
+								} flex flex-wrap items-center justify-evenly
+						`}
+								// className="flex flex-wrap items-center justify-evenly gap-6 w-full "
+							>
+								{products.map((product) => (
+									<ProductCard key={product.id} product={product} />
+								))}
+							</div>
 						</div>
-					))}
+					)
+				}
+
+				<div className="flex  justify-between md:gap-4 py-6 ">
+					<aside
+						className={`min-h-full  sm:w-1/2 lg:w-1/3 bg-white rounded-lg shadow  transition-all duration-700 ease-in-out ${
+							isOpen("isOpen")
+								? "translate-x-0 opacity-100 w-full p-4"
+								: "-translate-x-full opacity-0 w-0"
+						} sm:translate-x-0 sm:opacity-100  sm:p-4`}>
+						<FilterForm />
+					</aside>
+
+					<div
+						className={`flex flex-wrap items-center justify-evenly gap-6
+							 transition-all duration-700 ease-in-out ${
+									isOpen("isOpen") ? "opacity-0 w-0 " : "opacity-100  w-full"
+								}  sm:opacity-100 sm:w-full  `}>
+						{products.map((product) => (
+							<ProductCard key={product.id} product={product} />
+						))}
+					</div>
+
+					{/* Button to toggle filter visibility */}
 				</div>
 			</div>
 			<Footer />

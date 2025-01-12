@@ -84,7 +84,7 @@ const ProductPanel = ({
 					<CoverImage
 						IMAGE={currentCoverImage}
 						WIDTH={"100%"}
-						HEIGHT={"100%"}
+						HEIGHT={"15rem"}
 						ON_ERROR={handleImageError}
 					/>
 				</div>

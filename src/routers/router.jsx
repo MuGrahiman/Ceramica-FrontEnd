@@ -27,6 +27,7 @@ import Inventory from "../pages/inventory/Inventory";
 import AddToInventory from "../pages/inventory/AddToInventory";
 import ModifyInventory from "../pages/inventory/UpdateInventory";
 import InventoryItem from "../pages/inventory/InventoryItem";
+import Shop from "../pages/shop/Shop";
 
 const router = createBrowserRouter([
 	{
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
 			{
 				path: "/otp/:userId",
 				element: <OTP />,
+			},
+			{
+				path: "/shop",
+				element: <Shop/>,
 			},
 			{
 				path: "/about",

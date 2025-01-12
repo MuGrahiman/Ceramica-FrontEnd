@@ -2,11 +2,11 @@ import PropTypes from "prop-types";
 import React from "react";
 import { useForm } from "react-hook-form";
 
-const SearchBar = ({ ON_SUBMIT, CLEAR_SEARCH }) => {
+const SearchBar = ({ ON_SUBMIT, CLEAR_SEARCH, INPUT_STYLE, BUTTON_STYLE }) => {
 	const { register, handleSubmit } = useForm();
 
 	return (
-		<form className="flex-1 flex w-full" onSubmit={handleSubmit(ON_SUBMIT)}>
+		<form className="flex-1 flex w-full rounded-lg" onSubmit={handleSubmit(ON_SUBMIT)}>
 			<div className="relative w-full">
 				<input
 					type="search"
@@ -15,14 +15,14 @@ const SearchBar = ({ ON_SUBMIT, CLEAR_SEARCH }) => {
 						required: true,
 						onChange: (e) => !e.target.value.trim() && CLEAR_SEARCH(),
 					})}
-					className="focus:outline-none block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 focus:ring-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 rounded-e-lg rounded-s-lg dark:text-white border border-gray-300 focus:border-gray-500 dark:border-gray-600 dark:focus:border-gray-500"
+					className={INPUT_STYLE}
 					placeholder="Search"
 					required
 				/>
 
 				<button
 					type="submit"
-					className="absolute top-0 end-0 p-2.5 h-full text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 dark:border-gray-700 dark:text-white rounded-e-lg hover:bg-gray-200 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-800">
+					className={`absolute top-0 end-0 ${BUTTON_STYLE}`}>
 					<svg
 						className="w-4 h-4"
 						aria-hidden="true"
@@ -46,5 +46,7 @@ const SearchBar = ({ ON_SUBMIT, CLEAR_SEARCH }) => {
 SearchBar.propTypes = {
 	ON_SUBMIT: PropTypes.func.isRequired,
 	CLEAR_SEARCH: PropTypes.func.isRequired,
+	INPUT_STYLE: PropTypes.string,
+	BUTTON_STYLE: PropTypes.string,
 };
 export default SearchBar;

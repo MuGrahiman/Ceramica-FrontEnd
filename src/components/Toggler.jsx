@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+import { stringTrimmer } from "../utils/generals";
 
 const Toggler = ({ IS_TOG, TEXT, TOG }) => {
 	const normalHeight = '70px'
@@ -26,7 +27,7 @@ const Toggler = ({ IS_TOG, TEXT, TOG }) => {
                 className="transition-height duration-700 ease-out"
             >
                 <p className="text-gray-700 mb-2">
-				{IS_TOG ? TEXT : `${TEXT.substring(0, 100)}...`}
+				{IS_TOG ? TEXT : `${stringTrimmer(TEXT, 100)}...`}
                 </p>
             </div>
             <button
