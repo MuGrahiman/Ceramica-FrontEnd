@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-const APP = "STORE-APP-USER"
+import { APP } from "../../../constants/app";
 const jsonValue = localStorage.getItem(APP);
 const initialState = {
 	loading: false,

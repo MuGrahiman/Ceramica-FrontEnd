@@ -1,13 +1,18 @@
-import React from 'react'
-import { Navigate, Outlet } from 'react-router-dom';
+import React from "react";
+import { useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
+import useToast from "../hooks/useToast";
 
-const AdminRoute = ({children}) => {
-const APP = "STORE-APP-USER"
-  const token = localStorage.getItem(APP);
-  if(!token) {
-    return <Navigate to="/admin"/>
-  }
-  return children ?  children : <Outlet/>;
-}
+const AdminRoute = ({ children }) => {
+	const showToast = useToast();
 
-export default AdminRoute
+	const currentUser = useSelector((state) => state.auth.currentUser);
+
+	if (!currentUser || !currentUser.token || currentUser.role !== "admin") {
+		showToast("Please login", "error");
+		return <Navigate to="/admin" />;
+	}
+	return children ? children : <Outlet />;
+};
+
+export default AdminRoute;

@@ -34,8 +34,8 @@ const Mail = () => {
 			// Error Handling
 			console.error(error);
 			showToast(
-				"Failed to sign up. Please try again. " +
-					(error?.data?.message || error?.data || error)
+				(error?.data?.message || error?.data || error) + " Please try again. ",
+				"error"
 			);
 		}
 	};

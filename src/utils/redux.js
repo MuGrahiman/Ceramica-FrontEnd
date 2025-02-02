@@ -1,5 +1,7 @@
 /* utils/redux*/
 
+import { APP } from "../constants/app";
+
 // Custom paramsSerializer function for query parameter serialization
 export const paramsSerializer = ( params ) => {
     const searchParams = new URLSearchParams();
@@ -14,10 +16,22 @@ export const paramsSerializer = ( params ) => {
 };
 
 // Custom header function for handling token
-export const prepareHeaders = ( headers ) => {
-    const token = localStorage.getItem( "token" );
-    if ( token ) {
-        headers.set( "Authorization", `Bearer ${ token }` );
+export const prepareHeaders = (headers) => {
+    const jsonValue = localStorage.getItem(APP);
+    if (jsonValue) {
+        try {
+            const { token } = JSON.parse(jsonValue);
+            if (token) {
+                console.log("🚀 ~ prepareHeaders ~ token:", token);
+                headers.set("Authorization", `Bearer ${token}`);
+            }
+        } catch (error) {
+            console.error("Failed to parse APP data from localStorage:", error);
+        }
+    } else {
+        console.warn("No APP data found in localStorage.");
     }
+    console.log(headers); // Ensure headers include Authorization
     return headers;
 };
+;

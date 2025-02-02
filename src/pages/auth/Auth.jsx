@@ -9,9 +9,9 @@ import { addUser, removeUser } from "../../redux/store";
 import { useDispatch } from "react-redux";
 
 const Auth = () => {
-const APP = "STORE-APP-USER"
-const showToast = useToast();
-const dispatch = useDispatch();
+	const APP = "STORE-APP-USER";
+	const showToast = useToast();
+	const dispatch = useDispatch();
 
 	// ** State and Hooks **
 	const [message, setMessage] = useState("");
@@ -30,10 +30,11 @@ const dispatch = useDispatch();
 				}
 			);
 			const auth = response.data;
+			console.log("🚀 ~ submitFN ~ auth:", auth)
 
-			if (auth.token) {
+			if (auth.user) {
 				// Save token and set expiration timeout
-				dispatch(addUser({Token: auth.token,Role:'admin'}));
+				dispatch(addUser(auth.user));
 				setTimeout(() => {
 					dispatch(removeUser());
 					alert("Token has expired! Please login again.");
@@ -42,7 +43,7 @@ const dispatch = useDispatch();
 			}
 
 			navigate("/dashboard");
-			showToast("Admin Login successful!",'success');
+			showToast("Admin Login successful!", "success");
 		} catch (error) {
 			setMessage("Please provide a valid email and password");
 			console.error("Login Error:", error);

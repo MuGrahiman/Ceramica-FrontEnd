@@ -1,14 +1,19 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import getBaseUrl from "../../../utils/baseUrl";
 import { prepareHeaders, paramsSerializer } from "../../../utils/redux";
+import { axiosBaseQuery } from "../../api/axiosBaseQuery";
 
 
-const baseQuery = fetchBaseQuery( {
-	baseUrl: `${ getBaseUrl() }/api/inventory`,
-	credentials: "include",
-	prepareHeaders,
-	paramsSerializer
+// const baseQuery = fetchBaseQuery( {
+// 	baseUrl: `${ getBaseUrl() }/api/inventory`,
+// 	credentials: "include",
+// 	prepareHeaders,
+// 	paramsSerializer
+// } );
 
+
+const baseQuery = axiosBaseQuery( {
+	baseUrl: `/api/inventory`,
 } );
 
 const inventoryApi = createApi( {
@@ -68,7 +73,7 @@ const inventoryApi = createApi( {
 				return {
 					url: `/edit/${ id }`,
 					method: "PATCH",
-					body: {status},
+					body: { status },
 					headers: {
 						"Content-Type": "application/json",
 					},

@@ -48,6 +48,7 @@ const Inventory = () => {
         // Utility
         id,
     }= useInventory();
+        console.log("🚀 ~ Inventory ~ data:", data)
 
 	// Table headers configuration
 	const headers = [
