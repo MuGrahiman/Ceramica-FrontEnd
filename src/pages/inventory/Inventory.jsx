@@ -70,6 +70,12 @@ const Inventory = () => {
 		},
 		{
 			hide: true,
+			label: "Stock",
+			render: (inventory) => `${inventory.stock}`,
+			showValue: () => "md:table-cell",
+		},
+		{
+			hide: true,
 			label: "Price",
 			render: (inventory) => `${inventory.price.toFixed(2)}`,
 			showValue: () => "sm:table-cell",
@@ -116,23 +122,23 @@ const Inventory = () => {
 				</Link>
 			),
 		},
-		{
-			label: "Delete",
-			render: (inventory) =>
-				deleteLoading && inventory._id === id ? (
-					<ImSpinner9
-						className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600"
-						aria-label="Deleting item..."
-					/>
-				) : (
-					<MdDelete
-						id={inventory._id}
-						onClick={() => handleDelete(inventory._id)}
-						className="h-6 w-6 text-gray-500 cursor-pointer hover:text-red-700"
-						aria-label={`Delete ${inventory.title}`}
-					/>
-				),
-		},
+		// {
+		// 	label: "Delete",
+		// 	render: (inventory) =>
+		// 		deleteLoading && inventory._id === id ? (
+		// 			<ImSpinner9
+		// 				className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600"
+		// 				aria-label="Deleting item..."
+		// 			/>
+		// 		) : (
+		// 			<MdDelete
+		// 				id={inventory._id}
+		// 				onClick={() => handleDelete(inventory._id)}
+		// 				className="h-6 w-6 text-gray-500 cursor-pointer hover:text-red-700"
+		// 				aria-label={`Delete ${inventory.title}`}
+		// 			/>
+		// 		),
+		// },
 	];
 
 	const onSubmit = (data) => {
