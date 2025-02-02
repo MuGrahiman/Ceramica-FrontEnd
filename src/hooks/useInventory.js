@@ -63,7 +63,7 @@ const useInventory = () => {
 
     const handleStatus = async ( inventory ) => {
         setPatchId( inventory._id )
-        await patchInventory( { id: inventory._id, status: !inventory?.status } )
+        await patchInventory( { id: inventory._id, status: inventory?.status === 'active' ? 'inactive' : 'active' } )
     }
     const navigate = useNavigate();
 
@@ -127,30 +127,30 @@ const useInventory = () => {
         totalPages,
         currentPage,
         handlePage,
-    
+
         // Deleting data
         deleteLoading,
         deleteError,
         deleteSuccess,
         handleDelete,
-    
+
         // Patching data
         patchId,
         patchError,
         patchSuccess,
         handleStatus,
         patchLoading,
-    
+
         // Filters and search
         handleFilter,
         clearFilter,
         handleSearch,
         clearSearch,
-    
+
         // Utility
         id,
     };
-    
+
 
 };
 

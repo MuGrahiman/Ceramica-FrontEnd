@@ -87,7 +87,7 @@ const Inventory = () => {
 				) : (
 					<Badge
 						ON_CLICK={handleClick}
-						LABEL={inventory?.status ? "Enabled" : "Disabled"}
+						LABEL={inventory?.status }
 						STATUS={inventory?.status}
 					/>
 				);

@@ -43,10 +43,15 @@ const inventoryApi = createApi( {
 			providesTags: [ "Inventory" ],
 		} ),
 
-		getInventoryItemById: builder.query( {
-			query: ( id ) => `/get/${ id }`,
-			providesTags: ( result, error, id ) => [ { type: "Inventory", id } ],
-		} ),
+		getInventoryItemById: builder.query({
+			query: (id) => ({
+				url: `/get/${id}`,
+				method: 'GET',
+				params: {}, // Add any specific parameters if needed
+			}),
+			providesTags: (result, error, id) => [{ type: "Inventory", id }],
+		}),
+		
 
 		addToInventory: builder.mutation( {
 			query: ( newBook ) => ( {

@@ -13,6 +13,7 @@ import { getBreadCrumbItems } from "../../utils/inventory";
 // Page Component: Handles updating a product in the inventory
 const UpdateInventory = () => {
 	const { id } = useParams();
+	console.log("🚀 ~ UpdateInventory ~ id:", id)
 	const { data, isLoading: fetchLoading } = useGetInventoryItemByIdQuery(id);
 	console.log("🚀 ~ UpdateInventory ~ data:", data);
 	const [updateInventory, { isLoading: updateLoading }] =
@@ -28,6 +29,7 @@ const UpdateInventory = () => {
 		colorInput: data?.product.color.hex,
 		file: data?.product.coverImage,
 		files: data?.product.images,
+		status: data?.product.status ,
 		...data?.product,
 	};
 

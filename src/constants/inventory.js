@@ -33,6 +33,6 @@ export const SIZE_OPTIONS = [
  * @type {Array<{ value: boolean, label: string }>}
  */
 export const STATUS_OPTIONS = [
-    { value: 'true', label: "Activate" },
-    { value: 'false', label: "Deactivate" },
+    { value: 'active', label: "Active" },
+    { value: 'inactive', label: "In Active" },
 ];

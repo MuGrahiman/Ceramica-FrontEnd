@@ -149,7 +149,7 @@ const InventoryForm = ({
 			props: {
 				NAME: "status",
 				LABEL: "Status",
-				// TYPE: "number",
+				// TYPE: "bool",
 				PLACEHOLDER: "Select status",
 				OPTIONS: STATUS_OPTIONS,
 			},
