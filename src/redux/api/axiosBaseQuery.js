@@ -1,6 +1,5 @@
 
-import axios from "axios";
-import { axiosInstance } from "../../utils/axiosInstance";
+import { queryAxiosInstance } from "../../utils/axiosInstance";
 import { paramsSerializer } from "./paramsSerializer";
 import { prepareHeaders } from "./prepareHeaders";
 import { removeUser } from "../store";
@@ -15,11 +14,11 @@ export const axiosBaseQuery =
                 // Prepare headers using the prepareHeaders function
                 const headerValue = headers || new Headers()
                 const preparedHeaders = prepareHeaders( { ...headerValue } );
-                // await axiosInstance.get( "http://localhost:5000" + baseUrl + url )
+                // await queryAxiosInstance.get( "http://localhost:5000" + baseUrl + url )
                 //     .then( res => console.log( res ) )
                 //     .catch( err => console.error( err ) );
 
-                const result = await axiosInstance( {
+                const result = await queryAxiosInstance( {
                     url: baseUrl + url,
                     method,
                     data: body,

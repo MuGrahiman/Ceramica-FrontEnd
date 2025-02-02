@@ -1,10 +1,12 @@
-import axios from "axios";
 import CryptoJS from "crypto-js";
+import { cloudAxiosInstance } from "./axiosInstance";
 
 const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 const apiKey = import.meta.env.VITE_CLOUDINARY_API_KEY;
 const apiSecret = import.meta.env.VITE_CLOUDINARY_API_SECRET;
+
+// const cloudAxios = axiosInstance.defaults.baseURL = `/${ cloudName }`;
 
 /**
  * Uploads a file to Cloudinary.
@@ -20,8 +22,12 @@ export const uploadFile = async ( file ) => {
     formData.append( "upload_preset", uploadPreset );
 
     try {
-        const response = await axios.post(
-            `https://api.cloudinary.com/v1_1/${ cloudName }/image/upload`,
+        // const response = await axios.post(
+        //     `https://api.cloudinary.com/v1_1/${ cloudName }/image/upload`,
+        //     formData
+        // );
+        const response = await cloudAxiosInstance.post(
+            `/${ cloudName }/image/upload`,
             formData
         );
         return response?.status === 200 ? response.data : null;
@@ -57,8 +63,17 @@ export const removeFile = async ( publicId ) => {
         const timestamp = Math.floor( Date.now() / 1000 );
         const signature = generateSignature( apiSecret, timestamp, publicId );
 
-        const response = await axios.post(
-            `https://api.cloudinary.com/v1_1/${ cloudName }/image/destroy`,
+        // const response = await axios.post(
+        //     `https://api.cloudinary.com/v1_1/${ cloudName }/image/destroy`,
+        //     {
+        //         public_id: publicId,
+        //         api_key: apiKey,
+        //         timestamp: timestamp,
+        //         signature: signature,
+        //     }
+        // );
+        const response = await cloudAxiosInstance.post(
+            `/${ cloudName }/image/destroy`,
             {
                 public_id: publicId,
                 api_key: apiKey,
