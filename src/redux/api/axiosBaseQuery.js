@@ -1,15 +1,12 @@
 
 import { queryAxiosInstance } from "../../utils/axiosInstance";
-import { paramsSerializer } from "./paramsSerializer";
 import { prepareHeaders } from "./prepareHeaders";
 import { removeUser } from "../store";
 
 export const axiosBaseQuery =
     ( { baseUrl } = { baseUrl: '' } ) =>
         async ( argData, { dispatch } ) => {
-            console.log("🚀 ~ argData:", argData)
             const { url, method, body, params, headers } = argData
-            console.log( "🚀 ~ url, method, body, params, headers :", url, method, body, params, headers )
             try {
                 // Prepare headers using the prepareHeaders function
                 const headerValue = headers || new Headers()
@@ -26,7 +23,7 @@ export const axiosBaseQuery =
                     headers: preparedHeaders,
                     withCredentials: true, // Set withCredentials based on the provided option
                 } );
-                return result;
+                return result.data;
             } catch ( axiosError ) {
                 const err = axiosError;
                 console.error( "Axios Error:", {

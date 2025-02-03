@@ -26,11 +26,11 @@ const UpdateInventory = () => {
 
 	// Default values for the form
 	const defaultValues = {
-		colorInput: data?.product.color.hex,
-		file: data?.product.coverImage,
-		files: data?.product.images,
-		status: data?.product.status ,
-		...data?.product,
+		colorInput: data?.color.hex,
+		file: data?.coverImage,
+		files: data?.images,
+		status: data?.status ,
+		...data,
 	};
 
 	// Create default success state

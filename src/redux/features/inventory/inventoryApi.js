@@ -43,15 +43,15 @@ const inventoryApi = createApi( {
 			providesTags: [ "Inventory" ],
 		} ),
 
-		getInventoryItemById: builder.query({
-			query: (id) => ({
-				url: `/get/${id}`,
+		getInventoryItemById: builder.query( {
+			query: ( id ) => ( {
+				url: `/get/${ id }`,
 				method: 'GET',
 				params: {}, // Add any specific parameters if needed
-			}),
-			providesTags: (result, error, id) => [{ type: "Inventory", id }],
-		}),
-		
+			} ),
+			providesTags: ( result, error, id ) => [ { type: "Inventory", id } ],
+		} ),
+
 
 		addToInventory: builder.mutation( {
 			query: ( newBook ) => ( {
@@ -78,7 +78,7 @@ const inventoryApi = createApi( {
 				return {
 					url: `/edit/${ id }`,
 					method: "PATCH",
-					body: { status },
+					body: { newData: { status } },
 					headers: {
 						"Content-Type": "application/json",
 					},

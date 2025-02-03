@@ -37,7 +37,6 @@ const useInventory = () => {
         maxPrice,
         search
     } );
-
     // Mutation for deleting inventory item
     const [
         deleteInventory,

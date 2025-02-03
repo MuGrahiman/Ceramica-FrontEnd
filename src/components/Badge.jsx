@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const getInputClass = (status) => {
-	console.log("🚀 ~ getInputClass ~ status:", status)
 	if (status === "active") {
 		return "border border-green-500  dark:border-green-500 hover:ring-green-800  text-green-900 dark:text-green-800 hover:text-green-300 placeholder-green-700 dark:placeholder-green-500 bg-green-50 dark:bg-gray-100 hover:bg-green-900 ";
 	} else {

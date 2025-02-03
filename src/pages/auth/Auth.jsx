@@ -30,8 +30,6 @@ const Auth = () => {
 				}
 			);
 			const auth = response.data;
-			console.log("🚀 ~ submitFN ~ auth:", auth)
-
 			if (auth.user) {
 				// Save token and set expiration timeout
 				dispatch(addUser(auth.user));

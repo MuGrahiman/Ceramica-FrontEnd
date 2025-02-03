@@ -79,7 +79,7 @@ const ProductPanel = ({
 	return (
 		<div className="w-full md:flex p-6 gap-6">
 			{/* Left Side: Images Showcase */}
-			<div className="w-full mb-4">
+			<div className="w-1/2 mb-4">
 				<div className="mb-4">
 					<CoverImage
 						IMAGE={currentCoverImage}
@@ -107,12 +107,12 @@ const ProductPanel = ({
 			</div>
 
 			{/* Right Side: Product Details */}
-			<div className="w-full">
+			<div className="w-1/2">
 				<h1 className="text-3xl font-bold mb-2 text-gray-800">{title}</h1>
 				<ListOptions
 					OPTIONS={validContent}
 					RENDER_ITEM={(item, index) => (
-						<p key={index} className="text-gray-600 mb-1">
+						<p key={index} className="text-gray-600 mb-1 ">
 							<strong>{item.label}:</strong> {item.value}
 						</p>
 					)}
@@ -141,7 +141,7 @@ ProductPanel.propTypes = {
 	size: PropTypes.string,
 	stock: PropTypes.number,
 	price: PropTypes.number,
-	status: PropTypes.bool,
+	status: PropTypes.string,
 	description: PropTypes.string,
 	images: PropTypes.arrayOf(
 		PropTypes.shape({

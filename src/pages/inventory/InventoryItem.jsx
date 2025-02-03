@@ -23,24 +23,24 @@ const InventoryItem = () => {
 			</div>
 		);
 	}
-	if (!data || !data.product) <div>{`Sorry couldn't find any product `}</div>;
+	if (!data || !data) <div>{`Sorry couldn't find any product `}</div>;
 	return (
 		<main className="max-w-5xl  mx-auto ">
-			<BreadCrumb items={getBreadCrumbItems(data.product.title)} />
+			<BreadCrumb items={getBreadCrumbItems(data.title)} />
 			<div className=" bg-white rounded-lg shadow-lg mt-4">
 				<ProductPanel
-					coverImage={data.product.coverImage}
-					title={data.product.title}
-					category={data.product.category}
-					shape={data.product.shape}
-					color={data.product.color}
-					dimension={data.product.dimension}
-					size={data.product.size}
-					stock={data.product.stock}
-					price={data.product.price}
-					status={data.product.status}
-					description={data.product.description}
-					images={data.product.images}
+					coverImage={data.coverImage}
+					title={data.title}
+					category={data.category}
+					shape={data.shape}
+					color={data.color}
+					dimension={data.dimension}
+					size={data.size}
+					stock={data.stock}
+					price={data.price}
+					status={data.status}
+					description={data.description}
+					images={data.images}
 				/>
 			</div>
 			<div className="flex gap-6 mt-4">

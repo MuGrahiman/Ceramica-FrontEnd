@@ -269,7 +269,7 @@ const useInventoryFormHandler = ( { DEFAULT_VALUES, DEFAULT_SUCCESS_VALUE, ON_SU
         },
         // Images validation rules
         images: {
-            validate: ( files ) => files ? iterateFiles( files ) : handleFieldsValidation( fields ),
+            validate: ( files ) => files && files.length ? iterateFiles( files ) : handleFieldsValidation( fields ),
             onChange: ( e ) => handleFileChange( {
                 label: "images",
                 files: e.target.files,
