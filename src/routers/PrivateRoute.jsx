@@ -5,14 +5,15 @@ import { useSelector } from "react-redux";
 import useToast from "../hooks/useToast";
 
 const PrivateRoute = ({ children }) => {
-	const { currentUser, loading } = useAuth();
-	const { token, role } = useSelector((state) => state.auth.currentUser);
+	// const { currentUser, loading } = useAuth();
+	const currentUser = useSelector((state) => state.auth.currentUser);
+	console.log("🚀 ~ PrivateRoute ~ currentUser:", currentUser)
 	const showToast = useToast();
 
-	if (loading) {
-		return <div>Loading..</div>;
-	}
-	if (!token || role !== "client") {
+	// if (loading) {
+	// 	return <div>Loading..</div>;
+	// }
+	if (!currentUser || !currentUser.token || currentUser.role !== "client") {
 		showToast("Please login", "error");
 		return <Navigate to="/login" replace />;
 	}

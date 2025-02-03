@@ -28,7 +28,7 @@ const Login  = () => {
 		try {
 			const loginData = await loginUser({ provider: "mail", ...data }).unwrap();
 			if (loginData.success) {
-				dispatch(addUser({ Token: loginData?.token, Role: "client" }));
+				dispatch(addUser(loginData?.user));
 				showToast(loginData?.message, "success");
 				navigate("/");
 			} else {
@@ -57,7 +57,7 @@ const Login  = () => {
 			}).unwrap();
 
 			if (loginData.success) {
-				dispatch(addUser({ Token: loginData?.token, Role: "client" }));
+				dispatch(addUser(loginData?.user));
 				showToast(loginData?.message, "success");
 				navigate("/");
 			} else {
@@ -84,9 +84,8 @@ const Login  = () => {
 				provider: "facebook",
 				...userData,
 			}).unwrap();
-
 			if (loginData.success) {
-				dispatch(addUser({ Token: loginData?.token, Role: "client" }));
+				dispatch(addUser(loginData?.user));
 				showToast(loginData?.message, "success");
 				navigate("/");
 			} else {
