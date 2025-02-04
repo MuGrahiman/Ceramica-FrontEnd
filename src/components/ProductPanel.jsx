@@ -6,6 +6,7 @@ import ListOptions from "./ListOptions";
 import fallBackImage from "../assets/defualtimage.png";
 import CoverImage from "./CoverImage";
 const ProductPanel = ({
+	productId,
 	coverImage,
 	title,
 	category,
@@ -82,6 +83,7 @@ const ProductPanel = ({
 			<div className="w-1/2 mb-4">
 				<div className="mb-4">
 					<CoverImage
+						ITEM_ID={productId}
 						IMAGE={currentCoverImage}
 						WIDTH={"100%"}
 						HEIGHT={"15rem"}
@@ -95,7 +97,7 @@ const ProductPanel = ({
 							<img
 								key={image.public_id}
 								src={image.url}
-								alt={`Image of ${title} - ${index + 1}`} 
+								alt={`Image of ${title} - ${index + 1}`}
 								loading="lazy"
 								onError={handleImageError}
 								onClick={() => handleCoverImage(image)}
@@ -124,6 +126,7 @@ const ProductPanel = ({
 
 // Define prop types for the individual data
 ProductPanel.propTypes = {
+	productId: PropTypes.string.isRequired,
 	coverImage: PropTypes.shape({
 		url: PropTypes.string,
 		public_id: PropTypes.string,

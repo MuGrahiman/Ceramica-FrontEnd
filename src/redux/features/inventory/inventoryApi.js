@@ -47,7 +47,6 @@ const inventoryApi = createApi( {
 			query: ( id ) => ( {
 				url: `/get/${ id }`,
 				method: 'GET',
-				params: {}, // Add any specific parameters if needed
 			} ),
 			providesTags: ( result, error, id ) => [ { type: "Inventory", id } ],
 		} ),

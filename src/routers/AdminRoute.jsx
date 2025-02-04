@@ -1,14 +1,13 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 import useToast from "../hooks/useToast";
+import { useAuth } from "../hooks/useAuth";
 
 const AdminRoute = ({ children }) => {
 	const showToast = useToast();
+	const { isAuthorized } = useAuth("admin");
 
-	const currentUser = useSelector((state) => state.auth.currentUser);
-
-	if (!currentUser || !currentUser.token || currentUser.role !== "admin") {
+	if (!isAuthorized) {
 		showToast("Please login", "error");
 		return <Navigate to="/admin" />;
 	}

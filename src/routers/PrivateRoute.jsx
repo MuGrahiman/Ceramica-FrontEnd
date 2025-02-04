@@ -1,28 +1,17 @@
 import React from "react";
-import { useAuth } from "../context/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
 import useToast from "../hooks/useToast";
+import { useAuth } from "../hooks/useAuth";
 
 const PrivateRoute = ({ children }) => {
-	// const { currentUser, loading } = useAuth();
-	const currentUser = useSelector((state) => state.auth.currentUser);
-	console.log("🚀 ~ PrivateRoute ~ currentUser:", currentUser)
+	const { isAuthorized } = useAuth("client");
 	const showToast = useToast();
 
-	// if (loading) {
-	// 	return <div>Loading..</div>;
-	// }
-	if (!currentUser || !currentUser.token || currentUser.role !== "client") {
+	if (!isAuthorized) {
 		showToast("Please login", "error");
 		return <Navigate to="/login" replace />;
 	}
 	return children ? children : <Outlet />;
-	// if(currentUser) {
-	//     return children;
-	// }
-
-	// return <Navigate to="/login" replace/>
 };
 
 export default PrivateRoute;

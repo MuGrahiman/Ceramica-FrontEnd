@@ -29,6 +29,7 @@ const InventoryItem = () => {
 			<BreadCrumb items={getBreadCrumbItems(data.title)} />
 			<div className=" bg-white rounded-lg shadow-lg mt-4">
 				<ProductPanel
+					productId={data._id}
 					coverImage={data.coverImage}
 					title={data.title}
 					category={data.category}

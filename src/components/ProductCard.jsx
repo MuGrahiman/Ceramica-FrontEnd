@@ -20,6 +20,7 @@ const ProductCard = ({ product }) => {
 				WIDTH={"100%"}
 				HEIGHT={"12rem"}
 				ON_ERROR={handleImageError}
+				ITEM_ID={product._id}
 			/>
 			<div className="p-4">
 				<h3 className="text-lg font-semibold">{product.title}</h3>
@@ -49,12 +50,10 @@ ProductCard.propTypes = {
 		description: PropTypes.string,
 		price: PropTypes.number,
 		stock: PropTypes.number,
+		_id: PropTypes.string.isRequired,
 	}).isRequired,
 	onAddToCart: PropTypes.func,
 };
 
-ProductCard.defaultProps = {
-	onAddToCart: () => {},
-};
 
 export default ProductCard;
