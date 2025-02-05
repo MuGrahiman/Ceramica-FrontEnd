@@ -20,13 +20,17 @@ function App() {
 	}, []);
 
 	if (loading) {
-		return <Loading />;
+		return (
+			<div className="container min-h-screen flex justify-center items-center">
+				<Loading />
+			</div>
+		);
 	}
-//FBF8F1 ,FFFBE9 ,FAFDD6 cowdung,FEFBE7,FCF8E8
+	//FBF8F1 ,FFFBE9 ,FAFDD6 cowdung,FEFBE7,FCF8E8
 	return (
 		<>
 			<AuthProvide>
-				<Header/>
+				<Header />
 				<main className="min-h-screen max-w-screen-2xl mx-auto  font-primary">
 					<Outlet />
 				</main>

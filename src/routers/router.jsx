@@ -7,7 +7,7 @@ import Auth from "../pages/auth/Auth";
 // import Login from "../components/Login";
 // import Register from "../components/Register";
 // import Auth from "../components/Auth";
-import CartPage from "../pages/books/CartPage";
+// import CartPage from "../pages/books/CartPage";
 import CheckoutPage from "../pages/books/CheckoutPage";
 import SingleBook from "../pages/books/SingleBook";
 import PrivateRoute from "./PrivateRoute";
@@ -28,6 +28,7 @@ import AddToInventory from "../pages/inventory/AddToInventory";
 import ModifyInventory from "../pages/inventory/UpdateInventory";
 import InventoryItem from "../pages/inventory/InventoryItem";
 import Shop from "../pages/shop/Shop";
+import CartPage from "../pages/cart/CartPage";
 
 const router = createBrowserRouter([
 	{

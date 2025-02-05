@@ -1,19 +1,17 @@
 import PropTypes from "prop-types";
 import { stringTrimmer } from "../utils/generals";
 import CoverImage from "./CoverImage";
+import { useCart } from "../hooks/useCart";
+const defaultImage = "https://via.placeholder.com/150";
 
 const ProductCard = ({ product }) => {
-	const defaultImage = "https://via.placeholder.com/150";
+	const { addToCart, isAdding } = useCart();
 	const handleImageError = (e) => {
 		e.target.src = defaultImage;
 	};
+
 	return (
 		<div className="bg-white transform transition-transform hover:scale-105 shadow-lg rounded-lg overflow-hidden w-full sm:w-80 md:w-[25rem] lg:w-80 xl:w-72">
-			{/* <img
-				src={product.coverImage.url || defaultImage}
-				alt={product.title || "Product Image"}
-				className="w-full h-48 object-cover"
-			/> */}
 			<CoverImage
 				SHOW_WISHLIST
 				IMAGE={product.coverImage || defaultImage}
@@ -33,8 +31,11 @@ const ProductCard = ({ product }) => {
 					<span className="text-yellow-500">{product.price || "N/A"} ★</span>
 					<span className="text-gray-400 ml-2">({product.stock})</span>
 				</div>
-				<button className="mt-4 bg-blue-500 text-white p-2 rounded transition-all hover:bg-blue-600">
-					Add to Cart
+				<button
+					disabled={isAdding}
+					onClick={() => addToCart(product._id)}
+					className="mt-4 bg-blue-500 text-white p-2 rounded transition-all hover:bg-blue-600">
+					Add to Cart {isAdding && "..."}
 				</button>
 			</div>
 		</div>
@@ -54,6 +55,5 @@ ProductCard.propTypes = {
 	}).isRequired,
 	onAddToCart: PropTypes.func,
 };
-
 
 export default ProductCard;

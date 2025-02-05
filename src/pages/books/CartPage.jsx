@@ -2,20 +2,22 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { getImgUrl } from '../../utils/getImgUrl';
-import { clearCart, removeFromCart } from '../../redux/features/cart/cartSlice';
+// import { clearCart, removeFromCart } from '../../redux/features/cart/cartSlice';
 
 const CartPage = () => {
-    const cartItems = useSelector(state => state.cart.cartItems);
-    const dispatch =  useDispatch()
+    const cartItems = []
+    // useSelector(state => state.cart.cartItems);
+    // const dispatch =  useDispatch()
 
-    const totalPrice =  cartItems.reduce((acc, item) => acc + item.newPrice, 0).toFixed(2);
+    const totalPrice = 0
+    //  cartItems.reduce((acc, item) => acc + item.newPrice, 0).toFixed(2);
 
     const handleRemoveFromCart = (product) => {
-        dispatch(removeFromCart(product))
+        // dispatch(removeFromCart(product))
     }
 
     const handleClearCart  = () => {
-        dispatch(clearCart())
+        // dispatch(clearCart())
     }
     return (
         <>

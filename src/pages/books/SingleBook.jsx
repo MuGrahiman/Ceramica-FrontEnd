@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom"
 
 import { getImgUrl } from '../../utils/getImgUrl';
 import { useDispatch } from 'react-redux';
-import { addToCart } from '../../redux/features/cart/cartSlice';
+// import { addToCart } from '../../redux/features/cart/cartSlice';
 import { useFetchBookByIdQuery } from '../../redux/features/books/booksApi';
 
 const SingleBook = () => {
@@ -14,7 +14,7 @@ const SingleBook = () => {
     const dispatch =  useDispatch();
 
     const handleAddToCart = (product) => {
-        dispatch(addToCart(product))
+        // dispatch(addToCart(product))
     }
 
     if(isLoading) return <div>Loading...</div>
