@@ -29,6 +29,7 @@ import ModifyInventory from "../pages/inventory/UpdateInventory";
 import InventoryItem from "../pages/inventory/InventoryItem";
 import Shop from "../pages/shop/Shop";
 import CartPage from "../pages/cart/CartPage";
+import CheckOutPage from "../pages/checkout/CheckOutPage";
 
 const router = createBrowserRouter([
 	{
@@ -83,7 +84,7 @@ const router = createBrowserRouter([
 				path: "/checkout",
 				element: (
 					<PrivateRoute>
-						<CheckoutPage />
+						<CheckOutPage />
 					</PrivateRoute>
 				),
 			},

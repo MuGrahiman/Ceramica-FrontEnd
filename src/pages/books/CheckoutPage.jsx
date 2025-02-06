@@ -8,8 +8,10 @@ import Swal from'sweetalert2';
 import { useCreateOrderMutation } from '../../redux/features/orders/ordersApi';
 
 const CheckoutPage = () => {
-    const cartItems = useSelector(state => state.cart.cartItems);
-    const totalPrice = cartItems.reduce((acc, item) => acc + item.newPrice, 0).toFixed(2);
+    const cartItems = []
+    // useSelector(state => state.cart.cartItems);
+    const totalPrice = 0
+    // cartItems.reduce((acc, item) => acc + item.newPrice, 0).toFixed(2);
     const {  currentUser} = useAuth()
     const {
         register,
@@ -35,7 +37,7 @@ const CheckoutPage = () => {
         
             },
             phone: data.phone,
-            productIds: cartItems.map(item => item?._id),
+            // productIds: cartItems.map(item => item?._id),
             totalPrice: totalPrice,
         }
         
@@ -60,7 +62,7 @@ const CheckoutPage = () => {
     if(isLoading) return <div>Loading....</div>
     return (
         <section>
-            <div className="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
+            <div className="min-h-screen p-6  flex items-center justify-center">
                 <div className="container max-w-screen-lg mx-auto">
                     <div>
                         <div>
@@ -78,15 +80,20 @@ const CheckoutPage = () => {
                                     </div>
 
                                     <div className="lg:col-span-2">
-                                        <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
-                                            <div className="md:col-span-5">
-                                                <label htmlFor="full_name">Full Name</label>
+                                        <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-6   ">
+                                            <div className="md:col-span-3">
+                                                <label htmlFor="full_name">First Name</label>
                                                 <input
                                                     {...register("name", { required: true })}
                                                     type="text" name="name" id="name" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
                                             </div>
-
-                                            <div className="md:col-span-5">
+                                            <div className="md:col-span-3">
+                                                <label htmlFor="full_name">Second Name</label>
+                                                <input
+                                                    {...register("name", { required: true })}
+                                                    type="text" name="name" id="name" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                            </div>
+                                            <div className="md:col-span-3">
                                                 <label html="email">Email Address</label>
                                                 <input
 
@@ -95,7 +102,7 @@ const CheckoutPage = () => {
                                                     defaultValue={currentUser?.email}
                                                     placeholder="email@domain.com" />
                                             </div>
-                                            <div className="md:col-span-5">
+                                            <div className="md:col-span-3">
                                                 <label html="phone">Phone Number</label>
                                                 <input
                                                     {...register("phone", { required: true })}
@@ -109,7 +116,7 @@ const CheckoutPage = () => {
                                                     type="text" name="address" id="address" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" placeholder="" />
                                             </div>
 
-                                            <div className="md:col-span-2">
+                                            <div className="md:col-span-3">
                                                 <label htmlFor="city">City</label>
                                                 <input
                                                     {...register("city", { required: true })}
@@ -152,7 +159,7 @@ const CheckoutPage = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="md:col-span-1">
+                                            <div className="md:col-span-2">
                                                 <label htmlFor="zipcode">Zipcode</label>
                                                 <input
                                                     {...register("zipcode", { required: true })}
