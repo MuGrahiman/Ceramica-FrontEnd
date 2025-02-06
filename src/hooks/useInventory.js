@@ -19,7 +19,7 @@ const useInventory = () => {
     const [ data, setData ] = useState();
     const [ patchId, setPatchId ] = useState( null );
 
-    const limit = 5; // Items per page
+    const limit = 6; // Items per page
     const showToast = useToast(); // Custom toast notification
 
     // Fetch inventory items

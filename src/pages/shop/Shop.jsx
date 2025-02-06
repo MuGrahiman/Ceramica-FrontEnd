@@ -105,7 +105,6 @@ import Loading from "../../components/Loading";
 const Shop = () => {
 	const {
 		fetchLoading,
-		fetchError,
 		data,
 		totalPages,
 		currentPage,
@@ -163,7 +162,7 @@ const Shop = () => {
 					/>
 				</span>
 			</div>
-			<div className="container mx-auto mt-6 px-4 py-6 flex  justify-between md:gap-4  ">
+			<div className="container mx-auto mt-6 px-4 sm:px-0 md:px-4 py-6 flex  justify-between md:gap-4  ">
 				<aside
 					className={`min-h-full  sm:w-1/2 lg:w-1/3 bg-white rounded-lg shadow  transition-all duration-700 ease-in-out ${
 						isOpen("isOpen")
@@ -175,7 +174,7 @@ const Shop = () => {
 				</aside>
 
 				<div
-					className={`flex flex-wrap items-center justify-evenly gap-6
+					className={`flex flex-wrap items-center justify-center gap-6
 							 transition-all duration-700 ease-in-out ${
 									isOpen("isOpen") ? "opacity-0 w-0 " : "opacity-100  w-full"
 								}  sm:opacity-100 sm:w-full  `}>

@@ -11,7 +11,7 @@ const ProductCard = ({ product }) => {
 	};
 
 	return (
-		<div className="bg-white transform transition-transform hover:scale-105 shadow-lg rounded-lg overflow-hidden w-full sm:w-80 md:w-[25rem] lg:w-80 xl:w-72">
+		<div className="bg-white transform transition-transform shadow-lg hover:shadow-2xl rounded-lg overflow-hidden w-full sm:w-80 md:w-[25rem] lg:w-80 xl:w-72 min-h-[26rem] max-h-[26rem] flex flex-col">
 			<CoverImage
 				SHOW_WISHLIST
 				IMAGE={product.coverImage || defaultImage}
@@ -20,7 +20,7 @@ const ProductCard = ({ product }) => {
 				ON_ERROR={handleImageError}
 				ITEM_ID={product._id}
 			/>
-			<div className="p-4">
+			<div className="p-4 flex-grow flex flex-col justify-between">
 				<h3 className="text-lg font-semibold">{product.title}</h3>
 				<p className="text-gray-600">{`${stringTrimmer(
 					product.description,
@@ -40,6 +40,7 @@ const ProductCard = ({ product }) => {
 			</div>
 		</div>
 	);
+	
 };
 
 ProductCard.propTypes = {

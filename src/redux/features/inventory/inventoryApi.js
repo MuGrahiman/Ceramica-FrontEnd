@@ -1,15 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import getBaseUrl from "../../../utils/baseUrl";
-import { prepareHeaders, paramsSerializer } from "../../../utils/redux";
+import { createApi } from "@reduxjs/toolkit/query/react";
+
 import { axiosBaseQuery } from "../../api/axiosBaseQuery";
-
-
-// const baseQuery = fetchBaseQuery( {
-// 	baseUrl: `${ getBaseUrl() }/api/inventory`,
-// 	credentials: "include",
-// 	prepareHeaders,
-// 	paramsSerializer
-// } );
 
 
 const baseQuery = axiosBaseQuery( {
