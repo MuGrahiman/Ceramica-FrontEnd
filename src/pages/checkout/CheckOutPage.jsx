@@ -2,7 +2,7 @@ import React from "react";
 import OrderSummary from "./OrderSummary";
 import PaymentOptions from "./PaymentOptions";
 import AddressForm from "../address/AddressForm";
-import AddressList from "../address/AddressCard";
+import AddressList from "../address/AddressList";
 
 const CheckOutPage = () => {
 	return (

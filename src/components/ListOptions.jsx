@@ -7,7 +7,7 @@ const ListOptions = ({
 	EMPTY_MESSAGE = "No options available.",
 	RENDER_ITEM,
 }) => {
-	if (!OPTIONS.length) {
+	if (!OPTIONS||!OPTIONS.length) {
 		return <div>{EMPTY_MESSAGE}</div>;
 	}
 
