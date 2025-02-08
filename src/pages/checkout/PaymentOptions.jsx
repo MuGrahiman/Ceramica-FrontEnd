@@ -18,13 +18,13 @@ const PaymentOptions = () => {
 					<p className="text-gray-700">Total</p>
 					<p className="font-medium">$45.00</p>
 				</div>
-				<div className="sm:flex gap-2">
+				<div className="flex flex-col sm:flex-row gap-2">
 					<input
 						type="text"
 						placeholder="Coupon Code"
 						className="w-full p-2 border rounded-md"
 					/>
-					<button className="w-full sm:w-fit px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300">
+					<button className="w-full sm:w-fit  px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300">
 						Apply
 					</button>
 				</div>

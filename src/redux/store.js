@@ -9,6 +9,7 @@ import ordersApi from "./features/orders/ordersApi";
 import inventoryApi from "./features/inventory/inventoryApi.js";
 import wishListApi from "./features/wishlist/wishListApi.js";
 import cartApi from "./features/cart/cartApi.js";
+import addressApi from "./features/address/addressApi.js";
 
 export const store = configureStore( {
 	reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore( {
 		[ inventoryApi.reducerPath ]: inventoryApi.reducer,
 		[ wishListApi.reducerPath ]: wishListApi.reducer,
 		[ cartApi.reducerPath ]: cartApi.reducer,
+		[ addressApi.reducerPath ]: addressApi.reducer,
 		[ ordersApi.reducerPath ]: ordersApi.reducer,
 	},
 	middleware: ( getDefaultMiddleware ) =>
@@ -29,7 +31,8 @@ export const store = configureStore( {
 			booksApi.middleware,
 			inventoryApi.middleware,
 			wishListApi.middleware,
-			cartApi.middleware,
+			cartApi.middleware, 
+			addressApi.middleware,
 			ordersApi.middleware,
 		),
 } );
@@ -41,7 +44,7 @@ export * from "./features/otp/otpApi";
 export * from "./features/books/booksApi";
 export * from "./features/inventory/inventoryApi";
 export * from "./features/wishlist/wishListApi.js";
-export * from  "./features/cart/cartApi.js";
-// export * from "./features/cart/cartSlice";
+export * from "./features/cart/cartApi.js";
+export * from "./features/address/addressApi.js";
 export * from "./features/orders/ordersApi";
 export * from "./features/users/userSlice";

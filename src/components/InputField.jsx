@@ -26,10 +26,11 @@ const InputField = ({
 		: "text-gray-700 dark:text-gray-600";
 
 	return (
-		<div className="mb-5 w-full">
+		<div className=" w-full text-sm">
 			<label
 				htmlFor={NAME}
-				className={`block mb-2 text-sm font-bold ${labelClass}`}>
+				className={`font-semibold ${labelClass}`}
+			>
 				{LABEL}
 			</label>
 			<input
@@ -39,7 +40,8 @@ const InputField = ({
 				id={NAME}
 				aria-invalid={ERRORS[NAME] ? "true" : "false"}
 				placeholder={PLACEHOLDER || `Enter ${NAME}`}
-				className={`focus:outline-none dark:bg-white text-sm font-normal rounded-lg block w-full p-2.5 ${getInputClass()}`}
+				className={`h-10 border  rounded px-4  bg-gray-50
+					focus:outline-none dark:bg-white text-sm font-normal  block w-full p-2.5 ${getInputClass()}`}
 			/>
 			{ERRORS[NAME] && (
 				<small className="w-full text-center text-xs text-red-600 dark:text-red-500">

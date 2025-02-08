@@ -40,13 +40,14 @@ const ColorField = ({
 	};
 	const handleClose = () => setShowColor(false);
 	return (
-		<div className="mb-5 w-full">
+		<div className="w-full text-sm">
 			<label
 				htmlFor={NAME}
-				className={`block mb-2 text-sm font-bold ${labelClass}`}>
+				className={`font-semibold ${labelClass}`}
+				>
 				{LABEL}
 			</label>
-			<div className="flex ">
+			<div className="flex items-center">
 				<input
 					{...REST}
 					{...REGISTER(NAME, VALIDATION_RULES[NAME])}
@@ -54,9 +55,10 @@ const ColorField = ({
 					id={NAME}
 					aria-invalid={ERRORS[NAME] ? "true" : "false"}
 					placeholder={PLACEHOLDER || `Enter ${NAME}`}
-					className={`focus:outline-none dark:bg-white text-sm font-normal rounded-none rounded-s-lg block w-full p-2.5 ${getInputClass()}`}
+					
+					className={`h-10 border  px-4 focus:outline-none dark:bg-white  font-normal rounded-none rounded-s block w-full p-2.5 ${getInputClass()}`}
 				/>
-				<span className="inline-flex items-center px-3 text-sm text-gray-900 cursor-pointer   dark:text-gray-400 dark:bg-gray-500 hover:dark:bg-gray-600 bg-gray-200 border  border-e-0 rounded-e-0  rounded-e-md border-gray-300 dark:border-gray-500 hover:dark:border-gray-600">
+				<span className="h-10 inline-flex items-center px-3 text-sm text-gray-900 cursor-pointer   dark:text-gray-400 dark:bg-gray-500 hover:dark:bg-gray-600 bg-gray-200 border  border-e-0 rounded-e-0  rounded-e border-gray-300 dark:border-gray-500 hover:dark:border-gray-600">
 					{COLOR_DATA.colorLoading ? (
 						<ImSpinner9 className="w-5 h-5 rotate animate-spin text-gray-700 dark:text-gray-600" />
 					) : (

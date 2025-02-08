@@ -35,10 +35,13 @@ const ImageUploader = ({
 			: "text-gray-700 dark:text-gray-600";
 	};
 	return (
-		<div className="mb-5 w-full">
+		<div className=" w-full">
 			<label
 				htmlFor={NAME}
-				className={`block mb-2 text-sm font-bold ${getLabelClassName()}`}>
+				className={`font-semibold ${getLabelClassName}`}
+
+				// className={`block mb-2 text-sm font-bold ${getLabelClassName()}`}
+				>
 				{LABEL}
 			</label>
 

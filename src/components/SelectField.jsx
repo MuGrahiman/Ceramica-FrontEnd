@@ -46,16 +46,19 @@ const SelectField = ({
 		: "text-gray-700 dark:text-gray-600";
 
 	return (
-		<div className="mb-4">
+		<div className="w-full text-sm ">
 			<label
 				htmlFor={NAME}
-				className={`block mb-2 text-sm font-bold ${labelClass}`}>
+				className={`font-semibold ${labelClass}`}
+				>
 				{LABEL}
 			</label>
 			<select
 				{...REST}
 				{...REGISTER(NAME, VALIDATION_RULES[NAME])}
-				className={`focus:outline-none dark:bg-white text-sm font-normal rounded-lg block w-full p-2.5 ${getSelectClass()}`}
+				className={`h-10 border  rounded px-4  bg-gray-50
+					focus:outline-none dark:bg-white  font-normal  block w-full p-2.5 ${getSelectClass()}`}
+				// className={`focus:outline-none dark:bg-white font-normal rounded-lg block w-full p-2.5 ${getSelectClass()}`}
 				aria-invalid={!!ERRORS[NAME]} // ARIA attribute for accessibility
 				aria-describedby={`${NAME}-error`}>
 				{PLACEHOLDER && (

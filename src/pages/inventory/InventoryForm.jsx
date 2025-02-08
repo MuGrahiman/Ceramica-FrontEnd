@@ -183,12 +183,12 @@ const InventoryForm = ({
 	return (
 		<>
 			<BreadCrumb items={BREAD_CRUMB_ITEMS} />
-			<div className="max-w-lg mt-12 mx-auto md:p-6 p-3 bg-gray-300 rounded-lg shadow-lg">
+			<div className="max-w-lg mt-12 mx-auto md:p-6 p-3 bg-gray-300 rounded-lg shadow-lg font-primary">
 				<h2 className="text-2xl text-center font-extrabold font-serif text-gray-700 mb-8">
 					{TITLE}
 				</h2>
 				<form
-					className="max-w-sm mx-auto"
+					className="max-w-sm mx-auto grid gap-4"
 					onSubmit={handleFormSubmit}
 					noValidate>
 					{/* Iterate over formFields to render each component */}

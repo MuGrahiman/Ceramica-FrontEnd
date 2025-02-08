@@ -13,7 +13,7 @@ const AddToInventory = () => {
 	const [addToInventory, { isLoading }] = useAddToInventoryMutation();
 
 	const Title = "Add To Inventory";
-
+	
 	// Default values for the form
 	const defaultValues = {
 		file: null,
