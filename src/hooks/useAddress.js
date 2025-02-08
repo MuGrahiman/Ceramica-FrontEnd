@@ -20,7 +20,6 @@ const useAddress = ( existingAddressData ) => {
             showToast( "Failed to fetch address items. Please try again.", 'error' );
         }
         if ( data && data.length ) {
-            console.log("🚀 ~ useEffect ~ data:", data)
             setAddressList( data );
         } else {
             setAddressList( null );

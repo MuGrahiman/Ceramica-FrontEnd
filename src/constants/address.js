@@ -16,7 +16,7 @@ export const ADDRESS_VALIDATION_RULES = {
         pattern: { value: /^[0-9]{10,}$/, message: "Phone Number must be at least 10 digits." },
     },
     street: { required: "Street Address is required." },
-    town: { required: "Town/City is required." },
+    city: { required: "Town/City is required." },
     state: { required: "State is required." },
     country: { required: "Country is required." },
     zipCode: {
@@ -34,7 +34,7 @@ export const ADDRESS_FORM_FIELDS = [
     { NAME: "email", LABEL: "Email Address", TYPE: "email", PLACEHOLDER: "email@domain.com", DISABLED: true },
     { NAME: "phoneNumber", LABEL: "Phone Number", TYPE: "tel", PLACEHOLDER: "+123 456 7890" },
     { NAME: "street", LABEL: "Street Address", TYPE: "text", PLACEHOLDER: "Enter your address" },
-    { NAME: "town", LABEL: "Town/City", TYPE: "text", PLACEHOLDER: "Enter your town/city" },
+    { NAME: "city", LABEL: "Town/City", TYPE: "text", PLACEHOLDER: "Enter your town/city" },
     { NAME: "state", LABEL: "State", TYPE: "text", PLACEHOLDER: "Enter your state" },
     { NAME: "country", LABEL: "Country", TYPE: "text", PLACEHOLDER: "Enter your country" },
     { NAME: "zipCode", LABEL: "Zip Code", TYPE: "text", PLACEHOLDER: "Enter your zip code" },

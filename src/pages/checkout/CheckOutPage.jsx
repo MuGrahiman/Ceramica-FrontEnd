@@ -8,7 +8,7 @@ const CheckOutPage = () => {
 	return (
 		<div className="container mx-auto p-8">
 			{/* First Section */}
-			<section className="flex flex-col-reverse md:flex-row gap-8 mb-8">
+			<section className="flex flex-col-reverse md:flex-row gap-8 mb-8 md:max-h-[55rem] lg:max-h-[32rem]">
 				<AddressForm />
 				<AddressList />
 			</section>

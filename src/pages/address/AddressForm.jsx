@@ -1,7 +1,11 @@
 import React from "react";
 import InputField from "../../components/InputField";
 import useAddress from "../../hooks/useAddress";
-import { ADDRESS_FORM_FIELDS, ADDRESS_VALIDATION_RULES } from "../../constants/address";
+import {
+	ADDRESS_FORM_FIELDS,
+	ADDRESS_VALIDATION_RULES,
+} from "../../constants/address";
+import ListOptions from "../../components/ListOptions";
 
 const AddressForm = () => {
 	const { handleSubmit, register, errors } = useAddress();
@@ -15,8 +19,12 @@ const AddressForm = () => {
 				className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3 my-8">
 				<div className="lg:col-span-3">
 					<div className="grid gap-4 gap-y-2 text-sm grid-cols-1 sm:grid-cols-6 md:grid-cols-1 lg:grid-cols-6">
-						{ADDRESS_FORM_FIELDS.map(
-							({ NAME, LABEL, TYPE, PLACEHOLDER, DISABLED }, index) => (
+						<ListOptions
+							OPTIONS={ADDRESS_FORM_FIELDS}
+							RENDER_ITEM={(
+								{ NAME, LABEL, TYPE, PLACEHOLDER, DISABLED },
+								index
+							) => (
 								<div
 									key={index}
 									className={`col-span-1 md:col-span-1 ${
@@ -35,8 +43,8 @@ const AddressForm = () => {
 										DISABLED={DISABLED}
 									/>
 								</div>
-							)
-						)}
+							)}
+						/>
 
 						<div className="col-span-full mt-3">
 							<div className="inline-flex items-center">
