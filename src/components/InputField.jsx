@@ -6,7 +6,7 @@ const InputField = ({
 	PLACEHOLDER,
 	ERRORS,
 	VALIDATION_RULES,
-	IS_SUCCESS,
+	IS_SUCCESS,DISABLED,
 	...REST
 }) => {
 	const getInputClass = () => {
@@ -38,6 +38,7 @@ const InputField = ({
 				{...REGISTER(NAME, VALIDATION_RULES[NAME])}
 				type={TYPE}
 				id={NAME}
+				disabled={DISABLED}
 				aria-invalid={ERRORS[NAME] ? "true" : "false"}
 				placeholder={PLACEHOLDER || `Enter ${NAME}`}
 				className={`h-10 border  rounded px-4  bg-gray-50

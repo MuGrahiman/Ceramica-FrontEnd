@@ -20,7 +20,7 @@ const useToast = () => {
         toastMethod(message);
     }, []);
 
-    return showToast;
+    return showToast
 };
 
 export default useToast;

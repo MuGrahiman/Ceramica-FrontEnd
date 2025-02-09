@@ -1,17 +1,21 @@
 import { v4 as uuidv4 } from 'uuid';
 
 /**
- * Creates a default state object for the specified fields.
+ * Creates a default state object for the specified fields with different default values.
  *
  * @param {Array<string>} fields - An array of field names to initialize.
- * @param {any} defaultValue - The value to assign to each field (default: false).
+ * @param {Object} fieldDefaults - An object specifying default values for specific fields.
+ * @param {any} defaultValue - The default value for unspecified fields (default: '').
  * @returns {Object} - An object representing the initialized state.
  */
-export const createDefaultState = ( fields, defaultValue = false ) => {
-    return fields.reduce( ( acc, field ) => ( {
-        ...acc,
-        [ field ]: defaultValue,
-    } ), {} );
+export const createDefaultState = ( fields, defaultValue = null, fieldDefaults = {} ) => {
+    return fields.reduce(
+        ( acc, field ) => ( {
+            ...acc,
+            [ field ]: fieldDefaults[ field ] !== undefined ? fieldDefaults[ field ] : defaultValue,
+        } ),
+        {}
+    );
 };
 
 /**
@@ -47,4 +51,4 @@ export const generateId = () => uuidv4();
  * @param {number} [LEN=10] - The maximum length of the trimmed string (default is 10).
  * @returns {string} - The trimmed string.
  */
-export const stringTrimmer = (TEXT, LEN = 10) => TEXT.substring(0, LEN);
+export const stringTrimmer = ( TEXT, LEN = 10 ) => TEXT.substring( 0, LEN );

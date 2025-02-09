@@ -5,7 +5,7 @@ export const ADDRESS_VALIDATION_RULES = {
     },
     lastName: {
         required: "Last Name is required.",
-        minLength: { value: 3, message: "Last Name must be at least 3 characters long." },
+        minLength: { value: 1, message: "Last Name required." },
     },
     email: {
         required: "Email is required.",
@@ -24,8 +24,8 @@ export const ADDRESS_VALIDATION_RULES = {
         pattern: { value: /^[0-9]{5,}$/, message: "Zip Code must be at least 5 digits." },
     },
     isDefault: {
-		validate: (value) => typeof value === "boolean" || "Invalid selection.",
-	},
+        validate: ( value ) => typeof value === "boolean" || "Invalid selection.",
+    },
 };
 
 export const ADDRESS_FORM_FIELDS = [
@@ -40,3 +40,15 @@ export const ADDRESS_FORM_FIELDS = [
     { NAME: "zipCode", LABEL: "Zip Code", TYPE: "text", PLACEHOLDER: "Enter your zip code" },
 ];
 
+export const ADDRESS_FIELDS = [
+    "firstName",
+    "lastName",
+    "email",
+    "phoneNumber",
+    "street",
+    "city",
+    "state",
+    "country",
+    "zipCode",
+    "isDefault",
+];
