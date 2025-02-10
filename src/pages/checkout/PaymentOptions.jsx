@@ -1,14 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const PaymentOptions = () => {
+const PaymentOptions = ({SUB_TOTAL=0}) => {
 	return (
 		<div className="w-full lg:w-1/3 bg-white p-6">
 			<h2 className="text-xl font-semibold mb-6">Payment</h2>
 			<div className="space-y-4">
 				<div className="flex justify-between">
 					<p className="text-gray-700">Subtotal</p>
-					<p className="font-medium">$40.00</p>
+					<p className="font-medium">${SUB_TOTAL}</p>
 				</div>
 				<div className="flex justify-between">
 					<p className="text-gray-700">Shipping</p>

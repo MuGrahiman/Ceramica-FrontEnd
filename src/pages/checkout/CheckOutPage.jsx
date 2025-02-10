@@ -4,6 +4,7 @@ import PaymentOptions from "./PaymentOptions";
 import AddressForm from "../address/AddressForm";
 import AddressList from "../address/AddressList";
 import useAddress from "../../hooks/useAddress";
+import { useCart } from "../../hooks/useCart";
 
 const CheckOutPage = () => {
 	const {
@@ -17,6 +18,7 @@ const CheckOutPage = () => {
 		isLoading,
 		onSelection,
 	} = useAddress();
+	const { cartItems, subtotal, isFetching, isRemoving, isUpdating } = useCart();
 
 	return (
 		<div className="container mx-auto p-8">
@@ -40,10 +42,12 @@ const CheckOutPage = () => {
 				/>
 			</section>
 
-			{/* Order Summary & Payment Options Section */}
-			<section className="flex flex-col lg:flex-row gap-8">
-				<OrderSummary />
-				<PaymentOptions />
+			<section className="flex flex-col lg:flex-row gap-8 max-h-screen">
+				<OrderSummary
+					CART_ITEMS={cartItems}
+					IS_LOADING={isFetching || isRemoving || isUpdating}
+				/>
+				<PaymentOptions SUB_TOTAL={subtotal}/>
 			</section>
 		</div>
 	);

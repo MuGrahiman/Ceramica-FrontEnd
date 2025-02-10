@@ -18,10 +18,10 @@ export const useCart = () => {
     const { isAuthorized } = useAuth("client");
     const showToast = useToast();
     const [cartItems, setCartItems] = useState(null);
-    const [cartId, setCartId] = useState(null);
+    const [activeCartId, setActiveCartId] = useState(null);
     const [subtotal, setSubtotal] = useState(0);
 
-    const resetCartId = () => setCartId(null);
+    const resetActiveCartId = () => setActiveCartId(null);
 
     // Fetch cart items only if the user is authorized
     const { data, error: fetchError, isLoading: isFetching } = useGetCartItemsQuery(null, { skip: !isAuthorized });
@@ -56,17 +56,17 @@ export const useCart = () => {
      * @param {string} productId - The ID of the product to add.
      */
     const addToCart = useCallback(async (productId) => {
-        setCartId(productId);
+        setActiveCartId(productId);
         if (!productId) {
             showToast("Product ID is required.", 'error');
-            resetCartId();
+            resetActiveCartId();
             return;
         }
 
         if (!isAuthorized) {
             showToast("Please login to add products to your cart.", 'error');
             navigate("/login");
-            resetCartId();
+            resetActiveCartId();
             return;
         }
 
@@ -77,7 +77,7 @@ export const useCart = () => {
             console.error(error);
             showToast(error?.data?.message || "Failed to add product to cart.", 'error');
         } finally {
-            resetCartId();
+            resetActiveCartId();
         }
     }, [isAuthorized, addToCartMutation, navigate, showToast]);
 
@@ -86,11 +86,11 @@ export const useCart = () => {
      * @param {string} productId - The ID of the product to remove.
      */
     const removeFromCart = useCallback(async (productId) => {
-        setCartId(productId);
+        setActiveCartId(productId);
         if (!isAuthorized) {
             showToast("Please login to manage your cart.", 'error');
             navigate("/login");
-            resetCartId();
+            resetActiveCartId();
             return;
         }
 
@@ -101,7 +101,7 @@ export const useCart = () => {
             console.error(error);
             showToast(error?.data?.message || "Failed to remove product from cart.", 'error');
         } finally {
-            resetCartId();
+            resetActiveCartId();
         }
     }, [isAuthorized, removeFromCartMutation, navigate, showToast]);
 
@@ -111,13 +111,13 @@ export const useCart = () => {
      * @param {string} type - The type of update ("inc" for increment, "dec" for decrement).
      */
     const updateCartQuantity = useCallback(async (cartItem, type) => {
-        const { inventory, quantity, _id } = cartItem;
-        setCartId(_id);
+        const { productId, quantity, cartId } = cartItem;
+        setActiveCartId(cartId);
 
         if (!isAuthorized) {
             showToast("Please login to manage your cart.", 'error');
             navigate("/login");
-            resetCartId();
+            resetActiveCartId();
             return;
         }
 
@@ -131,16 +131,16 @@ export const useCart = () => {
             }
 
             if (newQuantity <= 0) {
-                await removeFromCart(_id);
+                await removeFromCart(cartId);
             } else {
-                await updateCartMutation({ productId: inventory._id, quantity: newQuantity }).unwrap();
+                await updateCartMutation({ productId, quantity: newQuantity }).unwrap();
                 showToast(`Quantity updated to ${newQuantity}`, 'success');
             }
         } catch (error) {
             console.error(error);
             showToast(error?.data?.message || "Failed to update quantity.", 'error');
         } finally {
-            resetCartId();
+            resetActiveCartId();
         }
     }, [isAuthorized, updateCartMutation, removeFromCart, navigate, showToast]);
 
@@ -155,7 +155,7 @@ export const useCart = () => {
         isAuthorized,
         cartItems,
         subtotal,
-        cartId,
+        activeCartId,
         addToCart,
         updateCartQuantity,
         removeFromCart,

@@ -276,84 +276,53 @@ function DemoPage() {
 			</section>
 
 			{/* <!-- Second Section --> */}
-			<section className="flex flex-col lg:flex-row gap-8">
-				{/* <!-- Part 1: Order Summary --> */}
-				<div className="w-full  lg:w-2/3 bg-white p-6 ">
+			<section className="flex flex-col lg:flex-row gap-8 max-h-screen overflow-hidden">
+				<div className="w-full lg:w-2/3 bg-white p-6">
 					<h2 className="text-xl font-semibold mb-6">Order Summary</h2>
-					<div className="space-y-4 overflow-y-auto">
-						{/* <!-- Product Row --> */}
-						<div className="flex justify-between items-center p-4 border rounded-lg">
-							<p className="font-medium">Product 1</p>
-							<p className="text-sm text-gray-600">$20.00</p>
-							<p className="text-sm text-gray-600">Qty: 2</p>
-							<p className="font-medium">$40.00</p>
-						</div>
-						{/* <!-- Add more product rows here --> */}
-					</div>
-				</div>
 
-				{/* <!-- Part 2: Payment Options --> */}
-				<div className="w-full  lg:w-1/3 bg-white p-6 ">
-					<h2 className="text-xl font-semibold mb-6">Payment</h2>
-					<div className="space-y-4">
-						<div className="flex justify-between">
-							<p className="text-gray-700">Subtotal</p>
-							<p className="font-medium">$40.00</p>
-						</div>
-						<div className="flex justify-between">
-							<p className="text-gray-700">Shipping</p>
-							<p className="font-medium">$5.00</p>
-						</div>
-						<div className="flex justify-between">
-							<p className="text-gray-700">Total</p>
-							<p className="font-medium">$45.00</p>
-						</div>
-						<div className="sm:flex gap-2">
-							<input
-								type="text"
-								placeholder="Coupon Code"
-								className="w-full p-2 border rounded-md"
-							/>
-							<button className="w-full sm:w-fit px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300">
-								Apply
-							</button>
-						</div>
-						<div className="space-y-2">
-							<label className="flex items-center">
-								<input type="radio" name="payment" className="mr-2" />
-								<span>Cash on Delivery (COD)</span>
-							</label>
-							<label className="flex items-center">
-								<input type="radio" name="payment" className="mr-2" />
-								<span>Net Banking</span>
-							</label>
-						</div>
-
-						<div className="md:col-span-5 mt-3 text-sm">
-							<div className="inline-flex items-center">
-								<input
-									type="checkbox"
-									name="billing_same"
-									id="billing_same"
-									className="form-checkbox"
+					<div className=" max-h-full  ">
+						
+						<ul role="list" className="max-h-full -my-6 divide-y divide-gray-200 overflow-y-scroll">
+								<ListOptions
+									EMPTY_MESSAGE="No products found in your cart!"
+									OPTIONS={cartItems}
+									RENDER_ITEM={({ inventory, ...rest }) => {
+										const { category, ...filteredInventory } = inventory; 
+										return (
+											<CartCard
+												{...filteredInventory}
+												{...rest}
+												showButtons={false}
+											/>
+										);
+									}}
 								/>
-								<label htmlFor="billing_same" className="ml-2 ">
-									I am aggree to the{" "}
-									<Link className="underline underline-offset-2 text-blue-600">
-										Terms & Conditions
-									</Link>{" "}
-									and{" "}
-									<Link className="underline underline-offset-2 text-blue-600">
-										Shoping Policy.
-									</Link>
-								</label>
-							</div>
-						</div>
-						<button className="w-full px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300">
-							Place Order
-						</button>
+							</ul>
+
 					</div>
+
+					{/* <div className="mt-8 pt-6 ">
+						<div className="flow-root">
+							<ul role="list" className="-my-6 divide-y divide-gray-200">
+								<ListOptions
+									EMPTY_MESSAGE="No products found in your cart!"
+									OPTIONS={cartItems}
+									RENDER_ITEM={({ inventory, ...rest }) => {
+										const { category, ...filteredInventory } = inventory; 
+										return (
+											<CartCard
+												{...filteredInventory}
+												{...rest}
+												showButtons={false}
+											/>
+										);
+									}}
+								/>
+							</ul>
+						</div>
+					</div> */}
 				</div>
+				<PaymentOptions />
 			</section>
 		</div>
 	);

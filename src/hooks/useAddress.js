@@ -37,6 +37,7 @@ const useAddress = () => {
         if ( isAuthorized && currentUser.role === "client" ) {
             setValue( "email", currentUser.email );
         }
+
     }, [ isAuthorized, currentUser, reset ] );
 
     /**
@@ -79,8 +80,8 @@ const useAddress = () => {
         try {
             const newAddress = await addAddress( formData ).unwrap();
             setAddressId( newAddress._id );
-            reset( createDefaultState( ADDRESS_FIELDS, "", 
-                { ...newAddress, email: currentUser.email } 
+            reset( createDefaultState( ADDRESS_FIELDS, "",
+                { ...newAddress, email: currentUser.email }
             ) );
             showToast( "Address added successfully", "success" );
         } catch ( error ) {
@@ -130,7 +131,7 @@ const useAddress = () => {
         if ( addressId === address._id ) return; // Prevent redundant updates
 
         setAddressId( address._id );
-        reset( createDefaultState( ADDRESS_FIELDS, "", { address } ) );
+        reset( createDefaultState( ADDRESS_FIELDS, "", { ...address, email: currentUser.email } ) );
     };
 
     return {
