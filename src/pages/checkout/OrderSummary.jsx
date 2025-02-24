@@ -5,8 +5,8 @@ import CartCard from "../cart/CartCard";
 import ListOptions from "../../components/ListOptions";
 import Loading from "../../components/Loading"; // Missing import added
 
-const OrderSummary = ({ CART_ITEMS, IS_LOADING }) => (
-	<div className="w-full lg:w-2/3 bg-white p-6">
+const OrderSummary = ({ CART_SUMMARY, IS_LOADING }) => (
+	<div className="w-full max-h-[80%] lg:w-2/3 bg-white p-6">
 		<h2 className="text-xl font-semibold mb-6">Order Summary</h2>
 
 		{/* Scrollable List Container */}
@@ -19,18 +19,9 @@ const OrderSummary = ({ CART_ITEMS, IS_LOADING }) => (
 				) : (
 					<ListOptions
 						EMPTY_MESSAGE="No products found in your cart!"
-						OPTIONS={CART_ITEMS}
-						RENDER_ITEM={({ inventory, _id: cartId, ...rest }) => {
-							const { _id: productId,category, ...filteredInventory } = inventory;
-							return (
-								<CartCard
-									{...filteredInventory}
-									{...rest}
-									cartId={cartId}
-									productId={productId}
-									showButtons={false}
-								/>
-							);
+						OPTIONS={CART_SUMMARY}
+						RENDER_ITEM={(item) => {
+							return <CartCard {...item} showButtons={false} />;
 						}}
 					/>
 				)}
@@ -38,13 +29,12 @@ const OrderSummary = ({ CART_ITEMS, IS_LOADING }) => (
 		</div>
 
 		{/* Edit Cart Link */}
-		<div className="mt-6 flex justify-center text-sm text-gray-500">
-			<Link to="/cart">
-				<button
-					type="button"
-					className="font-medium text-blue-500 hover:text-blue-950 ml-1">
-					Edit The Cart <span aria-hidden="true">&rarr;</span>
-				</button>
+		<div className="mb-3  flex justify-center text-sm text-gray-500">
+			<Link
+				to="/cart"
+				type="button"
+				className="font-medium text-blue-500 hover:text-blue-950 ">
+				Edit The Cart <span aria-hidden="true">&rarr;</span>
 			</Link>
 		</div>
 	</div>
@@ -52,7 +42,7 @@ const OrderSummary = ({ CART_ITEMS, IS_LOADING }) => (
 
 // PropTypes Validation
 OrderSummary.propTypes = {
-	CART_ITEMS: PropTypes.array.isRequired,
+	CART_SUMMARY: PropTypes.array.isRequired,
 	IS_LOADING: PropTypes.bool.isRequired,
 };
 

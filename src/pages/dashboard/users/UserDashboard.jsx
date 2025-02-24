@@ -1,13 +1,13 @@
 import React from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { useGetOrderByEmailQuery } from '../../../redux/features/orders/ordersApi';
+import { useGetOrderByEmailQuery } from '../../../redux/store';
 
 const UserDashboard = () => {
     const { currentUser } = useAuth();
     const { data: orders = [], isLoading, isError } = useGetOrderByEmailQuery(currentUser?.email);
 
     if (isLoading) return <div>Loading...</div>;
-    if (isError) return <div>Error getting orders data</div>;
+    if (isError) return <div>Error getting orders data</div>; 
 
     return (
         <div className=" bg-gray-100 py-16">

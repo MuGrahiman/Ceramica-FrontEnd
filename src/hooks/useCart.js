@@ -11,7 +11,7 @@ import useToast from "./useToast";
 
 /**
  * Custom hook to manage cart operations.
- * Handles fetching cart items, adding/removing items, updating quantities, and calculating subtotal.
+ * Handles fetching cart items, adding/removing items, updating quantities, and calculating subTotal.
  */
 export const useCart = () => {
     const navigate = useNavigate();
@@ -19,7 +19,7 @@ export const useCart = () => {
     const showToast = useToast();
     const [cartItems, setCartItems] = useState(null);
     const [activeCartId, setActiveCartId] = useState(null);
-    const [subtotal, setSubtotal] = useState(0);
+    const [subTotal, setSubTotal] = useState(0);
 
     const resetActiveCartId = () => setActiveCartId(null);
 
@@ -43,12 +43,12 @@ export const useCart = () => {
         }
     }, [data, fetchError, showToast]);
 
-    // Calculate subtotal whenever cart items change
+    // Calculate subTotal whenever cart items change
     useEffect(() => {
         const total = cartItems ? cartItems.reduce((acc, item) => {
             return acc + item.inventory.price * item.quantity;
         }, 0) : 0;
-        setSubtotal(total);
+        setSubTotal(total);
     }, [cartItems]);
 
     /**
@@ -154,7 +154,7 @@ export const useCart = () => {
     return {
         isAuthorized,
         cartItems,
-        subtotal,
+        subTotal,
         activeCartId,
         addToCart,
         updateCartQuantity,

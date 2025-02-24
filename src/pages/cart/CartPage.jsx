@@ -9,7 +9,7 @@ import CartList from "./CartList";
  * Component to display the cart page.
  */
 const CartPage = () => {
-	const { cartItems, subtotal, isFetching, isRemoving, isUpdating } = useCart();
+	const { cartItems, subTotal, isFetching, isRemoving, isUpdating } = useCart();
 
 	return isFetching ? (
 		<div className="container min-h-screen text-center">
@@ -22,7 +22,7 @@ const CartPage = () => {
 				<CartList CART_ITEMS={cartItems} />
 			</div>
 			<CartSummary
-				subtotal={subtotal}
+				subtotal={subTotal}
 				isLoading={isRemoving || isUpdating || isFetching}
 			/>
 		</div>

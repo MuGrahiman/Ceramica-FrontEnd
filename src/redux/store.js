@@ -10,6 +10,8 @@ import inventoryApi from "./features/inventory/inventoryApi.js";
 import wishListApi from "./features/wishlist/wishListApi.js";
 import cartApi from "./features/cart/cartApi.js";
 import addressApi from "./features/address/addressApi.js";
+import stripeApi from "./features/stripe/stripeApi.js";
+import orderApi from "./features/order/orderApi";
 
 export const store = configureStore( {
 	reducer: {
@@ -18,22 +20,26 @@ export const store = configureStore( {
 		[ usersApi.reducerPath ]: usersApi.reducer,
 		[ otpApi.reducerPath ]: otpApi.reducer,
 		[ booksApi.reducerPath ]: booksApi.reducer,
+		[ ordersApi.reducerPath ]: ordersApi.reducer,
 		[ inventoryApi.reducerPath ]: inventoryApi.reducer,
 		[ wishListApi.reducerPath ]: wishListApi.reducer,
 		[ cartApi.reducerPath ]: cartApi.reducer,
 		[ addressApi.reducerPath ]: addressApi.reducer,
-		[ ordersApi.reducerPath ]: ordersApi.reducer,
+		[ stripeApi.reducerPath ]: stripeApi.reducer,
+		[ orderApi.reducerPath ]: orderApi.reducer,
 	},
 	middleware: ( getDefaultMiddleware ) =>
 		getDefaultMiddleware().concat(
 			usersApi.middleware,
 			otpApi.middleware,
 			booksApi.middleware,
+			ordersApi.middleware,
 			inventoryApi.middleware,
 			wishListApi.middleware,
-			cartApi.middleware, 
+			cartApi.middleware,
 			addressApi.middleware,
-			ordersApi.middleware,
+			stripeApi.middleware,
+			orderApi.middleware,
 		),
 } );
 
@@ -47,4 +53,6 @@ export * from "./features/wishlist/wishListApi.js";
 export * from "./features/cart/cartApi.js";
 export * from "./features/address/addressApi.js";
 export * from "./features/orders/ordersApi";
+export * from "./features/stripe/stripeApi.js";
 export * from "./features/users/userSlice";
+export * from "./features/order/orderApi";

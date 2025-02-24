@@ -5,6 +5,7 @@ import AddressForm from "../address/AddressForm";
 import AddressList from "../address/AddressList";
 import useAddress from "../../hooks/useAddress";
 import { useCart } from "../../hooks/useCart";
+import { handleIteration } from "../../utils/generals";
 
 const CheckOutPage = () => {
 	const {
@@ -18,11 +19,20 @@ const CheckOutPage = () => {
 		isLoading,
 		onSelection,
 	} = useAddress();
-	const { cartItems, subtotal, isFetching, isRemoving, isUpdating } = useCart();
+
+	const { cartItems, subTotal, isFetching, isRemoving, isUpdating } = useCart();
+
+	const renderItem = (item) => ({
+		quantity: item.quantity,
+		productId: item.inventory?._id || null, // Use optional chaining and default to null
+		coverImage: item.inventory?.coverImage || "", // Default to empty string if not available
+		price: item.inventory?.price || 0, // Default to 0 if not available
+		title: item.inventory?.title || "Unknown Title", // Default to 'Unknown Title'
+	});
+	const summaryOfCartItems = handleIteration(cartItems, renderItem);
 
 	return (
 		<div className="container mx-auto p-8">
-			{/* Address Section: Allows users to enter a new address or select an existing one */}
 			<section className="flex flex-col-reverse md:flex-row gap-8 mb-8 md:max-h-[60rem] lg:max-h-[32rem]">
 				<AddressForm
 					key={addressId}
@@ -44,10 +54,15 @@ const CheckOutPage = () => {
 
 			<section className="flex flex-col lg:flex-row gap-8 max-h-screen">
 				<OrderSummary
-					CART_ITEMS={cartItems}
+					CART_SUMMARY={summaryOfCartItems}
 					IS_LOADING={isFetching || isRemoving || isUpdating}
 				/>
-				<PaymentOptions SUB_TOTAL={subtotal}/>
+				<PaymentOptions
+					subTotal={subTotal}
+					cartSummary={summaryOfCartItems}
+					addressId={addressId}
+					isLoading={isFetching || isRemoving || isUpdating}
+				/>
 			</section>
 		</div>
 	);

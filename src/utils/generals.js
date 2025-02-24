@@ -30,11 +30,11 @@ export const KeyFn = ( data ) => data._id;
  * Iterates over options and renders them using the provided render function.
  *
  * @param {Array<any>} options - An array of options to iterate over.
- * @param {Function} render - A function to render each option.
- * @returns {JSX.Element|string} - The rendered options or a message if none are available.
+ * @param {Function} render - A function that takes an option and returns a rendered element.
+ * @returns {Array<JSX.Element>} - An array of rendered options or an empty array if no options are available.
  */
-export const handleIteration = ( options, render ) => {
-    return options.length > 0 ? options.map( render ) : 'No options available.';
+export const handleIteration = (options, render) => {
+    return options && options.length > 0 ? options.map(render) : [];
 };
 
 /**
