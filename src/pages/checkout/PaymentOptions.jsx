@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import PayPal from "./PayPal";
 import { useCapturePaymentMutation, useCreateOrderMutation } from "../../redux/store";
 import useToast from "../../hooks/useToast";
+import { useCart } from "../../hooks/useCart";
 
 const PaymentOptions = ({
 	subTotal = 0,
@@ -14,6 +15,7 @@ const PaymentOptions = ({
 	const [createPayPalOrder] = useCreateOrderMutation();
 	const [capturePayment] = useCapturePaymentMutation();
 	const showToast = useToast();
+	const { handleClearCart, isClearing } = useCart();
 
 	// Called when PayPal button is clicked
 	const createOrder = async () => {
@@ -55,6 +57,7 @@ const PaymentOptions = ({
 			const response = await capturePayment(data).unwrap();
 			if (response.paymentStatus === "Completed") {
 				showToast(`Payment ${response.paymentStatus}`, "success");
+				await handleClearCart()
 			} else {
 				showToast(`Payment ${response.paymentStatus}`, "error");
 			}
