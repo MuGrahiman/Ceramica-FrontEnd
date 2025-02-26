@@ -1,10 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import PayPal from "./PayPal";
-import { useCapturePaymentMutation, useCreateOrderMutation } from "../../redux/store";
+import {
+	addPayment,
+	useCapturePaymentMutation,
+	useCreateOrderMutation,
+} from "../../redux/store";
 import useToast from "../../hooks/useToast";
 import { useCart } from "../../hooks/useCart";
+import { useDispatch } from "react-redux";
 
 const PaymentOptions = ({
 	subTotal = 0,
@@ -15,6 +20,8 @@ const PaymentOptions = ({
 	const [createPayPalOrder] = useCreateOrderMutation();
 	const [capturePayment] = useCapturePaymentMutation();
 	const showToast = useToast();
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const { handleClearCart, isClearing } = useCart();
 
 	// Called when PayPal button is clicked
@@ -41,8 +48,7 @@ const PaymentOptions = ({
 			}).unwrap();
 
 			// Returns orderID to PayPal SDK
-			const paymentIntentId = response.paymentId;
-			return paymentIntentId;
+			return response;
 		} catch (err) {
 			console.error("Failed to create order:", err);
 			showToast(err.message || "Failed to create order", "error");
@@ -55,11 +61,14 @@ const PaymentOptions = ({
 		try {
 			// Capture the approved payment
 			const response = await capturePayment(data).unwrap();
-			if (response.paymentStatus === "Completed") {
-				showToast(`Payment ${response.paymentStatus}`, "success");
-				await handleClearCart()
+			if (response.status === "Completed") {
+				showToast(`Payment ${response.status}`, "success");
+				console.log("🚀 ~ handlePayment ~ response:", response)
+				await handleClearCart();
+				dispatch(addPayment(response));
+				navigate("/success/" + response._id);
 			} else {
-				showToast(`Payment ${response.paymentStatus}`, "error");
+				showToast(`Payment ${response.status}`, "error");
 			}
 		} catch (err) {
 			console.error("Payment failed:", err);

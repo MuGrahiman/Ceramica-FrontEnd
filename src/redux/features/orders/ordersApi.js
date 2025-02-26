@@ -34,6 +34,19 @@ const orderApi = createApi( {
     } ),
 
     // Get an order by ID
+    getOrderPaymentById: builder.query( {
+      query: ( paymentId ) => ( {
+        url: `/payment/${ paymentId }`,
+        method: "GET",
+      } ),
+      providesTags: ( result, error, paymentId ) => [ { type: "Order", id: paymentId } ],
+    } ),
+
+
+
+
+
+    // Get an order by ID
     getOrderById: builder.query( {
       query: ( orderId ) => ( {
         url: `/get/${ orderId }`,
@@ -73,7 +86,10 @@ const orderApi = createApi( {
 // Export hooks for usage in components
 export const {
   useCreateOrderMutation,
-  useGetOrderByIdQuery,useCapturePaymentMutation,
+  useCapturePaymentMutation,
+  useGetOrderPaymentByIdQuery,
+  
+  useGetOrderByIdQuery, 
   useGetOrdersByUserQuery,
   useUpdateOrderStatusMutation,
 } = orderApi;
