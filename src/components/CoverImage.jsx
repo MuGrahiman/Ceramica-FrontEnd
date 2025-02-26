@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { FaHeart } from "react-icons/fa";
 import { ImSpinner9 } from "react-icons/im";
 import { useWishList } from "../hooks/useWishList";
+import MiniLoader from "./MiniLoader";
 
 const CoverImage = ({
 	IMAGE,
@@ -35,7 +36,7 @@ const CoverImage = ({
 					}`}
 					aria-label="Add to wishlist">
 					{isLoading ? (
-						<ImSpinner9 className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600" />
+						<MiniLoader />
 					) : (
 						<FaHeart
 							className={`${

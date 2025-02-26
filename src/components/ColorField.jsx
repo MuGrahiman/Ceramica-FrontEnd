@@ -2,6 +2,7 @@ import { IoMdAdd } from "react-icons/io";
 import ColorDisplay from "./ColorDisplay";
 import { ImSpinner9 } from "react-icons/im";
 import { useState } from "react";
+import MiniLoader from "./MiniLoader";
 
 const ColorField = ({
 	LABEL,
@@ -60,7 +61,7 @@ const ColorField = ({
 				/>
 				<span className="h-10 inline-flex items-center px-3 text-sm text-gray-900 cursor-pointer   dark:text-gray-400 dark:bg-gray-500 hover:dark:bg-gray-600 bg-gray-200 border  border-e-0 rounded-e-0  rounded-e border-gray-300 dark:border-gray-500 hover:dark:border-gray-600">
 					{COLOR_DATA.colorLoading ? (
-						<ImSpinner9 className="w-5 h-5 rotate animate-spin text-gray-700 dark:text-gray-600" />
+						<MiniLoader />
 					) : (
 						<IoMdAdd
 							onClick={handleAdding}

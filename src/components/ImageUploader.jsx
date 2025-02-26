@@ -1,6 +1,7 @@
 import React from "react";
 import { ImSpinner9 } from "react-icons/im";
 import { IoCloseSharp } from "react-icons/io5";
+import MiniLoader from "./MiniLoader";
 
 const ImageUploader = ({
 	HANDLE_FILE_REMOVE,
@@ -49,7 +50,7 @@ const ImageUploader = ({
 				className={`dark:bg-white text-sm flex flex-col justify-center items-center font-normal rounded-lg  w-full h-40 p-2.5 ${getDivClassName()}`}>
 				{IS_LOADING ? (
 					// <div className="w-full h-full flex justify-center items-center">
-					<ImSpinner9 className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600" />
+					<MiniLoader />
 				) : (
 					//{/* </div> */}
 					<>

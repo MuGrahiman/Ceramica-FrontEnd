@@ -6,8 +6,8 @@ import {
 	useVerifyOTPMutation,
 } from "../../redux/store";
 import { useNavigate, useParams } from "react-router-dom";
-import Loading from "../../components/Loading";
 import useToast from "../../hooks/useToast";
+import LoadingTemplate from "../../components/LoadingTemplate";
 
 // Constants
 const OTP_LENGTH = 4;
@@ -126,7 +126,7 @@ const OTP = () => {
 		}
 	};
 
-	if (isLoading) return <Loading />;
+	if (isLoading) return <LoadingTemplate />;
 
 	return (
 		<AuthLayout>

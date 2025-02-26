@@ -1,6 +1,7 @@
 import React from "react";
 import { useCart } from "../../hooks/useCart";
 import { ImSpinner9 } from "react-icons/im";
+import MiniLoader from "../../components/MiniLoader";
 
 const CartHeader = () => {
 	const { handleClearCart, isClearing } = useCart();
@@ -14,7 +15,7 @@ const CartHeader = () => {
 					onClick={handleClearCart}
 					className="relative -m-2 py-1 px-2 bg-red-500 text-white rounded-md hover:bg-secondary transition-all duration-200">
 					{isClearing ? (
-						<ImSpinner9 className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600" />
+						<MiniLoader/>
 					) : (
 						<span className="">Clear Cart</span>
 					)}

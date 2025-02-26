@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ImSpinner9 } from "react-icons/im";
 import PropTypes from "prop-types";
+import MiniLoader from "../../components/MiniLoader";
 
 /**
  * Component to display the cart summary.
@@ -17,7 +18,7 @@ const CartSummary = ({ subtotal, isLoading }) => {
 				<strong>
 					$
 					{isLoading ? (
-						<ImSpinner9 className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600" />
+						<MiniLoader />
 					) : (
 						subtotal
 					)}

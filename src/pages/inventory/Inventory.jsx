@@ -3,7 +3,7 @@ import { MdDelete, MdMode, MdOutlineAdd } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { ImEye, ImSpinner9 } from "react-icons/im";
 import Table from "../../components/Table";
-import Loading from "../../components/Loading";
+import LoadingTemplate from "../../components/LoadingTemplate";
 import SearchBar from "../../components/SearchBar";
 import FilterForm from "../../components/FilterForm";
 import useInventory from "../../hooks/useInventory";
@@ -11,6 +11,7 @@ import { KeyFn } from "../../utils/generals";
 import img from "../../assets/avatar.png";
 import Pagination from "../../components/Pagination";
 import Badge from "../../components/Badge";
+import MiniLoader from "../../components/MiniLoader";
 
 // Inventory Component
 const Inventory = () => {
@@ -84,9 +85,8 @@ const Inventory = () => {
 				const handleClick = () => handleStatus(inventory);
 
 				return patchLoading && patchId === inventory._id ? (
-					<ImSpinner9
-						className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600"
-						aria-label="Deleting item..."
+					<MiniLoader
+						
 					/>
 				) : (
 					<Badge
@@ -151,7 +151,7 @@ const Inventory = () => {
 	if (fetchLoading) {
 		return (
 			<div className="flex items-center justify-center h-screen">
-				<Loading message="Fetching inventory, please wait..." />
+				<LoadingTemplate message="Fetching inventory, please wait..." />
 			</div>
 		);
 	}

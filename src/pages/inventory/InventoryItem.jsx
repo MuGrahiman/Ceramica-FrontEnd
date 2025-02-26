@@ -2,10 +2,10 @@ import React from "react";
 import { useGetInventoryItemByIdQuery } from "../../redux/store";
 import { Link, useParams } from "react-router-dom";
 import ProductPanel from "../../components/ProductPanel";
-import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/BreadCrumb";
 import { getBreadCrumbItems } from "../../utils/inventory";
 import useInventory from "../../hooks/useInventory";
+import LoadingTemplate from "../../components/LoadingTemplate";
 
 const InventoryItem = () => {
 	const { id } = useParams();
@@ -19,7 +19,7 @@ const InventoryItem = () => {
 	if (fetchLoading) {
 		return (
 			<div className="flex items-center justify-center h-screen">
-				<Loading message="Fetching inventory, please wait..." />
+				<LoadingTemplate message="Fetching inventory, please wait..." />
 			</div>
 		);
 	}

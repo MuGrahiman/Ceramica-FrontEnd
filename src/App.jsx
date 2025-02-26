@@ -4,8 +4,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { AuthProvide } from "./context/AuthContext";
 import { useEffect, useState } from "react";
-import Loading from "./components/Loading";
 import Header from "./components/Header";
+import LoadingTemplate from "./components/LoadingTemplate";
 
 function App() {
 	const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ function App() {
 	if (loading) {
 		return (
 			<div className="container min-h-screen flex justify-center items-center">
-				<Loading />
+				<LoadingTemplate />
 			</div>
 		);
 	}

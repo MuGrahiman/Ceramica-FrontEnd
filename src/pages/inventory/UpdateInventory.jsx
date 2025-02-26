@@ -5,10 +5,10 @@ import {
 	useUpdateInventoryMutation,
 } from "../../redux/store";
 import useToast from "../../hooks/useToast";
-import Loading from "../../components/Loading";
 import InventoryForm from "./InventoryForm";
 import { createDefaultState } from "../../utils/generals";
 import { getBreadCrumbItems } from "../../utils/inventory";
+import LoadingTemplate from "../../components/LoadingTemplate";
 
 // Page Component: Handles updating a product in the inventory
 const UpdateInventory = () => {
@@ -79,7 +79,7 @@ const UpdateInventory = () => {
 	if (fetchLoading) {
 		return (
 			<div className="flex items-center justify-center h-screen">
-				<Loading message="Fetching inventory, please wait..." />
+				<LoadingTemplate message="Fetching inventory, please wait..." />
 			</div>
 		);
 	}

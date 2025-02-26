@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import ListOptions from "../../components/ListOptions";
 import AddressCard from "./AddressCard";
-import Loading from "../../components/Loading";
+import Skeleton from "../../components/Skeleton";
 
 const AddressList = ({
 	ADDRESS_LIST,
@@ -14,11 +14,12 @@ const AddressList = ({
 		<div className="w-full  md:w-1/2 lg:w-1/3 bg-white p-6   ">
 			<h2 className="text-xl font-semibold mb-6">Saved Addresses</h2>
 			{/* Address list container */}
+			{IS_LOADING ? (
+					<Skeleton />
+				) : (
 			<div className="max-h-[85%] flex md:flex-col gap-4 items-center justify-between overflow-x-auto md:overflow-y-scroll">
 				{/* Show loading indicator while fetching addresses */}
-				{IS_LOADING ? (
-					<Loading />
-				) : (
+				
 					<ListOptions
 						OPTIONS={ADDRESS_LIST}
 						EMPTY_MESSAGE="No Address Found"
@@ -33,8 +34,8 @@ const AddressList = ({
 							);
 						}}
 					/>
-				)}
 			</div>
+				)}
 		</div>
 	);
 };

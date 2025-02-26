@@ -4,10 +4,10 @@ import SelectField from '../addBook/SelectField'
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { useFetchBookByIdQuery, useUpdateBookMutation } from '../../../redux/features/books/booksApi';
-import Loading from '../../../components/Loading';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import getBaseUrl from '../../../utils/baseUrl';
+import LoadingTemplate from '../../../components/LoadingTemplate';
 
 const UpdateBook = () => {
   const { id } = useParams();
@@ -59,7 +59,7 @@ const UpdateBook = () => {
       alert("Failed to update book.");
     }
   }
-  if (isLoading) return <Loading />
+  if (isLoading) return <LoadingTemplate />
   if (isError) return <div>Error fetching book data</div>
   return (
     <div className="max-w-lg mx-auto md:p-6 p-3 bg-white rounded-lg shadow-md">

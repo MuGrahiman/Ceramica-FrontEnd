@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useCart } from "../../hooks/useCart";
-import Loading from "../../components/Loading";
+import Skeleton from "../../components/Skeleton";
 
 const CartCard = ({
 	title,
@@ -27,7 +27,7 @@ const CartCard = ({
 
 	// Show loading state if cart item is being updated/removed
 	if ((activeCartId === cartId && isRemoving) || isUpdating) {
-		return <Loading />;
+		return <Skeleton isSvg/>;
 	}
 
 	return (

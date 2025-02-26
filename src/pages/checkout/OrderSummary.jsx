@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import CartCard from "../cart/CartCard";
 import ListOptions from "../../components/ListOptions";
-import Loading from "../../components/Loading"; // Missing import added
+import Skeleton from "../../components/Skeleton";
 
 const OrderSummary = ({ CART_SUMMARY, IS_LOADING }) => (
 	<div className="w-full max-h-[80%] lg:w-2/3 bg-white p-6">
@@ -15,7 +15,7 @@ const OrderSummary = ({ CART_SUMMARY, IS_LOADING }) => (
 				role="list"
 				className="h-full divide-y divide-gray-200 p-6 overflow-y-auto">
 				{IS_LOADING ? (
-					<Loading />
+					<Skeleton isSvg />
 				) : (
 					<ListOptions
 						EMPTY_MESSAGE="No products found in your cart!"

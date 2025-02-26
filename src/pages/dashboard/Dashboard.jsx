@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import Loading from '../../components/Loading';
+import LoadingTemplate from '../../components/LoadingTemplate';
 import getBaseUrl from '../../utils/baseUrl';
 import { MdIncompleteCircle } from 'react-icons/md'
 import RevenueChart from './RevenueChart';
@@ -33,7 +33,7 @@ const Dashboard = () => {
 
     // console.log(data)
 
-    if(loading) return <Loading/>
+    if(loading) return <LoadingTemplate/>
 
   return (
     <>

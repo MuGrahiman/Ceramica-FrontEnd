@@ -1,9 +1,9 @@
 import React from "react";
 import { useCart } from "../../hooks/useCart";
 import CartSummary from "./CartSummary";
-import Loading from "../../components/Loading";
 import CartHeader from "./CartHeader";
 import CartList from "./CartList";
+import LoadingTemplate from "../../components/LoadingTemplate";
 
 /**
  * Component to display the cart page.
@@ -13,7 +13,7 @@ const CartPage = () => {
 
 	return isFetching ? (
 		<div className="container min-h-screen text-center">
-			<Loading />
+			<LoadingTemplate />
 		</div>
 	) : (
 		<div className="container mx-auto sm:px-4 py-6 flex mt-12 mb-12 h-full flex-col overflow-hidden bg-white shadow-xl">

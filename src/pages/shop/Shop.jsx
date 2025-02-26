@@ -8,7 +8,7 @@ import FilterForm from "../../components/FilterForm";
 import heroImage from "../../assets/ceramics/Gemini_Generated_Image_yzrj9syzrj9syzrj.jpeg";
 import useInventory from "../../hooks/useInventory";
 import Pagination from "../../components/Pagination";
-import Loading from "../../components/Loading";
+import LoadingTemplate from "../../components/LoadingTemplate";
 
 const Shop = () => {
 	const {
@@ -35,7 +35,7 @@ const Shop = () => {
 
 	const productList = fetchLoading ? (
 		<div className="flex items-center justify-center ">
-			<Loading message="Fetching inventory, please wait..." />
+			<LoadingTemplate message="Fetching inventory, please wait..." />
 		</div>
 	) : Array.isArray(data) && data.length > 0 ? (
 		data.map((product) => <ProductCard key={product._id} product={product} />)
