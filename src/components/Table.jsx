@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Pagination from "./Pagination";
+import ListOptions from "./ListOptions";
 
 /**
  * Table component that renders a data table with pagination.
@@ -16,6 +17,7 @@ import Pagination from "./Pagination";
 function Table({
 	DATA,
 	CONFIG,
+	onRowNavigate,
 	CURRENT_PAGE,
 	TOTAL_PAGES,
 	HANDLE_PAGE_CHANGE,
@@ -23,39 +25,45 @@ function Table({
 }) {
 	// Returns the class name for a table column based on visibility settings
 	const getClassName = (column) =>
-		`px-6 py-4 ${column.hide ? `hidden ${column.showValue()}` : ""}`;
+		`px-6 py-4  ${column.hide ? `hidden ${column.showValue()}` : ""}`;
 
 	return (
 		<div className="overflow-x-auto shadow-md mt-3 rounded-lg">
-			<table className="w-full text-sm text-left rtl:text-right dark:text-gray-600">
+			<table className="table-auto w-full text-sm text-left  rtl:text-right dark:text-gray-600">
 				<thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-					<tr className="border-b">
-						{CONFIG.map((column) => (
-							<th
-								key={column.label}
-								aria-hidden={column.hide || undefined}
-								className={getClassName(column)}>
-								{column.label}
-							</th>
-						))}
+					<tr className="border-b ">
+						<ListOptions
+							OPTIONS={CONFIG}
+							RENDER_ITEM={(column) => (
+								<th
+									key={column.label}
+									aria-hidden={column.hide || undefined}
+									className={getClassName(column)}>
+									{(column.header && column.header) || column.label}
+								</th>
+							)}
+						/>
 					</tr>
 				</thead>
 				<tbody>
-					{DATA &&
-						DATA.map((data) => (
+					<ListOptions
+						OPTIONS={DATA}
+						RENDER_ITEM={(data) => (
 							<tr
 								key={KEYFN(data)}
-								className="hover:bg-white even:bg-gray-300 odd:bg-gray-200 border-b">
+								className="hover:bg-white  cursor-pointer even:bg-gray-300 odd:bg-gray-200 border-b">
 								{CONFIG.map((column) => (
 									<td
 										key={column.label}
+										onClick={() => onRowNavigate(data)}
 										aria-hidden={column.hide || undefined}
 										className={getClassName(column)}>
 										{column.render(data)}
 									</td>
 								))}
 							</tr>
-						))}
+						)}
+					/>
 				</tbody>
 			</table>
 		</div>
@@ -77,6 +85,7 @@ Table.propTypes = {
 	TOTAL_PAGES: PropTypes.number.isRequired,
 	HANDLE_PAGE_CHANGE: PropTypes.func.isRequired,
 	KEYFN: PropTypes.func.isRequired,
+	onRowNavigate: PropTypes.func.isRequired,
 };
 
 export default Table;

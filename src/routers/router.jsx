@@ -31,6 +31,10 @@ import Shop from "../pages/shop/Shop";
 import CartPage from "../pages/cart/CartPage";
 import CheckOutPage from "../pages/checkout/CheckOutPage";
 import SuccessPaymentPage from "../pages/success/SuccessPaymentPage";
+import Coupon from "../pages/coupon/Coupon";
+import CreateCoupon from "../pages/coupon/CreateCoupon";
+import ViewCoupon from "../pages/coupon/ViewCoupon";
+import UpdateCoupon from "../pages/coupon/UpdateCoupon";
 
 const router = createBrowserRouter([
 	{
@@ -160,6 +164,38 @@ const router = createBrowserRouter([
 				element: (
 					<AdminRoute>
 						<InventoryItem />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "coupon",
+				element: (
+					<AdminRoute>
+						<Coupon />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "create-coupon",
+				element: (
+					<AdminRoute>
+						<CreateCoupon />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "view-coupon/:id",
+				element: (
+					<AdminRoute>
+						<ViewCoupon />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "update-coupon/:id",
+				element: (
+					<AdminRoute>
+						<UpdateCoupon />
 					</AdminRoute>
 				),
 			},

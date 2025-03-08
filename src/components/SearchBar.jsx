@@ -22,9 +22,10 @@ const SearchBar = ({ ON_SUBMIT, CLEAR_SEARCH, INPUT_STYLE, BUTTON_STYLE }) => {
 
 				<button
 					type="submit"
-					className={`absolute top-0 end-0 ${BUTTON_STYLE}`}>
+					className={`absolute top-0 end-0 font-serif px-8 ${BUTTON_STYLE}`}>
+					<p className="hidden md:block lg:mx-2">	Search </p>
 					<svg
-						className="w-4 h-4"
+						className="w-4 h-4 md:hidden"
 						aria-hidden="true"
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"

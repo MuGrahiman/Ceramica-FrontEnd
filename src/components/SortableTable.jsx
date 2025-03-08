@@ -2,70 +2,49 @@ import React from "react";
 import Table from "./Table";
 import { GoChevronDown, GoChevronUp } from "react-icons/go";
 import useSort from "../hooks/useSort";
+import SortIcons from "./SetIcons";
 
 function SortableTable(props) {
-  const { config, datas } = props;
-  const {sortColumn,sortBy,sortedData,orderBy} = useSort(datas,config)
+	const config = props.config || [],
+		datas = props.data || [];
 
+	const { sortColumn, sortBy, sortedData, orderBy } = useSort(datas, config);
+	const updateConfig = config.map((column) => {
+		if (!column.sortValue) {
+			return column;
+		}
+		return {
+			...column,
+			header: () => (
+				// <th
+				//           scope="col" className="px-6 py-3"
 
-  const updateConfig = config.map((column) => {
-    if (!column.sortValue) {
-      return column;
-    }
-    return {
-      ...column,
-      header: () => (
-        // <th
-        //           scope="col" className="px-6 py-3"
-              
-        // >
-          <div className="flex items-center"      onClick={() => {
-            sortColumn(column.label);
-          }}>
-            {column.label}
-            {getIcons(column.label, sortBy, orderBy)}
-          </div>
-        // </th>
-      ),
-    };
-  });
-  
-  return (
-    <div>
-      {orderBy}-{sortBy}
-      <Table {...props} datas={datas} config={config} />
-    </div>
-  );
+				// >
+				<div
+					className="flex items-center"
+					onClick={() => {
+						sortColumn(column.label);
+					}}>
+					{column.label}
+					<SortIcons label={column.label} order={orderBy} sort={sortBy} />
+				</div>
+				// </th>
+			),
+		};
+	});
+
+	return (
+		<div>
+			<h1>sortable table</h1>
+			{orderBy}-{sortBy}
+			<Table
+				{...props}
+				CONFIG={updateConfig}
+				DATA={sortedData}
+				KEYFN={(data) => data.now}
+			/>
+		</div>
+	);
 }
 
-function getIcons(label, sort, order) {
-  if (label !== sort) {
-    return (
-      <div className="border">
-        <GoChevronUp />
-        <GoChevronDown />
-      </div>
-    );
-  }
-  if (order === null) {
-    return (
-      <div className="cursor-pointer hover:bg-green-100 border">
-        <GoChevronUp />
-        <GoChevronDown />
-      </div>
-    );
-  } else if (order === "ASC") {
-    return (
-      <div className="cursor-pointer hover:bg-green-100 border">
-        <GoChevronUp />
-      </div>
-    );
-  } else if (order === "DSC") {
-    return (
-      <div className="cursor-pointer hover:bg-green-100 border">
-        <GoChevronDown />
-      </div>
-    );
-  }
-}
 export default SortableTable;

@@ -80,7 +80,7 @@ const ProductPanel = ({
 	return (
 		<div className="w-full md:flex p-6 gap-6">
 			{/* Left Side: Images Showcase */}
-			<div className="w-1/2 mb-4">
+			<div className="md:w-1/2 mb-4">
 				<div className="mb-4">
 					<CoverImage
 						ITEM_ID={productId}

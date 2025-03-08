@@ -4,7 +4,7 @@ import { useAddToInventoryMutation } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import useToast from "../../hooks/useToast";
 import { createDefaultState } from "../../utils/generals";
-import { getBreadCrumbItems } from "../../utils/inventory";
+import { INVENTORY_BREAD_CRUMB_ITEMS } from "../../constants/inventory";
 
 // Page Component: Handles adding a product to the inventory
 const AddToInventory = () => {
@@ -70,7 +70,7 @@ const AddToInventory = () => {
 		<InventoryForm
 			LOADING={isLoading}
 			ON_SUBMIT={handleSubmit}
-			BREAD_CRUMB_ITEMS={getBreadCrumbItems(Title)}
+			BREAD_CRUMB_ITEMS={INVENTORY_BREAD_CRUMB_ITEMS(Title)}
 			TITLE={Title}
 			DEFAULT_VALUES={defaultValues}
 			DEFAULT_SUCCESS_VALUE={defaultSuccessValue}

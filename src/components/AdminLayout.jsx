@@ -30,8 +30,8 @@ const navigationItems = [
 		icon: <MdOutlineInventory className="h-6 w-6" />,
 	},
 	{
-		label: "Category",
-		path: "/dashboard/manage-books",
+		label: "Coupon",
+		path: "/dashboard/Coupon",
 		icon: <MdFormatListBulletedAdd className="h-6 w-6" />,
 	},
 	{

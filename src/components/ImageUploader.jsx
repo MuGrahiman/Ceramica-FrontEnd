@@ -37,12 +37,8 @@ const ImageUploader = ({
 	};
 	return (
 		<div className=" w-full">
-			<label
-				htmlFor={NAME}
-				className={`font-semibold ${getLabelClassName}`}
+					<label htmlFor={NAME} className={`font-semibold ${getLabelClassName()}`}>
 
-				// className={`block mb-2 text-sm font-bold ${getLabelClassName()}`}
-				>
 				{LABEL}
 			</label>
 

@@ -33,8 +33,8 @@ export const KeyFn = ( data ) => data._id;
  * @param {Function} render - A function that takes an option and returns a rendered element.
  * @returns {Array<JSX.Element>} - An array of rendered options or an empty array if no options are available.
  */
-export const handleIteration = (options, render) => {
-    return options && options.length > 0 ? options.map(render) : [];
+export const handleIteration = ( options, render ) => {
+    return options && options.length > 0 ? options.map( render ) : [];
 };
 
 /**
@@ -52,3 +52,4 @@ export const generateId = () => uuidv4();
  * @returns {string} - The trimmed string.
  */
 export const stringTrimmer = ( TEXT, LEN = 10 ) => TEXT.substring( 0, LEN );
+

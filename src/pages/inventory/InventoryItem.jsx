@@ -3,9 +3,9 @@ import { useGetInventoryItemByIdQuery } from "../../redux/store";
 import { Link, useParams } from "react-router-dom";
 import ProductPanel from "../../components/ProductPanel";
 import BreadCrumb from "../../components/BreadCrumb";
-import { getBreadCrumbItems } from "../../utils/inventory";
 import useInventory from "../../hooks/useInventory";
 import LoadingTemplate from "../../components/LoadingTemplate";
+import { INVENTORY_BREAD_CRUMB_ITEMS } from "../../constants/inventory";
 
 const InventoryItem = () => {
 	const { id } = useParams();
@@ -26,7 +26,7 @@ const InventoryItem = () => {
 	if (!data || !data) <div>{`Sorry couldn't find any product `}</div>;
 	return (
 		<main className="max-w-5xl  mx-auto ">
-			<BreadCrumb items={getBreadCrumbItems(data.title)} />
+			<BreadCrumb items={INVENTORY_BREAD_CRUMB_ITEMS(data.title)} />
 			<div className=" bg-white rounded-lg shadow-lg mt-4">
 				<ProductPanel
 					productId={data._id}

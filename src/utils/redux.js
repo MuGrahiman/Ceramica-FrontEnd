@@ -22,7 +22,6 @@ export const prepareHeaders = (headers) => {
         try {
             const { token } = JSON.parse(jsonValue);
             if (token) {
-                console.log("🚀 ~ prepareHeaders ~ token:", token);
                 headers.set("Authorization", `Bearer ${token}`);
             }
         } catch (error) {

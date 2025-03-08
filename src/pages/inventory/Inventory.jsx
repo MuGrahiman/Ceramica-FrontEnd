@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MdDelete, MdMode, MdOutlineAdd } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ImEye, ImSpinner9 } from "react-icons/im";
 import Table from "../../components/Table";
 import LoadingTemplate from "../../components/LoadingTemplate";
@@ -16,39 +16,40 @@ import MiniLoader from "../../components/MiniLoader";
 // Inventory Component
 const Inventory = () => {
 	const [isOpen, setIsOpen] = useState(false);
+	const navigate = useNavigate();
 
 	// Use custom hook to manage inventory data
 	const {
-        // Fetching data
-        fetchLoading,
-        fetchError,
-        data,
-        totalPages,
-        currentPage,
-        handlePage,
-    
-        // Deleting data
-        deleteLoading,
-        deleteError,
-        deleteSuccess,
-        handleDelete,
-    
-        // Patching data
-        patchId,
-        patchError,
-        patchSuccess,
-        handleStatus,
-        patchLoading,
-    
-        // Filters and search
-        handleFilter,
-        clearFilter,
-        handleSearch,
-        clearSearch,
-    
-        // Utility
-        id,
-    }= useInventory();
+		// Fetching data
+		fetchLoading,
+		fetchError,
+		data,
+		totalPages,
+		currentPage,
+		handlePage,
+
+		// Deleting data
+		deleteLoading,
+		deleteError,
+		deleteSuccess,
+		handleDelete,
+
+		// Patching data
+		patchId,
+		patchError,
+		patchSuccess,
+		handleStatus,
+		patchLoading,
+
+		// Filters and search
+		handleFilter,
+		clearFilter,
+		handleSearch,
+		clearSearch,
+
+		// Utility
+		id,
+	} = useInventory();
 	// Table headers configuration
 	const headers = [
 		{
@@ -85,14 +86,12 @@ const Inventory = () => {
 				const handleClick = () => handleStatus(inventory);
 
 				return patchLoading && patchId === inventory._id ? (
-					<MiniLoader
-						
-					/>
+					<MiniLoader />
 				) : (
 					<Badge
 						ON_CLICK={handleClick}
-						LABEL={inventory?.status }
-						STATUS={inventory?.status}
+						LABEL={inventory?.status}
+						STATUS={inventory?.status === "active" ? true : false}
 					/>
 				);
 			},
@@ -120,23 +119,23 @@ const Inventory = () => {
 				</Link>
 			),
 		},
-		// {
-		// 	label: "Delete",
-		// 	render: (inventory) =>
-		// 		deleteLoading && inventory._id === id ? (
-		// 			<ImSpinner9
-		// 				className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600"
-		// 				aria-label="Deleting item..."
-		// 			/>
-		// 		) : (
-		// 			<MdDelete
-		// 				id={inventory._id}
-		// 				onClick={() => handleDelete(inventory._id)}
-		// 				className="h-6 w-6 text-gray-500 cursor-pointer hover:text-red-700"
-		// 				aria-label={`Delete ${inventory.title}`}
-		// 			/>
-		// 		),
-		// },
+		{
+			label: "Delete",
+			render: (inventory) =>
+				deleteLoading && inventory._id === id ? (
+					<ImSpinner9
+						className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600"
+						aria-label="Deleting item..."
+					/>
+				) : (
+					<MdDelete
+						id={inventory._id}
+						onClick={() => handleDelete(inventory._id)}
+						className="h-6 w-6 text-gray-500 cursor-pointer hover:text-red-700"
+						aria-label={`Delete ${inventory.title}`}
+					/>
+				),
+		},
 	];
 
 	const onSubmit = (data) => {
@@ -214,6 +213,7 @@ const Inventory = () => {
 								TOTAL_PAGES={totalPages}
 								HANDLE_PAGE_CHANGE={handlePage}
 							/>
+
 							<Pagination
 								currentPage={currentPage}
 								totalPages={totalPages}

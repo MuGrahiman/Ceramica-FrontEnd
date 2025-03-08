@@ -34,5 +34,10 @@ export const SIZE_OPTIONS = [
  */
 export const STATUS_OPTIONS = [
     { value: 'active', label: "Active" },
-    { value: 'inactive', label: "In Active" },
+    { value: 'inActive', label: "In Active" },
 ];
+
+export const INVENTORY_BREAD_CRUMB_ITEMS = ( Title ) => [
+    { label: "Inventory", to: "/dashboard/inventory" },
+    { label: Title },
+]

@@ -1,0 +1,112 @@
+[
+    {
+        "title": "Coupon1",
+        "couponCode": "SAVE10",        
+        "startDate": "2025-03-01T00:00:00Z",
+        "expiryDate": "2025-12-31T23:59:59Z",
+        "minimumPrice": 50,
+        "discount": 10,
+        "limit": 100,
+        "appliedUsers": [],
+        "status": "ACTIVE"
+    },
+    {
+        "title": "Coupon2",
+        "couponCode": "SPRING20",        
+        "startDate": "2025-03-15T00:00:00Z",
+        "expiryDate": "2025-06-15T23:59:59Z",
+        "minimumPrice": 30,
+        "discount": 20,
+        "limit": 50,
+        "appliedUsers": [],
+        "status": "ACTIVE"
+    },
+    {
+        "title": "Coupon3",
+        "couponCode": "SUMMER15",        
+        "startDate": "2025-06-01T00:00:00Z",
+        "expiryDate": "2025-09-01T23:59:59Z",
+        "minimumPrice": 40,
+        "discount": 15,
+        "limit": 75,
+        "appliedUsers": [],
+        "status": "ACTIVE"
+    },
+    {
+        "title": "Coupon4",
+        "couponCode": "FALL25",        
+        "startDate": "2025-09-01T00:00:00Z",
+        "expiryDate": "2025-11-30T23:59:59Z",
+        "minimumPrice": 60,
+        "discount": 25,
+        "limit": 30,
+        "appliedUsers": [],
+        "status": "ACTIVE"
+    },
+    {
+        "title": "Coupon5",
+        "couponCode": "WINTER5",        
+        "startDate": "2025-12-01T00:00:00Z",
+        "expiryDate": "2025-12-31T23:59:59Z",
+        "minimumPrice": 20,
+        "discount": 5,
+        "limit": 200,
+        "appliedUsers": [],
+        "status": "ACTIVE"
+    },
+    {
+        "title": "Coupon6",
+        "couponCode": "NEWYEAR30",        
+        "startDate": "2025-01-01T00:00:00Z",
+        "expiryDate": "2025-01-31T23:59:59Z",
+        "minimumPrice": 70,
+        "discount": 30,
+        "limit": 20,
+        "appliedUsers": [],
+        "status": "ACTIVE"
+    },
+    {
+        "title": "Coupon7",
+        "couponCode": "FLASH50",        
+        "startDate": "2025-02-01T00:00:00Z",
+        "expiryDate": "2025-02-28T23:59:59Z",
+        "minimumPrice": 100,
+        "discount": 50,
+        "limit": 10,
+        "appliedUsers": [],
+        "status": "ACTIVE"
+    },
+    {
+        "title": "Coupon8",
+        "couponCode": "WEEKEND15",        
+        "startDate": "2025-03-07T00:00:00Z",
+        "expiryDate": "2025-03-08T23:59:59Z",
+        "minimumPrice": 25,
+        "discount": 15,
+        "limit": 150,
+        "appliedUsers": [],
+        "status": "ACTIVE"
+    },
+    {
+        "title": "Coupon9",
+        "couponCode": "BOGO50",        
+        "startDate": "2025-05-01T00:00:00Z",
+        "expiryDate": "2025-05-31T23:59:59Z",
+        "minimumPrice": 50,
+        "discount": 50,
+        "limit": 40,
+        "appliedUsers": [],
+        "status": "ACTIVE"
+    },
+    {
+        "title": "Coupon10",
+        "couponCode": "LOYALTY10",        
+        "startDate": "2025-04-01T00:00:00Z",
+        "expiryDate": "2025-04-30T23:59:59Z",
+        "minimumPrice": 10,
+        "discount": 10,
+        "limit": 500,
+        "appliedUsers": [],
+        "status": "ACTIVE"
+    }
+]
