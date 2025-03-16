@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Pagination from "./Pagination";
 import ListOptions from "./ListOptions";
 
 /**
@@ -15,9 +14,8 @@ import ListOptions from "./ListOptions";
  * @param {function} props.KEYFN - Function to generate keys for table rows.
  */
 function Table({
-	DATA,
+	DATA = [],
 	CONFIG,
-	onRowNavigate,
 	CURRENT_PAGE,
 	TOTAL_PAGES,
 	HANDLE_PAGE_CHANGE,
@@ -52,15 +50,17 @@ function Table({
 							<tr
 								key={KEYFN(data)}
 								className="hover:bg-white  cursor-pointer even:bg-gray-300 odd:bg-gray-200 border-b">
-								{CONFIG.map((column) => (
-									<td
-										key={column.label}
-										onClick={() => onRowNavigate(data)}
-										aria-hidden={column.hide || undefined}
-										className={getClassName(column)}>
-										{column.render(data)}
-									</td>
-								))}
+								<ListOptions
+									OPTIONS={CONFIG}
+									RENDER_ITEM={(column) => (
+										<td
+											key={column.label}
+											aria-hidden={column.hide || undefined}
+											className={getClassName(column)}>
+											{column.render(data)}
+										</td>
+									)}
+								/>
 							</tr>
 						)}
 					/>
@@ -85,7 +85,6 @@ Table.propTypes = {
 	TOTAL_PAGES: PropTypes.number.isRequired,
 	HANDLE_PAGE_CHANGE: PropTypes.func.isRequired,
 	KEYFN: PropTypes.func.isRequired,
-	onRowNavigate: PropTypes.func.isRequired,
 };
 
 export default Table;

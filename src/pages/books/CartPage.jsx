@@ -16,7 +16,7 @@ const CartPage = () => {
         // dispatch(removeFromCart(product))
     }
 
-    const handleClearCart  = () => {
+    const clearCart  = () => {
         // dispatch(clearCart())
     }
     return (
@@ -28,7 +28,7 @@ const CartPage = () => {
                         <div className="ml-3 flex h-7 items-center ">
                             <button
                                 type="button"
-                                onClick={handleClearCart }
+                                onClick={clearCart }
                                 className="relative -m-2 py-1 px-2 bg-red-500 text-white rounded-md hover:bg-secondary transition-all duration-200  "
                             >
                                 <span className="">Clear Cart</span>

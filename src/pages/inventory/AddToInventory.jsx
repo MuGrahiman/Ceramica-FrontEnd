@@ -1,19 +1,20 @@
 import React from "react";
 import InventoryForm from "./InventoryForm";
 import { useAddToInventoryMutation } from "../../redux/store";
-import { useNavigate } from "react-router-dom";
-import useToast from "../../hooks/useToast";
 import { createDefaultState } from "../../utils/generals";
-import { INVENTORY_BREAD_CRUMB_ITEMS } from "../../constants/inventory";
+import {
+	INVENTORY_BREAD_CRUMB_ITEMS,
+	INVENTORY_URL,
+} from "../../constants/inventory";
+import useApiHandler from "../../hooks/useApiHandler";
 
 // Page Component: Handles adding a product to the inventory
 const AddToInventory = () => {
-	const showToast = useToast();
-	const navigate = useNavigate();
-	const [addToInventory, { isLoading }] = useAddToInventoryMutation();
+    const [ handleMutation ] = useApiHandler();
+	const [addToInventory, { isLoading }] = handleMutation(useAddToInventoryMutation);
 
 	const Title = "Add To Inventory";
-	
+
 	// Default values for the form
 	const defaultValues = {
 		file: null,
@@ -56,15 +57,12 @@ const AddToInventory = () => {
 	const handleSubmit = async (formData) => {
 		const { image, images, colorInput, file, files, ...rest } = formData;
 		const newData = { ...rest, coverImage: file, images: files };
-
-		try {
-			await addToInventory(newData).unwrap();
-			showToast("Product added to inventory successfully", "success");
-			navigate("/dashboard/inventory");
-		} catch (error) {
-			showToast("Failed to add product. Please try again.", "error");
-			console.error("Error adding product:", error);
-		}
+		await addToInventory( newData, {
+			onSuccess:()=> "Product added to inventory successfully",
+			onError: (err) =>
+				err.message || "Failed to add product. Please try again.",
+			redirectPath: INVENTORY_URL,
+		});
 	};
 	return (
 		<InventoryForm

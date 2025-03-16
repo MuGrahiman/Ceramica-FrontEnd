@@ -6,12 +6,12 @@ import { getImgUrl } from '../../utils/getImgUrl';
 import { useDispatch } from 'react-redux';
 // import { addToCart } from '../../redux/features/cart/cartSlice';
 import { useFetchBookByIdQuery } from '../../redux/features/books/booksApi';
+import { getDate } from '../../utils/date';
 
 const SingleBook = () => {
     const {id} = useParams();
     const {data: book, isLoading, isError} = useFetchBookByIdQuery(id);
 
-    const dispatch =  useDispatch();
 
     const handleAddToCart = (product) => {
         // dispatch(addToCart(product))
@@ -35,7 +35,7 @@ const SingleBook = () => {
                 <div className='mb-5'>
                     <p className="text-gray-700 mb-2"><strong>Author:</strong> {book.author || 'admin'}</p>
                     <p className="text-gray-700 mb-4">
-                        <strong>Published:</strong> {new Date(book?.createdAt).toLocaleDateString()}
+                        <strong>Published:</strong> {getDate(book?.createdAt).toLocaleDateString()}
                     </p>
                     <p className="text-gray-700 mb-4 capitalize">
                         <strong>Category:</strong> {book?.category}

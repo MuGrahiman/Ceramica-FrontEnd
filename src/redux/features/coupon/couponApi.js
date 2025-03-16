@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import getBaseUrl from "../../../utils/baseUrl";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { axiosBaseQuery } from "../../api/axiosBaseQuery";
 
 const baseQuery = axiosBaseQuery( {
@@ -11,15 +10,7 @@ const couponApi = createApi( {
     baseQuery,
     tagTypes: [ 'Coupon' ],
     endpoints: ( builder ) => ( {
-        createCoupon: ( builder.mutation )( {
-            query: ( couponData ) => ( {
-                url: "/create",
-                method: "POST",
-                body: couponData,
-                credentials: 'include',
-            } ),
-            invalidatesTags: [ "Coupon" ],
-        } ),
+
         getCoupons: builder.query( {
             query: ( searchTerm ) =>
             ( {
@@ -41,6 +32,24 @@ const couponApi = createApi( {
             } )
             ,
             providesTags: [ "Coupon" ],
+        } ),
+        checkCoupon: ( builder.mutation )( {
+            query: ( { couponCode, purchaseAmount } ) => ( {
+                url: `/check/${ couponCode }`,
+                method: "POST",
+                body: { purchaseAmount },
+                credentials: 'include',
+            } ),
+            invalidatesTags: [ "Coupon" ],
+        } ),
+        createCoupon: ( builder.mutation )( {
+            query: ( couponData ) => ( {
+                url: "/create",
+                method: "POST",
+                body: couponData,
+                credentials: 'include',
+            } ),
+            invalidatesTags: [ "Coupon" ],
         } ),
         updateCoupon: builder.mutation( {
             query: ( { couponId, couponData } ) => {
@@ -73,7 +82,6 @@ const couponApi = createApi( {
             query: ( couponId ) => ( {
                 url: `/delete/${ couponId }`,
                 method: "DELETE",
-                // body: { cartId },
             } ),
             invalidatesTags: [ "Coupon" ],
         } ),
@@ -81,9 +89,10 @@ const couponApi = createApi( {
 } )
 
 export const {
-    useCreateCouponMutation,
     useGetCouponsQuery,
-    useGetSingleCouponQuery,
+    useGetSingleCouponQuery, 
+    useCheckCouponMutation,
+    useCreateCouponMutation,
     useUpdateCouponMutation,
     useUpdateCouponStatusMutation,
     useDeleteCouponMutation

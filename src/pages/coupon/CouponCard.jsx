@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import Toggler from "../../components/Toggler";
 import useToggle from "../../hooks/useToggle";
 import { setDateAsDayMonthYear } from "../../utils/date";
-// import { format } from 'date-fns'; // Using date-fns for date formatting
 
 const CouponCard = ({ coupon }) => {
 	const {
@@ -17,6 +16,7 @@ const CouponCard = ({ coupon }) => {
 		description,
 		status,
 	} = coupon;
+	
 	const [toggle, isToggled] = useToggle();
 
 	return (

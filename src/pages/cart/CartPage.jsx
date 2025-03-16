@@ -4,12 +4,15 @@ import CartSummary from "./CartSummary";
 import CartHeader from "./CartHeader";
 import CartList from "./CartList";
 import LoadingTemplate from "../../components/LoadingTemplate";
+import { useSelector } from "react-redux";
 
 /**
  * Component to display the cart page.
  */
 const CartPage = () => {
-	const { cartItems, subTotal, isFetching, isRemoving, isUpdating } = useCart();
+		const subTotal = useSelector( ( state ) => state.order.subTotal );
+	
+	const { cartItems, isFetching, isRemoving, isUpdating } = useCart();
 
 	return isFetching ? (
 		<div className="container min-h-screen text-center">

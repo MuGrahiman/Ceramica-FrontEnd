@@ -1,43 +1,31 @@
 import React from "react";
-import {
-	useDeleteCouponMutation,
-	useGetInventoryItemByIdQuery,
-	useGetSingleCouponQuery,
-} from "../../redux/store";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import ProductPanel from "../../components/ProductPanel";
+import { Link, useParams } from "react-router-dom";
 import BreadCrumb from "../../components/BreadCrumb";
 import LoadingTemplate from "../../components/LoadingTemplate";
-import { COUPON_BREAD_CRUMB_ITEMS } from "../../constants/coupon";
+import { COUPON_BREAD_CRUMB_ITEMS, COUPON_URL } from "../../constants/coupon";
 import CouponCard from "./CouponCard";
 import CouponUsersList from "./CouponUsersList";
-import useToast from "../../hooks/useToast";
+import useCoupon from "../../hooks/useCoupon";
 
 const ViewCoupon = () => {
 	const { id } = useParams();
-	const showToast = useToast(); // Custom toast notification
-	const navigate = useNavigate();
+	const { useSingleCoupon, useDeleteCoupon } =
+		useCoupon();
 
-	const { data, isLoading: fetchLoading } = useGetSingleCouponQuery(id);
-	const [
-		deleteCoupon,
-		{
-			isLoading: deleteLoading,
-			isError: deleteError,
-			isSuccess: deleteSuccess,
-		},
-	] = useDeleteCouponMutation();
+	const { data, isLoading: fetchLoading } = useSingleCoupon(id);
+	const [deleteCoupon, { isLoading: isDeletingCoupon }] = useDeleteCoupon(id);
+
+	// const { deletdData, isLoading: isDeletingCoupon }
+	// const [deleteCoupon, { isLoading: deleteLoading }] =
+	// 	useDeleteCouponMutation();
 
 	const onDeleteCoupon = async () => {
-		try {
-			const res = await deleteCoupon(id).unwrap();
-			showToast(res.message, res.success ? "success" : "error");
-			navigate("/dashboard/coupon");
-		} catch (error) {
-			console.error(" onDeleteCoupon ~ error:", error);
-		} finally {
-			// setId(null);
-		}
+		await deleteCoupon(id, {
+			onSuccess: () => "Coupon delete successfully",
+			redirectPath: COUPON_URL,
+			onError: (error) =>
+				error.message || "Failed to delete coupon. Please try again.",
+		});
 	};
 
 	// Handle loading state
@@ -58,6 +46,7 @@ const ViewCoupon = () => {
 			</div>
 			<div className="flex gap-6 mt-4">
 				<button
+					disabled={isDeletingCoupon}
 					onClick={onDeleteCoupon}
 					aria-label={`Edit ${data.title}`}
 					className="w-full inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white font-semibold rounded-md shadow-lg hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-300 transition ease-in-out duration-200">

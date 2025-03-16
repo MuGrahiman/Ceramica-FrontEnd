@@ -4,7 +4,7 @@ import { ImSpinner9 } from "react-icons/im";
 import MiniLoader from "../../components/MiniLoader";
 
 const CartHeader = () => {
-	const { handleClearCart, isClearing } = useCart();
+	const { clearCart, isClearing } = useCart();
 
 	return (
 		<div className="flex items-start justify-between">
@@ -12,7 +12,7 @@ const CartHeader = () => {
 			<div className="ml-3 flex h-7 items-center">
 				<button
 					type="button"
-					onClick={handleClearCart}
+					onClick={clearCart}
 					className="relative -m-2 py-1 px-2 bg-red-500 text-white rounded-md hover:bg-secondary transition-all duration-200">
 					{isClearing ? (
 						<MiniLoader/>

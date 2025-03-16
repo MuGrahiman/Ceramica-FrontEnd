@@ -13,6 +13,8 @@ import addressApi from "./features/address/addressApi.js";
 import stripeApi from "./features/stripe/stripeApi.js";
 import orderApi from "./features/order/orderApi";
 import couponApi from "./features/coupon/couponApi";
+import couponReducer from "./features/coupon/couponSlice";
+import orderReducer from "./features/orders/orderSlice";
 import paymentReducer from "./features/payment/paymentSlice.js";
 
 export const store = configureStore( {
@@ -20,6 +22,8 @@ export const store = configureStore( {
 		// cart: cartReducer,
 		auth: userReducer,
 		payment: paymentReducer,
+		coupon: couponReducer,
+		order: orderReducer,
 		[ usersApi.reducerPath ]: usersApi.reducer,
 		[ otpApi.reducerPath ]: otpApi.reducer,
 		[ booksApi.reducerPath ]: booksApi.reducer,
@@ -61,5 +65,7 @@ export * from "./features/orders/ordersApi";
 export * from "./features/stripe/stripeApi.js";
 export * from "./features/payment/paymentSlice.js";
 export * from "./features/users/userSlice";
-export * from "./features/order/orderApi";
 export * from "./features/coupon/couponApi";
+export * from "./features/coupon/couponSlice";
+export * from "./features/order/orderApi";
+export * from "./features/orders/orderSlice";

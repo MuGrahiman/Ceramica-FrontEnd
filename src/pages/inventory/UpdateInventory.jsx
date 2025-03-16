@@ -1,23 +1,27 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
 	useGetInventoryItemByIdQuery,
 	useUpdateInventoryMutation,
 } from "../../redux/store";
-import useToast from "../../hooks/useToast";
 import InventoryForm from "./InventoryForm";
 import { createDefaultState } from "../../utils/generals";
 import LoadingTemplate from "../../components/LoadingTemplate";
-import { INVENTORY_BREAD_CRUMB_ITEMS } from "../../constants/inventory";
+import {
+	INVENTORY_BREAD_CRUMB_ITEMS,
+	INVENTORY_URL,
+} from "../../constants/inventory";
+import useApiHandler from "../../hooks/useApiHandler";
 
 // Page Component: Handles updating a product in the inventory
 const UpdateInventory = () => {
 	const { id } = useParams();
+	const [handleMutation, handleApiCall] = useApiHandler();
+
 	const { data, isLoading: fetchLoading } = useGetInventoryItemByIdQuery(id);
-	const [updateInventory, { isLoading: updateLoading }] =
-		useUpdateInventoryMutation();
-	const showToast = useToast();
-	const navigate = useNavigate();
+	const [updateInventory, { isLoading: updateLoading }] = handleMutation(
+		useUpdateInventoryMutation
+	);
 
 	// Define constant strings
 	const Title = "Update Inventory";
@@ -64,15 +68,15 @@ const UpdateInventory = () => {
 			coverImage: file,
 			images: files,
 		};
-
-		try {
-			await updateInventory({ id, newData }).unwrap();
-			showToast("Product updated successfully", "success");
-			navigate("/dashboard/inventory");
-		} catch (error) {
-			console.error(error);
-			showToast("Failed to update product. Please try again.", "error");
-		}
+		await updateInventory(
+			{ id, newData },
+			{
+				onSuccess: () => "Product updated successfully",
+				onError: (err) =>
+					err.message || "Failed to update product. Please try again.",
+				redirectPath: INVENTORY_URL,
+			}
+		);
 	};
 
 	// Handle loading state

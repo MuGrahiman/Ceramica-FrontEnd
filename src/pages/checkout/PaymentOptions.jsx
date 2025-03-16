@@ -5,24 +5,30 @@ import PayPal from "./PayPal";
 import {
 	addPayment,
 	useCapturePaymentMutation,
+	useCouponSlice,
 	useCreateOrderMutation,
+	useOrderSlice,
 } from "../../redux/store";
 import useToast from "../../hooks/useToast";
 import { useCart } from "../../hooks/useCart";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import ApplyCoupon from "./ApplyCoupon";
+import useCoupon from "../../hooks/useCoupon";
 
-const PaymentOptions = ({
-	subTotal = 0,
-	cartSummary = [],
-	addressId,
-	isLoading = false,
-}) => {
-	const [createPayPalOrder] = useCreateOrderMutation();
-	const [capturePayment] = useCapturePaymentMutation();
+const PaymentOptions = ({ cartSummary = [], addressId, isLoading = false }) => {
+	const subTotal = useSelector((state) => state.order.subTotal);
+	const appliedCoupon = useSelector((state) => state.coupon.appliedCoupon);
+
 	const showToast = useToast();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { handleClearCart, isClearing } = useCart();
+	const { clearCart } = useCart();
+	const { checkCoupon } = useCoupon();
+	const { removeCoupon } = useCouponSlice();
+	const { removeSubTotal } = useOrderSlice();
+
+	const [createPayPalOrder] = useCreateOrderMutation();
+	const [capturePayment] = useCapturePaymentMutation();
 
 	// Called when PayPal button is clicked
 	const createOrder = async () => {
@@ -44,6 +50,7 @@ const PaymentOptions = ({
 				items: cartSummary,
 				totalAmount: subTotal,
 				addressId: addressId,
+				couponId: appliedCoupon && appliedCoupon._id,
 				currency: "USD",
 			}).unwrap();
 
@@ -51,20 +58,24 @@ const PaymentOptions = ({
 			return response;
 		} catch (err) {
 			console.error("Failed to create order:", err);
-			showToast(err.message || "Failed to create order", "error");
+			showToast(
+				err?.data?.message || err?.message || "Failed to create order",
+				"error"
+			);
 			throw err;
 		}
 	};
 
 	// Called after user approves payment in PayPal modal
-	const handlePayment = async (data, actions) => {
+	const handlePayment = async (data) => {
 		try {
 			// Capture the approved payment
 			const response = await capturePayment(data).unwrap();
 			if (response.status === "Completed") {
 				showToast(`Payment ${response.status}`, "success");
-				console.log("🚀 ~ handlePayment ~ response:", response)
-				await handleClearCart();
+				await clearCart();
+				removeCoupon();
+				removeSubTotal();
 				dispatch(addPayment(response));
 				navigate("/success/" + response._id);
 			} else {
@@ -90,18 +101,7 @@ const PaymentOptions = ({
 					<p className="text-gray-700">Subtotal</p>
 					<p className="font-bold">${subTotal}</p>
 				</div>
-
-				<div className="flex flex-col sm:flex-row gap-2">
-					<input
-						type="text"
-						placeholder="Coupon Code"
-						className="w-full p-2 border rounded-md"
-						aria-label="Coupon Code"
-					/>
-					<button className="w-full sm:w-fit px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300">
-						Apply
-					</button>
-				</div>
+				<ApplyCoupon onSubmit={checkCoupon} />
 
 				<div className="md:col-span-5 pt-9 text-sm">
 					<div className="inline-flex items-center mb-3">
@@ -142,7 +142,6 @@ const PaymentOptions = ({
 
 // 🔹 PropTypes for the component
 PaymentOptions.propTypes = {
-	subTotal: PropTypes.number,
 	cartSummary: PropTypes.array,
 	addressId: PropTypes.string.isRequired,
 	isLoading: PropTypes.bool,

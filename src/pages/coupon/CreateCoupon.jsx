@@ -1,24 +1,17 @@
 import React from "react";
-//import InventoryForm from "./InventoryForm";
-import {
-	useCreateCouponMutation,
-} from "../../redux/store";
-import { useNavigate } from "react-router-dom";
-import useToast from "../../hooks/useToast";
 import { createDefaultState } from "../../utils/generals";
 import CouponForm from "./CouponForm";
 import {
 	COUPON_BREAD_CRUMB_ITEMS,
 	COUPON_FORM_FIELDS,
+	COUPON_URL,
 } from "../../constants/coupon";
+import useCoupon from "../../hooks/useCoupon";
 
-// Page Component: Handles adding a product to the inventory
 const CreateCoupon = () => {
-	const showToast = useToast();
-	const navigate = useNavigate();
-	const [createCoupon, { isLoading }] = useCreateCouponMutation();
-
 	const Title = "Create Coupon";
+	const { useCreateCoupon } = useCoupon();
+	const [createCoupon, { isLoading }] = useCreateCoupon();
 
 	// Default values for the form
 	const defaultValues = createDefaultState(COUPON_FORM_FIELDS, null);
@@ -28,15 +21,14 @@ const CreateCoupon = () => {
 
 	// Handles form submission and API call
 	const handleSubmit = async (formData) => {
-		try {
-			const data = await createCoupon(formData).unwrap();
-			showToast(" Coupon created successfully", "success");
-			navigate("/dashboard/coupon");
-		} catch (error) {
-			showToast("Failed to create coupon . Please try again.", "error");
-			console.error("Error adding product:", error);
-		}
+		await createCoupon(formData, {
+			onSuccess: () => "Coupon created successfully",
+			redirectPath: COUPON_URL,
+			onError: (error) =>
+				error.message || "Failed to create coupon. Please try again.",
+		});
 	};
+
 	return (
 		<CouponForm
 			LOADING={isLoading}

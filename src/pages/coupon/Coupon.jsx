@@ -1,82 +1,64 @@
 import React, { useState } from "react";
-import { MdDelete, MdMode, MdOutlineAdd } from "react-icons/md";
-import { Link, useNavigate } from "react-router-dom";
-import { ImEye, ImSpinner9 } from "react-icons/im";
+import { Link } from "react-router-dom";
+import { ImEye } from "react-icons/im";
 import Table from "../../components/Table";
 import LoadingTemplate from "../../components/LoadingTemplate";
 import SearchBar from "../../components/SearchBar";
-import FilterForm from "../../components/FilterForm";
-import useInventory from "../../hooks/useInventory";
-import { KeyFn } from "../../utils/generals";
-import img from "../../assets/avatar.png";
 import Pagination from "../../components/Pagination";
 import Badge from "../../components/Badge";
 import MiniLoader from "../../components/MiniLoader";
 import demoData from "../demo/DemoData.json";
 import useSortTable from "../../hooks/useSortTable";
 import SortIcons from "../../components/SetIcons";
-import {
-	useGetCouponsQuery,
-	useUpdateCouponStatusMutation,
-} from "../../redux/store";
 import usePagination from "../../hooks/usePagination";
+import useSearch from "../../hooks/useSearch";
+import useCoupon from "../../hooks/useCoupon";
 
-// Inventory Component
+// Coupon Component
 const Coupon = () => {
-	const navigate = useNavigate();
 	const [id, setId] = useState(null);
-    const [ search, setSearch ] = useState();
 
-	// Fetch inventory items
+	const { useGetCoupons, isUpdatingCouponStatus, useUpdateCouponStatus } =
+		useCoupon();
+
+	const { searchTerm, handleSearch, clearSearch } = useSearch();
+
+	// Fetch Coupon items
 	const {
 		data,
 		isLoading: fetchLoading,
 		error: fetchError,
-	} = useGetCouponsQuery(search);
-	const [
-		updateCouponStatus,
-		{ isLoading: patchLoading, isError: patchError, isSuccess: patchSuccess },
-	] = useUpdateCouponStatusMutation();
+	} = useGetCoupons(searchTerm);
+
+	const [updateCouponStatus, { isLoading: patchLoading }] =
+		useUpdateCouponStatus();
+
 	const handleCouponStatus = async (coupon) => {
 		const couponId = coupon._id;
 		setId(couponId);
 		const status = coupon.status === "active" ? "inActive" : "active";
-		try {
-			await updateCouponStatus({ couponId, couponData: { status } }).unwrap();
-		} catch (error) {
-			console.error("  handleCouponStatus ~ error:", error);
-		} finally {
-			setId(null);
-		}
+		await updateCouponStatus(
+			{ couponId, couponData: { status } },
+			{
+				onSuccess: () => "Coupon status has been successfully updated.",
+				onError: (err) =>
+					err.message ||
+					"Failed to update the coupon status. Please try again.",
+			}
+		);
+		setId(null);
 	};
-    const handleSearch = ( { searchTerm } ) => { setSearch( searchTerm ) }
-    const clearSearch = () => setSearch()
 
 	// Table headers configuration
 	const headers = [
 		{
-			// hide: true,
 			label: "Name",
 			render: (Coupon) => Coupon.title,
-			// showValue: () => "lg:table-cell",
 		},
 		{
-			// hide: true,
 			label: "Code",
 			render: (Coupon) => Coupon.couponCode,
-			// showValue: () => "lg:table-cell",
 		},
-		// {
-		// 	label: "Start Date",
-		// 	render: (Coupon) => Coupon.startDate,
-		// },
-		// {
-		// 	// hide: true,
-		// 	label: "Expiry Date",
-		// 	render: (Coupon) => Coupon.expiryDate,
-
-		// 	// showValue: () => "md:table-cell",
-		// },
 		{
 			hide: true,
 			label: "Minimum Price",
@@ -101,7 +83,7 @@ const Coupon = () => {
 		{
 			label: "Status",
 			render: (Coupon) => {
-				return patchLoading && id === Coupon._id ? (
+				return isUpdatingCouponStatus && id === Coupon._id && patchLoading ? (
 					<MiniLoader />
 				) : (
 					<Badge
@@ -113,47 +95,18 @@ const Coupon = () => {
 			},
 		},
 		{
-					label: "Details",
-					render: (Coupon) => (
-						<Link
-							to={`/dashboard/view-coupon/${Coupon._id}`}
-							aria-label={`Item ${Coupon.title}`}>
-							<ImEye
-								className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700"
-								aria-label="Details"
-							/>
-						</Link>
-					),
-				},
-				// {
-				// 	label: "Edit",
-				// 	render: (inventory) => (
-				// 		<Link
-				// 			to={`/dashboard/update-inventory/${inventory._id}`}
-				// 			aria-label={`Edit ${inventory.title}`}>
-				// 			<MdMode className="h-6 w-6 text-gray-500 cursor-pointer hover:text-gray-700" />
-				// 		</Link>
-				// 	),
-				// },
-				// {
-				// 	label: "Delete",
-				// 	render: (inventory) =>
-						// deleteLoading && inventory._id === id ? (
-						// 	<ImSpinner9
-						// 		className="w-6 h-6 rotate animate-spin text-gray-700 dark:text-gray-600"
-						// 		aria-label="Deleting item..."
-						// 	/>
-						// ) : 
-						// (
-						// 	<MdDelete
-						// 		id={inventory._id}
-						// 		// onClick={() => handleDelete(inventory._id)}
-						// 		className="h-6 w-6 text-gray-500 cursor-pointer hover:text-red-700"
-						// 		aria-label={`Delete ${inventory.title}`}
-						// 	/>
-						// ),
-				// },
-	
+			label: "Details",
+			render: (Coupon) => (
+				<Link
+					to={`/dashboard/view-coupon/${Coupon._id}`}
+					aria-label={`Item ${Coupon.title}`}>
+					<ImEye
+						className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700"
+						aria-label="Details"
+					/>
+				</Link>
+			),
+		},
 	];
 
 	const { updateConfig, sortedData } = useSortTable(data, headers);
@@ -161,11 +114,12 @@ const Coupon = () => {
 		sortedData,
 		5
 	);
+
 	// Handle loading state
 	if (fetchLoading) {
 		return (
 			<div className="flex items-center justify-center h-screen">
-				<LoadingTemplate message="Fetching inventory, please wait..." />
+				<LoadingTemplate message="Fetching Coupon, please wait..." />
 			</div>
 		);
 	}
@@ -174,7 +128,7 @@ const Coupon = () => {
 	if (fetchError) {
 		return (
 			<div className="text-center text-gray-500">
-				<p>Error fetching inventory. Please try again later.</p>
+				<p>Error fetching Coupon. Please try again later.</p>
 			</div>
 		);
 	}
@@ -186,14 +140,6 @@ const Coupon = () => {
 				<h2 className="text-4xl font-extrabold font-serif text-gray-700">
 					Coupons
 				</h2>
-				{/* <Link
-					to="/dashboard/add-to-inventory"
-					className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 
-					px-5 py-3 text-white bg-gray-600 hover:bg-gray-700 
-					rounded-md shadow-md">
-					<MdOutlineAdd className="h-6 w-6" />
-					Add To Inventory
-				</Link> */}
 			</div>
 
 			{/* Filter and Search Section */}
@@ -212,7 +158,7 @@ const Coupon = () => {
 				/>
 			</div>
 
-			{/* Inventory Table */}
+			{/* Coupon Table */}
 			<div className="relative mb-12 min-h-screen">
 				<div
 					className={`w-full shadow-lg transition-all duration-700 ease-in-out `}>
@@ -227,9 +173,6 @@ const Coupon = () => {
 										<SortIcons label={label} order={order} sort={sort} />
 									</div>
 								))}
-								// onRowNavigate={(data) =>
-								// 	navigate(`/dashboard/view-coupon/${data._id}`)
-								// }
 								DATA={currentItems}
 								KEYFN={(data) => data.now}
 							/>
@@ -239,27 +182,6 @@ const Coupon = () => {
 								onPageChange={handlePage}
 							/>
 						</>
-						////<Table
-						//DATA={sortedData}
-						//CONFIG={updateConfig(({ sortColumn, label, order, sort }) => (
-						//	<div
-						//		className="flex items-center"
-						//		onClick={() => sortColumn(label)}>
-						//</Table>		{/* {label} why */}
-						//</div>		<SortIcons label={label} order={order} sort={sort} />
-						//	</div>
-						// ))}
-						// KEYFN={KeyFn}
-						// CURRENT_PAGE={currentPage}
-						// TOTAL_PAGES={totalPages}
-						// HANDLE_PAGE_CHANGE={handlePage}
-						// />
-						/* <Pagination
-								currentPage={currentPage}
-								totalPages={totalPages}
-								onPageChange={handlePage}
-							/> */
-						// </>
 					)}
 				</div>
 			</div>

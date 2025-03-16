@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MdDelete, MdMode, MdOutlineAdd } from "react-icons/md";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ImEye, ImSpinner9 } from "react-icons/im";
 import Table from "../../components/Table";
 import LoadingTemplate from "../../components/LoadingTemplate";
@@ -12,11 +12,12 @@ import img from "../../assets/avatar.png";
 import Pagination from "../../components/Pagination";
 import Badge from "../../components/Badge";
 import MiniLoader from "../../components/MiniLoader";
+import useSearch from "../../hooks/useSearch";
 
 // Inventory Component
 const Inventory = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const navigate = useNavigate();
+	const { searchTerm, handleSearch, clearSearch } = useSearch();
 
 	// Use custom hook to manage inventory data
 	const {
@@ -30,26 +31,20 @@ const Inventory = () => {
 
 		// Deleting data
 		deleteLoading,
-		deleteError,
-		deleteSuccess,
 		handleDelete,
 
 		// Patching data
 		patchId,
-		patchError,
-		patchSuccess,
 		handleStatus,
 		patchLoading,
 
 		// Filters and search
 		handleFilter,
 		clearFilter,
-		handleSearch,
-		clearSearch,
 
 		// Utility
 		id,
-	} = useInventory();
+	} = useInventory(searchTerm);
 	// Table headers configuration
 	const headers = [
 		{

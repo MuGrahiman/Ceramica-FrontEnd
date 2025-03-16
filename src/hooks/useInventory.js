@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { useDeleteInventoryMutation, useGetInventoryItemsQuery, usePatchInventoryMutation } from '../redux/store';
-import useToast from './useToast';
-import { useNavigate } from 'react-router-dom';
+import {
+    useDeleteInventoryMutation,
+    useGetInventoryItemsQuery,
+    usePatchInventoryMutation
+} from '../redux/store';
+import useApiHandler from './useApiHandler';
+import { INVENTORY_URL } from '../constants/inventory';
 
 // Custom hook to manage inventory
-const useInventory = () => {
+const useInventory = ( searchTerm ) => {
     // State variables
     const [ currentPage, setCurrentPage ] = useState( 1 );
     const [ totalPages, setTotalPages ] = useState( 1 );
     const [ minPrice, setMinPrice ] = useState();
     const [ maxPrice, setMaxPrice ] = useState();
     const [ sort, setSort ] = useState();
-    const [ search, setSearch ] = useState();
     const [ category, setCategory ] = useState( [] );
     const [ size, setSize ] = useState( [] );
     const [ id, setId ] = useState( null );
@@ -20,7 +23,7 @@ const useInventory = () => {
     const [ patchId, setPatchId ] = useState( null );
 
     const limit = 6; // Items per page
-    const showToast = useToast(); // Custom toast notification
+    const [ handleMutation ] = useApiHandler();
 
     // Fetch inventory items
     const {
@@ -35,7 +38,7 @@ const useInventory = () => {
         sort,
         minPrice,
         maxPrice,
-        search
+        search: searchTerm
     } );
     // Mutation for deleting inventory item
     const [
@@ -43,13 +46,14 @@ const useInventory = () => {
         { isLoading: deleteLoading,
             isError: deleteError,
             isSuccess: deleteSuccess }
-    ] = useDeleteInventoryMutation();
+    ] = handleMutation( useDeleteInventoryMutation );
     const [
         patchInventory,
         { isLoading: patchLoading,
+            error,
             isError: patchError,
             isSuccess: patchSuccess }
-    ] = usePatchInventoryMutation();
+    ] = handleMutation( usePatchInventoryMutation );
 
     // Update inventory data when productData changes
     useEffect( () => {
@@ -62,9 +66,15 @@ const useInventory = () => {
 
     const handleStatus = async ( inventory ) => {
         setPatchId( inventory._id )
-        await patchInventory( { id: inventory._id, status: inventory?.status === 'active' ? 'inactive' : 'active' } )
+        await patchInventory(
+            { id: inventory._id, status: inventory?.status === 'active' ? 'inActive' : 'active' },
+            {
+                onSuccess: () => "inventory status updated successfully ",
+                onError: ( err ) => err.message || "Failed to update product. Please try again.",
+            }
+        );
+        setPatchId( null )
     }
-    const navigate = useNavigate();
 
     // Handles the deletion of an inventory item
     const handleDelete = async ( id ) => {
@@ -81,17 +91,12 @@ const useInventory = () => {
 
         if ( !result.isConfirmed ) return setId( null );
 
-        try {
-            const res = await deleteInventory( id ).unwrap();
-            showToast( res.message, res.success ? "success" : "error" );
-            navigate( "/dashboard/inventory" );
-
-        } catch ( err ) {
-            showToast( err?.data?.message || "Something went wrong", "error" );
-            console.error( "Delete inventory error:", err );
-        } finally {
-            setId( null );
-        }
+        await deleteInventory( id, {
+            onSuccess: () => "Product deleted successfully",
+            onError: ( err ) => err.message || "Failed to delete the product .Please try again",
+            redirectPath: INVENTORY_URL
+        } );
+        setId( null );
     };
 
     // Handle page changes
@@ -115,8 +120,6 @@ const useInventory = () => {
         setSort()
     }
 
-    const handleSearch = ( { searchTerm } ) => { setSearch( searchTerm ) }
-    const clearSearch = () => setSearch()
     // Return values and functions for use in components
     return {
         // Fetching data
@@ -143,8 +146,6 @@ const useInventory = () => {
         // Filters and search
         handleFilter,
         clearFilter,
-        handleSearch,
-        clearSearch,
 
         // Utility
         id,

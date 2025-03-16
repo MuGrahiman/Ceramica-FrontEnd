@@ -20,7 +20,7 @@ const CheckOutPage = () => {
 		onSelection,
 	} = useAddress();
 
-	const { cartItems, subTotal, isFetching, isRemoving, isUpdating } = useCart();
+	const { cartItems, isFetching, isRemoving, isUpdating } = useCart();
 
 	const renderItem = (item) => ({
 		quantity: item.quantity,
@@ -58,7 +58,6 @@ const CheckOutPage = () => {
 					IS_LOADING={isFetching || isRemoving || isUpdating}
 				/>
 				<PaymentOptions
-					subTotal={subTotal}
 					cartSummary={summaryOfCartItems}
 					addressId={addressId}
 					isLoading={isFetching || isRemoving || isUpdating}

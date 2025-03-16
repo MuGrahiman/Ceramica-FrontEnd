@@ -37,7 +37,8 @@ export const STATUS_OPTIONS = [
     { value: 'inActive', label: "In Active" },
 ];
 
+export const INVENTORY_URL = "/dashboard/inventory"
 export const INVENTORY_BREAD_CRUMB_ITEMS = ( Title ) => [
-    { label: "Inventory", to: "/dashboard/inventory" },
+    { label: "Inventory", to: INVENTORY_URL },
     { label: Title },
 ]

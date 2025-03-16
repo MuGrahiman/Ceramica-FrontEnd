@@ -63,15 +63,6 @@ export const removeFile = async ( publicId ) => {
         const timestamp = Math.floor( Date.now() / 1000 );
         const signature = generateSignature( apiSecret, timestamp, publicId );
 
-        // const response = await axios.post(
-        //     `https://api.cloudinary.com/v1_1/${ cloudName }/image/destroy`,
-        //     {
-        //         public_id: publicId,
-        //         api_key: apiKey,
-        //         timestamp: timestamp,
-        //         signature: signature,
-        //     }
-        // );
         const response = await cloudAxiosInstance.post(
             `/${ cloudName }/image/destroy`,
             {

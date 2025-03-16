@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useGetOrderByEmailQuery } from '../../../redux/store';
+import { getDate } from '../../../utils/date';
 
 const UserDashboard = () => {
     const { currentUser } = useAuth();
@@ -22,7 +23,7 @@ const UserDashboard = () => {
                             {orders.map((order) => (
                                 <li key={order._id} className="bg-gray-50 p-4 rounded-lg shadow-sm space-y-1">
                                     <p className="font-medium">Order ID: {order._id}</p>
-                                    <p>Date: {new Date(order?.createdAt).toLocaleDateString()}</p>
+                                    <p>Date: {getDate(order?.createdAt).toLocaleDateString()}</p>
                                     <p >Total: ${order.totalPrice}</p>
                                     {order.productIds.map((productId) => (
                                         <p key={productId} className='ml-1'>{productId}</p>

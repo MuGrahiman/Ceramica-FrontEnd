@@ -38,6 +38,7 @@ export const axiosBaseQuery =
                     alert( "Your session has expired. Please log in again." ); // Show toast notification
                     // window.location.href = '/login'; // Redirect to login page (optional)
                 }
+                // throw new Error(err.response?.data || err.message);
                 return {
                     error: {
                         status: err.response?.status,

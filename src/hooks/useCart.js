@@ -1,118 +1,128 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "./useAuth";
 import {
     useAddToCartMutation,
     useClearCartMutation,
     useGetCartItemsQuery,
+    useOrderSlice,
     useRemoveFromCartMutation,
     useUpdateCartMutation
 } from "../redux/store";
 import useToast from "./useToast";
 import { handleAndShowError } from "../utils/errorHandlers";
 import { TOAST_MESSAGES } from "../constants/cart";
+import useApiHandler from "./useApiHandler";
 
 /**
  * Custom hook to manage cart operations.
  * Handles fetching cart items, adding/removing items, updating quantities, and calculating subTotal.
  */
 export const useCart = () => {
-    const navigate = useNavigate();
-    const { isAuthorized } = useAuth( "client" );
+    const { isAuthorized, validateAuthentication } = useAuth( "client" );
     const showToast = useToast();
-    const [ cartItems, setCartItems ] = useState( null );
+    const [ handleMutation ] = useApiHandler()
+    const { addSubTotal } = useOrderSlice()
+    const [ cartItems, setCartItems ] = useState( [] );
     const [ activeCartId, setActiveCartId ] = useState( null );
-
     const resetActiveCartId = () => setActiveCartId( null );
+    const getTotal = () => cartItems.reduce( ( acc, item ) =>
+        acc + item.inventory.price * item.quantity, 0 );
 
     // Fetch cart items only if the user is authorized
-    const { data, error: fetchError, isLoading: isFetching } = useGetCartItemsQuery( null, { skip: !isAuthorized } );
+    const { data, error: fetchError, isLoading: isFetching } =
+        useGetCartItemsQuery( null, { skip: !isAuthorized } );
 
     // Define mutation hooks for cart operations
-    const [ addToCartMutation, { isLoading: isAdding } ] = useAddToCartMutation();
-    const [ updateCartMutation, { isLoading: isUpdating } ] = useUpdateCartMutation();
-    const [ removeFromCartMutation, { isLoading: isRemoving } ] = useRemoveFromCartMutation();
-    const [ clearCartMutation, { isLoading: isClearing } ] = useClearCartMutation();
+    const [ addToCartMutation, { isLoading: isAdding } ] = handleMutation( useAddToCartMutation );
+    const [ updateCartMutation, { isLoading: isUpdating } ] = handleMutation( useUpdateCartMutation );
+    const [ removeFromCartMutation, { isLoading: isRemoving } ] =
+        handleMutation( useRemoveFromCartMutation );
+    const [ clearCartMutation, { isLoading: isClearing } ] = handleMutation( useClearCartMutation );
 
     // Update cart items when data changes
     useEffect( () => {
         if ( fetchError ) {
-            handleAndShowError( fetchError, TOAST_MESSAGES.FETCH_CART_ERROR, showToast );
+            showToast( handleAndShowError( fetchError, TOAST_MESSAGES.FETCH_CART_ERROR, ), "error" );
         }
-        setCartItems( data?.length ? data : null );
+        setCartItems( data?.length ? data : [] );
     }, [ data, fetchError, showToast ] );
 
     // Calculate subTotal whenever cart items change
-    const subTotal = useMemo( () => {
-        return cartItems ? cartItems.reduce( ( acc, item ) => acc + item.inventory.price * item.quantity, 0 ) : 0;
+    useEffect( () => {
+        addSubTotal( getTotal() );
     }, [ cartItems ] );
 
-    const validateAuthentication = () => {
-        if ( !isAuthorized ) {
-            const message = "Please login to manage your cart."
+    /**
+     * Validate an ID.
+     * @param {string} id - The ID to validate.
+     * @throws {Error} If the ID is missing.
+     */
+    const validateId = ( id ) => {
+        if ( !id ) {
             resetActiveCartId();
-            navigate( "/login" );
-            throw new Error( message );
+            // throw new Error( "ID is required." );
+            showToast( "ID is required.", "error" );
+            return false;
         }
-        return;
-    }
-
-    const validateId = ( Id ) => {
-        if ( !Id ) {
-            const message = " ID is required."
-            resetActiveCartId();
-            throw new Error( message );
-        }
-        return;
-    }
+        return true;
+    };
 
     /**
      * Add a product to the cart.
      * @param {string} productId - The ID of the product to add.
      */
-    const addToCart = useCallback( async ( productId ) => {
-        setActiveCartId( productId );
-        try {
-            validateAuthentication( isAuthorized, navigate, showToast );
-            validateId( productId, "Product" );
-            await addToCartMutation( { productId, quantity: 1 } ).unwrap();
-            showToast( TOAST_MESSAGES.ADD_TO_CART_SUCCESS, 'success' );
-        } catch ( error ) {
-            handleAndShowError( error, TOAST_MESSAGES.ADD_TO_CART_ERROR, showToast );
-        } finally {
-            resetActiveCartId();
-        }
-    }, [ isAuthorized, addToCartMutation, navigate, showToast ] );
+    const addToCart = useCallback(
+        async ( productId ) => {
+            if ( !validateId( productId ) ) return;
+            setActiveCartId( productId );
+            validateAuthentication();
+            // validateId( productId );
+            await addToCartMutation( { productId, quantity: 1 }, {
+                onSuccess: () =>
+                    showToast( TOAST_MESSAGES.ADD_TO_CART_SUCCESS, "success" ),
+                onError: ( err ) =>
+                    showToast( handleAndShowError( err, TOAST_MESSAGES.ADD_TO_CART_ERROR, ), "error" ),
+                onFinally: () =>
+                    resetActiveCartId()
+            } );
+
+        },
+        [ isAuthorized, addToCartMutation, showToast ]
+    );
 
     /**
      * Remove a product from the cart.
      * @param {string} productId - The ID of the product to remove.
      */
-    const removeFromCart = useCallback( async ( productId ) => {
-        setActiveCartId( productId );
-        try {
-            validateAuthentication( isAuthorized, navigate, showToast );
-            validateId( productId, "Product" );
-            await removeFromCartMutation( productId ).unwrap();
-            showToast( TOAST_MESSAGES.REMOVE_FROM_CART_SUCCESS, 'success' );
-        } catch ( error ) {
-            handleAndShowError( error, TOAST_MESSAGES.REMOVE_FROM_CART_ERROR, showToast );
-        } finally {
-            resetActiveCartId();
-        }
-    }, [ isAuthorized, removeFromCartMutation, navigate, showToast ] );
+    const removeFromCart = useCallback(
+        async ( productId ) => {
+            if ( !validateId( productId ) ) return;
+            setActiveCartId( productId );
+            validateAuthentication();
+            await removeFromCartMutation( productId, {
+                onSuccess: () =>
+                    showToast( TOAST_MESSAGES.REMOVE_FROM_CART_SUCCESS, "success" ),
+                onError: ( err ) =>
+                    showToast( handleAndShowError( err, TOAST_MESSAGES.REMOVE_FROM_CART_ERROR ), "error" ),
+                onFinally: () =>
+                    resetActiveCartId()
+            } );
+        },
+        [ isAuthorized, removeFromCartMutation, showToast ]
+    );
 
     /**
      * Update the quantity of a product in the cart.
      * @param {Object} cartItem - The cart item to update.
      * @param {string} operation - The type of update ("inc" for increment, "dec" for decrement).
-     */
-    const updateCartQuantity = useCallback( async ( { productId, quantity, cartId }, operation ) => {
-        setActiveCartId( cartId );
-        try {
-            validateAuthentication( isAuthorized, navigate, showToast );
-            validateId( productId, "Product" );
-            validateId( cartId, "Cart" );
+    */
+    const updateCartQuantity = useCallback(
+        async ( { productId, quantity, cartId }, operation ) => {
+            if ( !validateId( productId ) ) return;
+            if ( !validateId( cartId ) ) return;
+            setActiveCartId( cartId );
+            validateAuthentication();
+
 
             let newQuantity = quantity;
             if ( operation === "inc" ) {
@@ -124,40 +134,48 @@ export const useCart = () => {
             if ( newQuantity <= 0 ) {
                 await removeFromCart( cartId );
             } else {
-                await updateCartMutation( { productId, quantity: newQuantity } ).unwrap();
-                showToast( `Quantity updated to ${ newQuantity }`, 'success' );
+                await updateCartMutation( { productId, quantity: newQuantity }, {
+                    onSuccess: () =>
+                        showToast( `Quantity updated to ${ newQuantity }`, "success" ),
+                    onError: ( err ) =>
+                        showToast( handleAndShowError( err, TOAST_MESSAGES.UPDATE_QUANTITY_ERROR ), "error" ),
+                    onFinally: () =>
+                        resetActiveCartId()
+                } );
             }
-        } catch ( error ) {
-            handleAndShowError( error, TOAST_MESSAGES.UPDATE_QUANTITY_ERROR, showToast );
-        } finally {
-            resetActiveCartId();
-        }
-    }, [ isAuthorized, updateCartMutation, removeFromCart, navigate, showToast ] );
+
+        },
+        [ isAuthorized, updateCartMutation, removeFromCart, showToast ]
+    );
 
     /**
      * Clear the cart.
      */
-    const handleClearCart = useCallback( async () => {
-        try {
-            validateAuthentication( isAuthorized, navigate, showToast );
-            await clearCartMutation().unwrap();
-            showToast( TOAST_MESSAGES.CLEAR_CART_SUCCESS, 'success' );
-        } catch ( error ) {
-            handleAndShowError( error, TOAST_MESSAGES.CLEAR_CART_ERROR, showToast );
-        } finally {
-            resetActiveCartId();
-        }
-    }, [ isAuthorized, clearCartMutation, navigate, showToast ] );
+    const clearCart = useCallback( async () => {
+        validateAuthentication();
+        await clearCartMutation( null, {
+            onSuccess: () =>
+                showToast( TOAST_MESSAGES.CLEAR_CART_SUCCESS, "success" ),
+            onError: ( err ) =>
+                showToast( handleAndShowError( err, TOAST_MESSAGES.CLEAR_CART_ERROR ), "error" ),
+            onFinally: () =>
+                resetActiveCartId()
+        } )
+
+    }, [ isAuthorized, clearCartMutation, showToast ] );
+
+
+
 
     return {
         isAuthorized,
         cartItems,
-        subTotal,
+        getTotal,
         activeCartId,
         addToCart,
         updateCartQuantity,
         removeFromCart,
-        handleClearCart,
+        clearCart,
         isFetching, isAdding, isRemoving, isUpdating, isClearing
     };
 };

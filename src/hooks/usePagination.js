@@ -2,7 +2,9 @@ import { useState } from 'react';
 
 const usePagination = ( items = [], itemsPerPage ) => {
     const [ currentPage, setCurrentPage ] = useState( 1 );
-    // if ( !items ) return;
+    
+    // alert( typeof items )
+    if ( !items ) return;
     const totalPages = Math.ceil( items.length / itemsPerPage );
 
     const nextPage = () => {

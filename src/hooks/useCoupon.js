@@ -1,15 +1,86 @@
-import React, { useState } from 'react'
+import React, {  useState } from 'react'
 import { useForm } from 'react-hook-form';
 import useToast from './useToast';
+import { getDate } from '../utils/date';
+import {
+    useCheckCouponMutation,
+    useCouponSlice,
+    useCreateCouponMutation,
+    useDeleteCouponMutation,
+    useGetCouponsQuery,
+    useGetSingleCouponQuery,
+    useOrderSlice,
+    useUpdateCouponMutation,
+    useUpdateCouponStatusMutation
+} from '../redux/store';
+import useApiHandler from './useApiHandler';
+import { useCart } from './useCart';
+import { useAuth } from './useAuth';
 
-const useCoupon = ( { DEFAULT_SUCCESS_VALUE, DEFAULT_VALUES, ON_SUBMIT } ) => {
+
+
+/**
+ * Custom hook to manage coupon-related operations.
+ * @param {Object} config - Configuration object.
+ * @param {Object} config.DEFAULT_SUCCESS_VALUE - Default success state values.
+ * @param {Object} config.DEFAULT_VALUES - Default form values.
+ * @param {Function} config.ON_SUBMIT - Callback function for form submission.
+ * @returns {Object} An object containing form handlers, validation rules, and API call handlers.
+ */
+const useCoupon = ( { DEFAULT_SUCCESS_VALUE = {}, DEFAULT_VALUES = {}, ON_SUBMIT } = {} ) => {
     const showToast = useToast();
+    const { getTotal } = useCart()
+    const [ handleMutation ] = useApiHandler();
+    const { validateAuthentication } = useAuth( "client" )
+    const { addSubTotal } = useOrderSlice()
+    const { addCoupon } = useCouponSlice()
+    const [ checkCouponMutation ] = handleMutation( useCheckCouponMutation );
+
+    /**
+     * Custom hook to fetch all coupons.
+     * @param {string} searchTerm - The search term for filtering coupons.
+     * @returns {Object} The result of the useGetCouponsQuery hook.
+     */
+    const useGetCoupons = ( searchTerm ) => {
+        return useGetCouponsQuery( searchTerm );
+    };
+
+    /**
+     * Custom hook to fetch a single coupon by ID.
+     * @param {string} couponId - The ID of the coupon to fetch.
+     * @returns {Object} The result of the useGetSingleCouponQuery hook.
+     */
+    const useSingleCoupon = ( couponId ) => {
+        return useGetSingleCouponQuery( couponId );
+    };
+
+    /**
+     * Create a new coupon.
+     * @returns {Array} A tuple containing the mutation function and loading state.
+     */
+    const useCreateCoupon = () => handleMutation( useCreateCouponMutation )
+
+    /**
+     * Update an existing coupon.
+     * @returns {Array} A tuple containing the mutation function and loading state.
+     */
+    const useUpdateCoupon = () => handleMutation( useUpdateCouponMutation )
+
+    /**
+     * Update an existing coupon.
+     * @returns {Array} A tuple containing the mutation function and loading state.
+     */
+    const useUpdateCouponStatus = () => handleMutation( useUpdateCouponStatusMutation )
+
+    /**
+     * Delete a coupon.
+     * @returns {Array} A tuple containing the mutation function and loading state.
+     */
+    const useDeleteCoupon = () => handleMutation( useDeleteCouponMutation )
 
     // Form Hook Configuration
     const {
         handleSubmit,
-        control,
-        setValue,
         getValues,
         setError,
         clearErrors,
@@ -21,68 +92,89 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE, DEFAULT_VALUES, ON_SUBMIT } ) => {
 
     const [ isSuccess, setIsSuccess ] = useState( DEFAULT_SUCCESS_VALUE );
 
-    // Utility function to set success state for fields
-    const setSuccessFn = ( label, isSucceed ) =>
+    /**
+        * Set the success state for a specific field.
+        * @param {string} label - The field label.
+        * @param {boolean} isSucceed - Whether the field is valid.
+        */
+    const setSuccessState = ( label, isSucceed ) =>
         setIsSuccess( ( prev ) => ( {
             ...prev,
             [ label ]: isSucceed,
         } ) );
 
-    // Utility function to set custom error messages
-    const setErrorFn = ( label, message ) =>
-        setError( label, { type: "custom", message: message } );
-    const getValidDates = () => {
-        const startDate = getValues( "validFrom" )
-        const endDate = getValues( "validUntil" )
-        return { startDate, endDate }
-    }
+    /**
+     * Set a custom error message for a specific field.
+     * @param {string} label - The field label.
+     * @param {string} message - The error message.
+     */
+    const setCustomError = ( label, message ) =>
+        setError( label, { type: 'custom', message } );
+
+
+    /**
+     * Get the start and end dates from the form values.
+     * @returns {Object} An object containing the start and end dates.
+     */
+    const getFormDates = () => {
+        const startDate = getValues( 'validFrom' );
+        const endDate = getValues( 'validUntil' );
+        return { startDate, endDate };
+    };
+
+    /**
+     * Validate the date range between start and end dates.
+     * @param {Object} dates - The start and end dates.
+     * @returns {boolean} Whether the date range is valid.
+     */
     const validateDateRange = ( { startDate, endDate } ) => {
-        //  new Date( getValues( "validFrom" ) ); // Convert to Date object
-        // new Date( getValues( "validUntil" ) ); // Convert to Date object
-        if ( !startDate || !endDate ) return false
-        // Check if the selected date is in the future or past
+        if ( !startDate || !endDate ) return false;
+
         if ( endDate < startDate ) {
-            setErrorFn( "validUntil", "End date must be greater than start date." );
-            return false
+            setCustomError( 'validUntil', 'End date must be greater than start date.' );
+            return false;
         }
 
-        // Return true if the dates are valid (optional)
         return true;
-    }
+    };
 
+    /**
+     * Validate a specific date field.
+     * @param {string} label - The field label.
+     * @param {string} value - The field value.
+     */
     const validateDate = ( label, value ) => {
         clearErrors( label );
-        const selectedDate = new Date( value ); // Convert to Date object
+        const selectedDate = getDate( value );
+        const now = getDate();
+        now.setHours( 0, 0, 0, 0 );
 
-        // Get the current date
-        const now = new Date();
-
-        // Reset the time part of the current date to compare only the date
-        now.setHours( 0, 0, 0, 0 ); // Set time to midnight
-        // Check if the selected date is in the future or past
         if ( selectedDate < now ) {
-            setErrorFn( label, "The selected date is in the past." );
+            setCustomError( label, 'The selected date is in the past.' );
         }
 
-        const { startDate, endDate } = getValidDates()
+        const { startDate, endDate } = getFormDates();
         if ( startDate && endDate ) validateDateRange( { startDate, endDate } );
-        // Optionally, set success or error states
-        setSuccessFn( label, value && !errors[ label ] );
-        return;
+        setSuccessState( label, value && !errors[ label ] );
     };
-    const validateOnChange = ( label, rule, message ) => {
-        // alert( rule )
+
+    /**
+      * Validate a field on change.
+      * @param {string} label - The field label.
+      * @param {boolean} rule - The validation rule.
+      */
+    const validateFieldOnChange = ( label, rule ) => {
         clearErrors( label );
-        if ( rule ) setSuccessFn( label, rule );
-        // else setErrorFn( label, message )
+        if ( rule ) setSuccessState( label, rule );
     };
+
 
 
     const titleError = "Title must be at least 3 characters long."
     const usageLimitError = "Limit must be greater than zero."
     const statusError = "Please select an option"
     const minimumPurchaseAmountError = "Purchase Amount must be greater than 0"
-    const discountError = "Discount must be greater than 0"
+    const discountError = "Discount must be in between 1 and 100"
     const descriptionError = "Description must be at least 200 characters long."
     // Validation rules for form fields
     const validationRules = {
@@ -91,10 +183,10 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE, DEFAULT_VALUES, ON_SUBMIT } ) => {
             required: "Title is required.",
             minLength: {
                 value: 3,
-                // message: titleError,
+                message: titleError,
             },
             onChange: ( e ) =>
-                validateOnChange(
+                validateFieldOnChange(
                     "title",
                     e.target.value.length >= 3 && !errors[ "title" ],
                     titleError
@@ -107,7 +199,7 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE, DEFAULT_VALUES, ON_SUBMIT } ) => {
             validate: ( value ) =>
                 ( value && value > 0 ) || usageLimitError,
             onChange: ( e ) =>
-                validateOnChange( "usageLimit", e.target.value && !errors[ "usageLimit" ], usageLimitError ),
+                validateFieldOnChange( "usageLimit", e.target.value && !errors[ "usageLimit" ], usageLimitError ),
         },
         // Status validation rules
         status: {
@@ -115,7 +207,7 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE, DEFAULT_VALUES, ON_SUBMIT } ) => {
             validate: ( value ) =>
                 ( value && value !== "select" ) || statusError,
             onChange: ( e ) =>
-                validateOnChange( "status", e.target.value && !errors[ "status" ], statusError ),
+                validateFieldOnChange( "status", e.target.value && !errors[ "status" ], statusError ),
         },
         // Price validation rules
         validFrom: {
@@ -134,7 +226,7 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE, DEFAULT_VALUES, ON_SUBMIT } ) => {
             validate: ( value ) =>
                 value > 0 || minimumPurchaseAmountError,
             onChange: ( e ) =>
-                validateOnChange(
+                validateFieldOnChange(
                     "minimumPurchaseAmount",
                     e.target.value && !errors[ "minimumPurchaseAmount" ],
                     minimumPurchaseAmountError
@@ -144,9 +236,9 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE, DEFAULT_VALUES, ON_SUBMIT } ) => {
         discount: {
             required: "Discount is required.",
             valueAsNumber: true,
-            validate: ( value ) => value > 0 || discountError,
+            validate: ( value ) => ( value >= 1 && value <= 100 ) || discountError,
             onChange: ( e ) =>
-                validateOnChange( "discount", e.target.value && !errors[ "discount" ],
+                validateFieldOnChange( "discount", e.target.value && !errors[ "discount" ],
                     discountError
                 ),
         },
@@ -157,7 +249,7 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE, DEFAULT_VALUES, ON_SUBMIT } ) => {
                 value.trim().length >= 200 ||
                 descriptionError,
             onChange: ( e ) =>
-                validateOnChange(
+                validateFieldOnChange(
                     "description",
                     e.target.value.trim().length >= 200 && !errors[ "description" ],
                     descriptionError
@@ -165,37 +257,74 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE, DEFAULT_VALUES, ON_SUBMIT } ) => {
         },
     };
 
-    // Handle form submission
-    const handleForm = ( data ) => {
-        if ( errors && errors.length ) return;
+    /**
+  * Check the coupon code.
+  * @param {string} code - The coupon code to apply.
+  */
+    const checkCoupon = async ( code ) => {
+        const totalAmount = getTotal()
+        if ( !code ) {
+            showToast( "Please enter the code", "warning" );
+            return;
+        }
+        validateAuthentication();
 
-        clearErrors()
-        const isValidDateRange = validateDateRange(getValidDates())
+        const data = { couponCode: code, purchaseAmount: totalAmount };
+        const coupon = await checkCouponMutation( data, {
+            onError: ( err ) =>
+                showToast( err.data.message || err.message || "Coupon not found", "error" )
+        } );
+
+        if ( !coupon || typeof coupon !== "object" || !Object.keys( coupon ).length ) {
+            showToast( "Coupon not found", "error" );
+            return;
+        }
+        showToast( `${ coupon.discount } discount`, "success" );
+
+        addCoupon( coupon )
+        if ( coupon.discount ) {
+            const discountPercentage = coupon.discount;
+            const discountAmount = ( discountPercentage / 100 ) * totalAmount;
+            const newSubTotal = totalAmount - discountAmount;
+            addSubTotal( Math.max( newSubTotal, 0 ) );
+        }
+
+
+    };
+    
+    /**
+      * Handle form submission.
+      * @param {Object} data - The form data.
+      */
+    const handleFormSubmission = ( data ) => {
+        if ( Object.keys( errors ).length > 0 ) return;
+
+        clearErrors();
+        const isValidDateRange = validateDateRange( getFormDates() );
         if ( !isValidDateRange ) return;
 
-        // const startDate = new Date( getValues( "validFrom" ) ); // Convert to Date object
-        // const endDate = new Date( getValues( "validUntil" ) ); // Convert to Date object
-
-        // // Check if the selected date is in the future or past
-        // if ( endDate < startDate ) {
-        //     return setErrorFn( "validUntil", "End date must be greater than start date." );
-        // }
-
-
-        // If form fields are valid, proceed with submission
-        if ( isDirty && isValid  ) {
-            return ON_SUBMIT( data );
+        if ( isDirty && isValid ) {
+            ON_SUBMIT( data );
         } else {
-            return showToast( "Please make changes", "info" );
+            showToast( 'Please make changes', 'info' );
         }
     };
+
 
     return {
         register,
         errors,
-        handleFormSubmit: handleSubmit( handleForm ),
+        handleCouponFormSubmit: handleSubmit( handleFormSubmission ),
         validationRules,
-        isSuccess, isSubmitting
+        isSuccess,
+        isSubmitting,
+        useGetCoupons,
+        useSingleCoupon,
+        useCreateCoupon,
+        useUpdateCoupon,
+        useUpdateCouponStatus,
+        useDeleteCoupon,
+        checkCoupon
     }
 }
 

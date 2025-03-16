@@ -1,19 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types"; // Ensure PropTypes is imported at the top
 import InputField from "../../components/InputField";
 import BreadCrumb from "../../components/BreadCrumb";
 import TextArea from "../../components/TextArea";
 import SelectField from "../../components/SelectField";
-import ImageUploader from "../../components/ImageUploader";
-import ColorField from "../../components/ColorField";
-import useInventoryFormHandler from "../../hooks/useInventoryFormHandler";
-import {
-	CATEGORY_OPTIONS,
-	SIZE_OPTIONS,
-	STATUS_OPTIONS,
-} from "../../constants/inventory";
+import { STATUS_OPTIONS } from "../../constants/inventory";
 import ListOptions from "../../components/ListOptions";
-import { useForm } from "react-hook-form";
 import useCoupon from "../../hooks/useCoupon";
 
 //  InventoryForm component
@@ -25,15 +17,16 @@ const CouponForm = ({
 	LOADING,
 	DEFAULT_SUCCESS_VALUE,
 }) => {
-
+	
 	const {
 		register,
 		errors,
-		handleFormSubmit,
+		handleCouponFormSubmit,
 		validationRules,
 		isSuccess,
 		isSubmitting,
 	} = useCoupon({ DEFAULT_SUCCESS_VALUE, DEFAULT_VALUES, ON_SUBMIT });
+
 	// Form fields
 	const formFields = [
 		/* Coupon Title */
@@ -102,7 +95,6 @@ const CouponForm = ({
 			props: {
 				NAME: "status",
 				LABEL: "Status",
-				// TYPE: "bool",
 				PLACEHOLDER: "Select status",
 				OPTIONS: STATUS_OPTIONS,
 			},
@@ -127,7 +119,7 @@ const CouponForm = ({
 				</h2>
 				<form
 					className="max-w-sm mx-auto grid gap-4"
-					onSubmit={handleFormSubmit}
+					onSubmit={handleCouponFormSubmit}
 					noValidate>
 					{/* Iterate over formFields to render each component */}
 					<ListOptions

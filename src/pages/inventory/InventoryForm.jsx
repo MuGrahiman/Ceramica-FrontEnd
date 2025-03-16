@@ -149,7 +149,6 @@ const InventoryForm = ({
 			props: {
 				NAME: "status",
 				LABEL: "Status",
-				// TYPE: "bool",
 				PLACEHOLDER: "Select status",
 				OPTIONS: STATUS_OPTIONS,
 			},
@@ -193,7 +192,7 @@ const InventoryForm = ({
 					noValidate>
 					{/* Iterate over formFields to render each component */}
 					<ListOptions
-					OPTIONS={formFields}
+						OPTIONS={formFields}
 						RENDER_ITEM={({ component: Component, props }, index) => (
 							<Component
 								key={index}

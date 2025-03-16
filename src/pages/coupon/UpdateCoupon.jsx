@@ -1,33 +1,23 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-	useGetInventoryItemByIdQuery,
-	useGetSingleCouponQuery,
-	useUpdateCouponMutation,
-	useUpdateInventoryMutation,
-} from "../../redux/store";
-import useToast from "../../hooks/useToast";
+import { useParams } from "react-router-dom";
 import { createDefaultState } from "../../utils/generals";
 import {
 	COUPON_BREAD_CRUMB_ITEMS,
 	COUPON_FORM_FIELDS,
+	COUPON_URL,
 } from "../../constants/coupon";
-import { handleAndShowError } from "../../utils/errorHandlers";
 import CouponForm from "./CouponForm";
 import LoadingTemplate from "../../components/LoadingTemplate";
 import { setDateAsMonthDayYear } from "../../utils/date";
+import useCoupon from "../../hooks/useCoupon";
 
-// Page Component: Handles updating a product in the inventory
 const UpdateCoupon = () => {
-	const { id } = useParams();
-	const { data, isLoading: fetchLoading } = useGetSingleCouponQuery(id);
-	const [UpdateCoupon, { isLoading: updateLoading }] =
-		useUpdateCouponMutation();
-	const showToast = useToast();
-	const navigate = useNavigate();
-
-	// Define constant strings
 	const Title = "Update Coupon";
+	const { id } = useParams();
+	const { useSingleCoupon, useUpdateCoupon } = useCoupon();
+	const { data, isLoading: fetchLoading } = useSingleCoupon(id);
+
+	const [UpdateCoupon, { isLoading: updateLoading }] = useUpdateCoupon();
 
 	// Default values for the form
 	const defaultValues = createDefaultState(COUPON_FORM_FIELDS, null, {
@@ -41,20 +31,17 @@ const UpdateCoupon = () => {
 
 	// Handles form submission and API call
 	const handleSubmit = async (formData) => {
-		try {
-			const data = await UpdateCoupon({
-				couponId: id,
-				couponData: formData,
-			}).unwrap();
-			showToast(" Coupon updated successfully", "success");
-			navigate("/dashboard/coupon");
-		} catch (error) {
-			handleAndShowError(
-				error,
-				"Failed to update coupon. Please try again.",
-				showToast
-			);
-		}
+		await UpdateCoupon(
+			{ couponId: id, couponData: formData },
+			{
+				onSuccess: () => "Coupon updated successfully",
+				redirectPath: COUPON_URL,
+				onError: (error) =>
+					error.message ||
+					error.data.message ||
+					"Failed to update coupon. Please try again.",
+			}
+		);
 	};
 
 	// Handle loading state
@@ -68,7 +55,7 @@ const UpdateCoupon = () => {
 
 	return (
 		<CouponForm
-			LOADING={fetchLoading}
+			LOADING={fetchLoading || updateLoading}
 			ON_SUBMIT={handleSubmit}
 			BREAD_CRUMB_ITEMS={COUPON_BREAD_CRUMB_ITEMS(Title)}
 			TITLE={Title}

@@ -2,11 +2,14 @@ import React, { useEffect } from "react";
 import SuccessPaymentCard from "./SuccessPaymentCard";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addPayment, useGetOrderPaymentByIdQuery } from "../../redux/store";
+import { addPayment, useCouponSlice, useGetOrderPaymentByIdQuery, useOrderSlice } from "../../redux/store";
+import { useCart } from "../../hooks/useCart";
 
 const SuccessPaymentPage = () => {
 	const dispatch = useDispatch();
 	const { id } = useParams();
+		const { clearCart } = useCart();
+	
 	const { data, isLoading, error } = useGetOrderPaymentByIdQuery(id);
 	useEffect(() => {
 		if (data) {

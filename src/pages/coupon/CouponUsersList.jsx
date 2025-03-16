@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import CouponUser from "./CouponUser";
 import ListOptions from "../../components/ListOptions";
 
@@ -9,10 +10,11 @@ const CouponUsersList = ({ users = [], onSelect }) => {
 				<p className="font-semibold">Redeemed Users:</p>
 				<span className="text-gray-600">{users.length}</span>
 			</div>
-			<div className="grid gap-3 overflow-y-auto overflow-x-hidden " 
-			style={{maxHeight:"20rem"}}>
+			<div
+				className="grid gap-3 overflow-y-auto overflow-x-hidden "
+				style={{ maxHeight: "20rem" }}>
 				<ListOptions
-                EMPTY_MESSAGE="No one used yet"
+					EMPTY_MESSAGE="No one used yet"
 					OPTIONS={users}
 					RENDER_ITEM={(user) => (
 						<CouponUser key={user.id} user={user} onSelect={onSelect} />
@@ -21,6 +23,11 @@ const CouponUsersList = ({ users = [], onSelect }) => {
 			</div>
 		</div>
 	);
+};
+
+CouponUsersList.propTypes = {
+	users: PropTypes.array.isRequired,
+	onSelect: PropTypes.func.isRequired,
 };
 
 export default CouponUsersList;
