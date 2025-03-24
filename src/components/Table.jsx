@@ -46,6 +46,7 @@ function Table({
 				<tbody>
 					<ListOptions
 						OPTIONS={DATA}
+						EMPTY_MESSAGE="No data available"
 						RENDER_ITEM={(data) => (
 							<tr
 								key={KEYFN(data)}

@@ -6,14 +6,73 @@ import RadioComponent from "./RadioComponent";
 import { AccordionComponent, AccordionWrapper } from "./Accordion";
 import useToggle from "../hooks/useToggle";
 import {
-	CATEGORIES_OPTIONS,
-	DEFAULT_VALUES,
-	SIZES_OPTIONS,
-	SORT_OPTIONS,
+	FILTER_FORMS_CATEGORIES_OPTIONS,
+	FILTER_FORMS_DEFAULT_VALUES,
+	FILTER_FORMS_COMPONENTS,
+	FILTER_FORMS_SIZES_OPTIONS,
+	FILTER_FORMS_SORT_OPTIONS,
 } from "../constants/filter-form";
 import ListOptions from "./ListOptions";
 
+/**
+ * Controlled Input Component: A  input component with a label.
+ *
+ * @param {Object} props - Component props.
+ * @param {string} props.name - The name of the input field.
+ * @param {Object} props.control - The control object from react-hook-form.
+ * @param {string} props.label - The label for the input field.
+ * @param {string} props.type - The type of the input field.
+ */
+const ControlledInput = ({ name, type, control, label, defaultValue = "" }) => (
+	<div className="flex flex-col mb-2">
+		<label className="text-sm font-medium mb-1">{label.toUpperCase()}</label>
+		<Controller
+			name={name}
+			control={control}
+			defaultValue={defaultValue}
+			render={({ field }) => (
+				<input
+					type={type}
+					className="border rounded p-1"
+					placeholder={"Enter The " + label}
+					{...field}
+					
+				/>
+			)}
+		/>
+	</div>
+);
+ControlledInput.propTypes = {
+	defaultValue: PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
+	type: PropTypes.string.isRequired,
+	control: PropTypes.object.isRequired,
+	label: PropTypes.string.isRequired,
+};
 // Group check box component
+const InputGroup = ({ options, control }) => (
+	<ListOptions
+		OPTIONS={options}
+		RENDER_ITEM={(option, index) => (
+			<ControlledInput key={index} {...option} control={control} />
+		)}
+	/>
+);
+
+InputGroup.propTypes = {
+	name: PropTypes.string.isRequired,
+	options: PropTypes.arrayOf(PropTypes.string).isRequired,
+	control: PropTypes.object.isRequired,
+};
+
+/**
+ * Checkbox Group Component: A  component for rendering a group of checkboxes.
+ *
+ * @param {Object} props - Component props.
+ * @param {string} props.name - The name of the checkbox group.
+ * @param {Array} props.options - The options for the checkbox group.
+ * @param {Object} props.control - The control object from react-hook-form.
+ */
 const CheckboxGroup = ({ name, options, control }) => (
 	<ListOptions
 		OPTIONS={options}
@@ -27,13 +86,21 @@ const CheckboxGroup = ({ name, options, control }) => (
 		)}
 	/>
 );
+
 CheckboxGroup.propTypes = {
 	name: PropTypes.string.isRequired,
 	options: PropTypes.arrayOf(PropTypes.string).isRequired,
 	control: PropTypes.object.isRequired,
 };
 
-// Group radio component
+/**
+ * Radio Group Component: A  component for rendering a group of radio buttons.
+ *
+ * @param {Object} props - Component props.
+ * @param {string} props.name - The name of the radio group.
+ * @param {Array} props.options - The options for the radio group.
+ * @param {Object} props.control - The control object from react-hook-form.
+ */
 const RadioGroup = ({ name, options, control }) => (
 	<ListOptions
 		OPTIONS={options}
@@ -47,6 +114,7 @@ const RadioGroup = ({ name, options, control }) => (
 		)}
 	/>
 );
+
 RadioGroup.propTypes = {
 	name: PropTypes.string.isRequired,
 	options: PropTypes.arrayOf(
@@ -57,56 +125,27 @@ RadioGroup.propTypes = {
 	).isRequired,
 	control: PropTypes.object.isRequired,
 };
-
-// Input component for price
-const PriceInput = ({ name, control, label }) => (
-	<div className="flex flex-col">
-		<label className="text-sm font-medium">{label}</label>
-		<Controller
-			name={name}
-			control={control}
-			render={({ field }) => (
-				<input
-					type="number"
-					className="border rounded p-2 "
-					placeholder={label}
-					{...field}
-				/>
-			)}
-		/>
-	</div>
-);
-PriceInput.propTypes = {
-	name: PropTypes.string.isRequired,
-	control: PropTypes.object.isRequired,
-	label: PropTypes.string.isRequired,
-};
-
-// Main Filter Form Component
-const FilterForm = ({ ON_SUBMIT, ON_CLEAR }) => {
-	const [toggleA, isToggled] = useToggle({ multiple: true });
+/**
+ * Filter Form Component: A reusable component for filtering products.
+ *
+ * @param {Object} props - Component props.
+ * @param {Function} props.onSubmit - The function to call when the form is submitted.
+ * @param {Function} props.onClear - The function to call when the form is cleared.
+ * @param {Array} props.FIELD_CONTENT - Configuration for the form fields.
+ * @param {Object} props.DEFAULT_VALUES - Default values for the form fields.
+ */
+const FilterForm = ({
+	ON_SUBMIT,
+	ON_CLEAR,
+	FIELD_CONTENT = [],
+	DEFAULT_VALUES = {},
+}) => {
+	const [toggleAccordion, isToggled] = useToggle({ multiple: true });
 	const { control, handleSubmit, reset } = useForm({
 		defaultValues: DEFAULT_VALUES,
 	});
 
 	// Accordion content configuration
-	const FieldContent = [
-		{
-			title: "Filter by Category",
-			component: CheckboxGroup,
-			props: { name: "categories", options: CATEGORIES_OPTIONS, control },
-		},
-		{
-			title: "Filter by Size",
-			component: CheckboxGroup,
-			props: { name: "sizes", options: SIZES_OPTIONS, control },
-		},
-		{
-			title: "Sort By",
-			component: RadioGroup,
-			props: { name: "sort", options: SORT_OPTIONS, control },
-		},
-	];
 
 	// Form submission handler
 	const onSubmit = (data) => {
@@ -115,39 +154,63 @@ const FilterForm = ({ ON_SUBMIT, ON_CLEAR }) => {
 
 	// Reset form fields
 	const clearAll = () => {
-		ON_CLEAR();
 		reset();
+		ON_CLEAR();
 	};
 
-	const renderItems = ({ component: Component, props, title }, index) => {
+	// Get component by type
+	const getComponentByType = (type) => {
+		switch (type) {
+			case FILTER_FORMS_COMPONENTS.CHECKBOX:
+				return CheckboxGroup;
+			case FILTER_FORMS_COMPONENTS.RADIO:
+				return RadioGroup;
+			case FILTER_FORMS_COMPONENTS.INPUT:
+				return InputGroup;
+			default:
+				return null;
+		}
+	};
+
+	// Render accordion items
+	const renderItems = ({ type, props, title }, index) => {
 		const keyId = `${title}-accordion-${index}`;
+		const Component = getComponentByType(type);
 		return (
 			<AccordionComponent
 				key={keyId}
 				ID={keyId}
 				LABEL={title}
 				IS_OPEN={isToggled(keyId)}
-				TOGGLE_ACCORDION={() => toggleA(keyId)}>
-				<Component {...props} />
+				TOGGLE_ACCORDION={() => toggleAccordion(keyId)}>
+				<Component {...props} control={control} />
 			</AccordionComponent>
 		);
 	};
 
 	return (
-		<form className="p-4 space-y-6" onSubmit={handleSubmit(ON_SUBMIT)}>
+		<form className="p-4 space-y-6" onSubmit={handleSubmit(onSubmit)}>
 			<AccordionWrapper type={"open"}>
-				<ListOptions OPTIONS={FieldContent} RENDER_ITEM={renderItems} />
-				<AccordionComponent
+				<ListOptions OPTIONS={FIELD_CONTENT} RENDER_ITEM={renderItems} />
+				{/* <AccordionComponent
 					key={" price-accordion"}
 					LABEL={"Price"}
 					ID={"price-accordion"}
 					IS_OPEN={isToggled("price-accordion")}
-					TOGGLE_ACCORDION={() => toggleA("price-accordion")}>
+					TOGGLE_ACCORDION={() => toggleAccordion("price-accordion")}>
 					<div className=" gap-4">
-						<PriceInput name="minPrice" control={control} label="Min Price" />
-						<PriceInput name="maxPrice" control={control} label="Max Price" />
+						<ControlledInput
+							name="minPrice"
+							control={control}
+							label="Min Price"
+						/>
+						<ControlledInput
+							name="maxPrice"
+							control={control}
+							label="Max Price"
+						/>
 					</div>
-				</AccordionComponent>
+				</AccordionComponent> */}
 			</AccordionWrapper>
 
 			<div className="flex gap-4">
@@ -168,5 +231,15 @@ const FilterForm = ({ ON_SUBMIT, ON_CLEAR }) => {
 };
 FilterForm.propTypes = {
 	ON_SUBMIT: PropTypes.func.isRequired,
+	ON_CLEAR: PropTypes.func.isRequired,
+	FIELD_CONTENT: PropTypes.arrayOf(
+		PropTypes.shape({
+			type: PropTypes.oneOf(Object.values(FILTER_FORMS_COMPONENTS)).isRequired,
+			title: PropTypes.string.isRequired,
+			props: PropTypes.object.isRequired,
+		})
+	).isRequired,
+	DEFAULT_VALUES: PropTypes.object,
 };
+
 export default FilterForm;

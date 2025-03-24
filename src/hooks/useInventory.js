@@ -7,6 +7,7 @@ import {
 } from '../redux/store';
 import useApiHandler from './useApiHandler';
 import { INVENTORY_URL } from '../constants/inventory';
+import generatePageNumbers from '../utils/pagination';
 
 // Custom hook to manage inventory
 const useInventory = ( searchTerm ) => {
@@ -129,6 +130,7 @@ const useInventory = ( searchTerm ) => {
         totalPages,
         currentPage,
         handlePage,
+        pageNumbers: generatePageNumbers( currentPage, totalPages ),
 
         // Deleting data
         deleteLoading,

@@ -21,20 +21,16 @@ export const setDateAsMonthDayYear = ( dateString ) => {
  * @throws {Error} - Throws an error if the provided value cannot be converted to a valid Date.
  */
 export const getDate = ( value = null ) => {
-    // If value is null or undefined, return the current date
     if ( value === null || value === undefined ) {
         return new Date();
     }
 
-    // Ensure the value is a string or a number before attempting to convert
     if ( typeof value !== 'string' && typeof value !== 'number' ) {
         throw new Error( 'Date Value must be a string or a number' );
     }
 
-    // Attempt to convert the provided value to a Date object
     const date = new Date( value );
 
-    // Check if the conversion was successful
     if ( isNaN( date.getTime() ) ) {
         throw new Error( 'Invalid date value provided' );
     }

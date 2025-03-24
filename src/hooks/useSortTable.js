@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { handleIteration } from '../utils/generals';
-
+/**
+ * Custom hook for sorting table data.
+ * 
+ * @param {Array} collection - The array of items to sort.
+ * @param {Array} config - The configuration for sorting, including column labels and sort values.
+ * @returns {Object} - An object containing sorted data and a function to update the configuration.
+ */
 function useSortTable ( collection, config ) {
   const [ orderBy, setOrderBy ] = useState( null );
   const [ sortBy, setSortBy ] = useState( null );

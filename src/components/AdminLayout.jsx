@@ -36,7 +36,7 @@ const navigationItems = [
 	},
 	{
 		label: "Orders",
-		path: "/dashboard/manage-books",
+		path: "/dashboard/orders",
 		icon: <MdOutlineManageHistory className="h-6 w-6" />,
 	},
 	{
@@ -72,7 +72,7 @@ const AdminLayout = () => {
 					isSidebarOpen
 						? "translate-x-0 opacity-100"
 						: "-translate-x-full opacity-100"
-				} sm:translate-x-0 sm:opacity-100
+				} sm:translate-x-0 sm:opacity-100 flex-shrink-0
 				      w-full sm:w-fit md:w-1/3 lg:w-1/5 flex flex-col bg-gray-800 text-gray-500 text-lg fixed sm:relative z-[100] min-h-full
 				      transition-transform duration-700 ease-in-out`}>
 				<div className="flex justify-between items-center mx-4 mt-4">

@@ -15,7 +15,7 @@ const Badge = ({ LABEL, STATUS, ON_CLICK }) => (
 		className={`inline-flex items-center px-2 py-1 me-2 text-sm font-medium cursor-pointer rounded ${getInputClass(
 			STATUS
 		)}`}>
-		{LABEL.toUpperCase()}
+		{LABEL?.toUpperCase()}
 	</span>
 );
 

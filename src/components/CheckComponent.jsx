@@ -17,15 +17,15 @@ const CheckBox = ({ NAME, OPTION, CONTROL }) => {
 							onChange={(e) => {
 								const newValue = e.target.checked
 									? [...field.value, OPTION]
-									: field.value.filter((val) => val !== OPTION);
-								field.onChange(newValue);
+									: field?.value?.filter((val) => val !== OPTION);
+								field?.onChange(newValue);
 							}}
-							checked={field.value.includes(OPTION)}
+							checked={field?.value?.includes(OPTION)}
 						/>
 					);
 				}}
 			/>
-			<label className="ms-2 text-sm font-medium">{OPTION}</label>
+			<label className="ms-2 text-sm font-medium">{OPTION.toUpperCase()}</label>
 		</div>
 	);
 };

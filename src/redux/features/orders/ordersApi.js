@@ -42,9 +42,21 @@ const orderApi = createApi( {
       providesTags: ( result, error, paymentId ) => [ { type: "Order", id: paymentId } ],
     } ),
 
-
-
-
+    // Get all orders based users
+    getOrders: builder.query( {
+      query: ( role ) => (
+        {
+          url: `/get/${ role }`,
+          method: "GET",
+        } ),
+      providesTags: ( result ) =>
+        result
+          ? [
+            ...result.map( ( { id } ) => ( { type: "Order", id } ) ),
+            { type: "Order", id: "LIST" },
+          ]
+          : [ { type: "Order", id: "LIST" } ],
+    } ),
 
     // Get an order by ID
     getOrderById: builder.query( {
@@ -55,30 +67,14 @@ const orderApi = createApi( {
       providesTags: ( result, error, orderId ) => [ { type: "Order", id: orderId } ],
     } ),
 
-    // Get all orders for a user
-    getOrdersByUser: builder.query( {
-      query: ( userId ) => ( {
-        url: "/get",
-        method: "GET",
-        // params: { userId }, // Pass userId as a query parameter
-      } ),
-      providesTags: ( result ) =>
-        result
-          ? [
-            ...result.map( ( { id } ) => ( { type: "Order", id } ) ),
-            { type: "Order", id: "LIST" },
-          ]
-          : [ { type: "Order", id: "LIST" } ],
-    } ),
-
     // Update the status of an order
     updateOrderStatus: builder.mutation( {
-      query: ( { orderId, status } ) => ( {
-        url: `/update/${ orderId }`,
+      query: ( { orderId, orderStatus } ) => ( {
+        url: `/status/${ orderId }`,
         method: "PATCH",
-        body: { status }, // Pass the new status in the request body
+        body: { status: orderStatus }, 
       } ),
-      invalidatesTags: ( result, error, { orderId } ) => [ { type: "Order", id: orderId } ],
+      invalidatesTags: [ "Order" ],
     } ),
   } ),
 } );
@@ -88,9 +84,8 @@ export const {
   useCreateOrderMutation,
   useCapturePaymentMutation,
   useGetOrderPaymentByIdQuery,
-  
-  useGetOrderByIdQuery, 
-  useGetOrdersByUserQuery,
+  useGetOrderByIdQuery,
+  useGetOrdersQuery,
   useUpdateOrderStatusMutation,
 } = orderApi;
 

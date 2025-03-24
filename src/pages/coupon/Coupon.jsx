@@ -110,7 +110,7 @@ const Coupon = () => {
 	];
 
 	const { updateConfig, sortedData } = useSortTable(data, headers);
-	const { currentPage, totalPages, handlePage, currentItems } = usePagination(
+	const { currentPage,pageNumbers, totalPages, handlePage, currentItems } = usePagination(
 		sortedData,
 		5
 	);
@@ -177,6 +177,7 @@ const Coupon = () => {
 								KEYFN={(data) => data.now}
 							/>
 							<Pagination
+							pageNumbers={pageNumbers}
 								currentPage={currentPage}
 								totalPages={totalPages}
 								onPageChange={handlePage}

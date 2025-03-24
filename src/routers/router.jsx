@@ -11,7 +11,6 @@ import Auth from "../pages/auth/Auth";
 import CheckoutPage from "../pages/books/CheckoutPage";
 import SingleBook from "../pages/books/SingleBook";
 import PrivateRoute from "./PrivateRoute";
-import OrderPage from "../pages/books/OrderPage";
 import AdminRoute from "./AdminRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import Dashboard from "../pages/dashboard/Dashboard";
@@ -35,6 +34,8 @@ import Coupon from "../pages/coupon/Coupon";
 import CreateCoupon from "../pages/coupon/CreateCoupon";
 import ViewCoupon from "../pages/coupon/ViewCoupon";
 import UpdateCoupon from "../pages/coupon/UpdateCoupon";
+import OrderPage from "../pages/order/OrderPage";
+import OrderDetailPage from "../pages/order/OrderDetailPage";
 
 const router = createBrowserRouter([
 	{
@@ -196,6 +197,22 @@ const router = createBrowserRouter([
 				element: (
 					<AdminRoute>
 						<UpdateCoupon />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "orders",
+				element: (
+					<AdminRoute>
+						<OrderPage />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "order-detail/:id",
+				element: (
+					<AdminRoute>
+						<OrderDetailPage />
 					</AdminRoute>
 				),
 			},

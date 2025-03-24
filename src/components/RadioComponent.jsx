@@ -18,7 +18,7 @@ const RadioComponent = ({ NAME, OPTION, CONTROL }) => {
 					/>
 				)}
 			/>
-			<label className="ms-2 text-sm font-medium">{OPTION.label}</label>
+			<label className="ms-2 text-sm font-medium">{OPTION.label.toUpperCase()}</label>
 		</div>
 	);
 };

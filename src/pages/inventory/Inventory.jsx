@@ -5,7 +5,6 @@ import { ImEye, ImSpinner9 } from "react-icons/im";
 import Table from "../../components/Table";
 import LoadingTemplate from "../../components/LoadingTemplate";
 import SearchBar from "../../components/SearchBar";
-import FilterForm from "../../components/FilterForm";
 import useInventory from "../../hooks/useInventory";
 import { KeyFn } from "../../utils/generals";
 import img from "../../assets/avatar.png";
@@ -13,6 +12,14 @@ import Pagination from "../../components/Pagination";
 import Badge from "../../components/Badge";
 import MiniLoader from "../../components/MiniLoader";
 import useSearch from "../../hooks/useSearch";
+import {
+	FILTER_FORMS_CATEGORIES_OPTIONS,
+	FILTER_FORMS_COMPONENTS,
+	FILTER_FORMS_DEFAULT_VALUES,
+	FILTER_FORMS_SIZES_OPTIONS,
+	FILTER_FORMS_SORT_OPTIONS,
+} from "../../constants/filter-form";
+import FilterFormLayout from "../../components/FilterFormLayout";
 
 // Inventory Component
 const Inventory = () => {
@@ -27,6 +34,7 @@ const Inventory = () => {
 		data,
 		totalPages,
 		currentPage,
+		pageNumbers,
 		handlePage,
 
 		// Deleting data
@@ -134,6 +142,7 @@ const Inventory = () => {
 	];
 
 	const onSubmit = (data) => {
+		console.log("🚀 ~ onSubmit ~ data:", data);
 		handleFilter(data);
 		setIsOpen((prev) => !prev);
 	};
@@ -141,6 +150,34 @@ const Inventory = () => {
 		clearFilter();
 		setIsOpen((prev) => !prev);
 	};
+	const FieldContents = [
+		{
+			title: "Filter by Category",
+			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
+			props: { name: "categories", options: FILTER_FORMS_CATEGORIES_OPTIONS },
+		},
+		{
+			title: "Filter by Size",
+			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
+			props: { name: "sizes", options: FILTER_FORMS_SIZES_OPTIONS },
+		},
+		{
+			title: "Sort By",
+			type: FILTER_FORMS_COMPONENTS.RADIO,
+			props: { name: "sort", options: FILTER_FORMS_SORT_OPTIONS },
+		},
+		{
+			title: "Filter by Price",
+			type: FILTER_FORMS_COMPONENTS.INPUT,
+			props: {
+				name: "price",
+				options: [
+					{ name: "minPrice", label: "Minimum Price", type: "numbers" },
+					{ name: "maxPrice", label: "Maximum Price", type: "numbers" },
+				],
+			},
+		},
+	];
 	// Handle loading state
 	if (fetchLoading) {
 		return (
@@ -193,41 +230,29 @@ const Inventory = () => {
 			</div>
 
 			{/* Inventory Table */}
-			<div className="relative mb-12 min-h-screen">
-				<div
-					className={`w-full shadow-lg transition-all duration-700 ease-in-out ${
-						isOpen ? "opacity-0 -z-50" : "opacity-100 z-50"
-					}`}>
-					{data && (
-						<>
-							<Table
-								DATA={data}
-								CONFIG={headers}
-								KEYFN={KeyFn}
-								CURRENT_PAGE={currentPage}
-								TOTAL_PAGES={totalPages}
-								HANDLE_PAGE_CHANGE={handlePage}
-							/>
+			<FilterFormLayout
+				isOpen={isOpen}
+				onSubmit={onSubmit}
+				onClear={onClear}
+				defaultValues={FILTER_FORMS_DEFAULT_VALUES}
+				fieldContents={FieldContents}>
+				<Table
+					DATA={data}
+					CONFIG={headers}
+					KEYFN={KeyFn}
+					CURRENT_PAGE={currentPage}
+					TOTAL_PAGES={totalPages}
+					HANDLE_PAGE_CHANGE={handlePage}
+				/>
 
-							<Pagination
-								currentPage={currentPage}
-								totalPages={totalPages}
-								onPageChange={handlePage}
-							/>
-						</>
-					)}
-				</div>
-
-				{/* Sidebar - Filter Form */}
-				<aside
-					className={`absolute top-0 left-0 w-full p-4 transition-all duration-700 ease-in-out ${
-						isOpen
-							? "translate-y-0 z-50 opacity-100"
-							: "-translate-y-full opacity-0 -z-50"
-					} bg-gray-800 text-gray-500 text-lg`}>
-					<FilterForm ON_SUBMIT={onSubmit} ON_CLEAR={onClear} />
-				</aside>
-			</div>
+				<Pagination
+					pageNumbers={pageNumbers}
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={handlePage}
+				/>
+			</FilterFormLayout>
+		
 		</>
 	);
 };

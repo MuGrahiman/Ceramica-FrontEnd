@@ -53,3 +53,36 @@ export const generateId = () => uuidv4();
  */
 export const stringTrimmer = ( TEXT, LEN = 10 ) => TEXT.substring( 0, LEN );
 
+/**
+ * Converts a string to uppercase.
+ * 
+ * This function takes a string as input and returns a new string with all characters converted to uppercase.
+ * It throws an error if the input is not a string.
+ * 
+ * @param {string} value - The string to be converted to uppercase.
+ * @returns {string} - The input string converted to uppercase.
+ * @throws {TypeError} - If the input is not a string.
+ */
+export const formatToUpperCase = (value) => {
+    if (typeof value !== 'string') {
+      throw new TypeError('Input must be a string');
+    }
+    return value.toUpperCase();
+  };
+  
+  /**
+   * Converts a string to lowercase.
+   * 
+   * This function takes a string as input and returns a new string with all characters converted to lowercase.
+   * It throws an error if the input is not a string.
+   * 
+   * @param {string} value - The string to be converted to lowercase.
+   * @returns {string} - The input string converted to lowercase.
+   * @throws {TypeError} - If the input is not a string.
+   */
+  export const formatToLowerCase = (value) => {
+    if (typeof value !== 'string') {
+      throw new TypeError('Input must be a string');
+    }
+    return value.toLowerCase();
+  };

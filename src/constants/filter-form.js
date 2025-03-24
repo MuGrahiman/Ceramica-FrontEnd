@@ -4,7 +4,7 @@
  * Available categories for filtering products.
  * @type {Array<string>}
  */
-export const CATEGORIES_OPTIONS = [
+export const FILTER_FORMS_CATEGORIES_OPTIONS = [
     "cups",
     "kettle",
     "plates",
@@ -20,7 +20,7 @@ export const CATEGORIES_OPTIONS = [
  * Available size options for filtering products.
  * @type {Array<string>}
  */
-export const SIZES_OPTIONS = [
+export const FILTER_FORMS_SIZES_OPTIONS = [
     "x-Small",
     "small",
     "medium",
@@ -32,7 +32,7 @@ export const SIZES_OPTIONS = [
  * Sorting options for product listings.
  * @type {Array<{ value: string, label: string }>}
  */
-export const SORT_OPTIONS = [
+export const FILTER_FORMS_SORT_OPTIONS = [
     { value: "newest", label: "Newest Product" },
     { value: "oldest", label: "Oldest Product" },
     { value: "price_desc", label: "Price: High to Low" },
@@ -43,10 +43,19 @@ export const SORT_OPTIONS = [
  * Default filter values for the form.
  * @type {Object}
  */
-export const DEFAULT_VALUES = {
+export const FILTER_FORMS_DEFAULT_VALUES = {
     categories: [],
     sizes: [],
     sort: "",
     minPrice: "",
     maxPrice: "",
+};
+/**
+ *  Filter component.
+ * @type {Object}
+ */
+export const FILTER_FORMS_COMPONENTS = {
+    INPUT: "input",
+    RADIO: "radio",
+    CHECKBOX: "checkbox",
 };

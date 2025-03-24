@@ -1,112 +1,99 @@
-[
-    {
-        "title": "Coupon1",
-        "couponCode": "SAVE10",        
-        "startDate": "2025-03-01T00:00:00Z",
-        "expiryDate": "2025-12-31T23:59:59Z",
-        "minimumPrice": 50,
-        "discount": 10,
-        "limit": 100,
-        "appliedUsers": [],
-        "status": "ACTIVE"
-    },
-    {
-        "title": "Coupon2",
-        "couponCode": "SPRING20",        
-        "startDate": "2025-03-15T00:00:00Z",
-        "expiryDate": "2025-06-15T23:59:59Z",
-        "minimumPrice": 30,
-        "discount": 20,
-        "limit": 50,
-        "appliedUsers": [],
-        "status": "ACTIVE"
-    },
-    {
-        "title": "Coupon3",
-        "couponCode": "SUMMER15",        
-        "startDate": "2025-06-01T00:00:00Z",
-        "expiryDate": "2025-09-01T23:59:59Z",
-        "minimumPrice": 40,
-        "discount": 15,
-        "limit": 75,
-        "appliedUsers": [],
-        "status": "ACTIVE"
-    },
-    {
-        "title": "Coupon4",
-        "couponCode": "FALL25",        
-        "startDate": "2025-09-01T00:00:00Z",
-        "expiryDate": "2025-11-30T23:59:59Z",
-        "minimumPrice": 60,
-        "discount": 25,
-        "limit": 30,
-        "appliedUsers": [],
-        "status": "ACTIVE"
-    },
-    {
-        "title": "Coupon5",
-        "couponCode": "WINTER5",        
-        "startDate": "2025-12-01T00:00:00Z",
-        "expiryDate": "2025-12-31T23:59:59Z",
-        "minimumPrice": 20,
-        "discount": 5,
-        "limit": 200,
-        "appliedUsers": [],
-        "status": "ACTIVE"
-    },
-    {
-        "title": "Coupon6",
-        "couponCode": "NEWYEAR30",        
-        "startDate": "2025-01-01T00:00:00Z",
-        "expiryDate": "2025-01-31T23:59:59Z",
-        "minimumPrice": 70,
-        "discount": 30,
-        "limit": 20,
-        "appliedUsers": [],
-        "status": "ACTIVE"
-    },
-    {
-        "title": "Coupon7",
-        "couponCode": "FLASH50",        
-        "startDate": "2025-02-01T00:00:00Z",
-        "expiryDate": "2025-02-28T23:59:59Z",
-        "minimumPrice": 100,
-        "discount": 50,
-        "limit": 10,
-        "appliedUsers": [],
-        "status": "ACTIVE"
-    },
-    {
-        "title": "Coupon8",
-        "couponCode": "WEEKEND15",        
-        "startDate": "2025-03-07T00:00:00Z",
-        "expiryDate": "2025-03-08T23:59:59Z",
-        "minimumPrice": 25,
-        "discount": 15,
-        "limit": 150,
-        "appliedUsers": [],
-        "status": "ACTIVE"
-    },
-    {
-        "title": "Coupon9",
-        "couponCode": "BOGO50",        
-        "startDate": "2025-05-01T00:00:00Z",
-        "expiryDate": "2025-05-31T23:59:59Z",
-        "minimumPrice": 50,
-        "discount": 50,
-        "limit": 40,
-        "appliedUsers": [],
-        "status": "ACTIVE"
-    },
-    {
-        "title": "Coupon10",
-        "couponCode": "LOYALTY10",        
-        "startDate": "2025-04-01T00:00:00Z",
-        "expiryDate": "2025-04-30T23:59:59Z",
-        "minimumPrice": 10,
-        "discount": 10,
-        "limit": 500,
-        "appliedUsers": [],
-        "status": "ACTIVE"
+{
+  "_id": "65f4b5e8f1a2c3d4e5f6g7h8",
+  "userId": {
+    "_id": "65f4b5e8f1a2c3d4e5f6g7h9",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "guId": null,
+    "fbId": null,
+    "status": "verified",
+    "role": "client",
+    "avatar": {
+      "public_id": "avatar_123",
+      "url": "https://example.com/avatar.jpg",
+      "type": "image/jpeg"
     }
-]
+  },
+  "addressId": {
+    "_id": "65f4b5e8f1a2c3d4e5f6g7h0",
+    "firstName": "John",
+    "lastName": "Doe",
+    "phoneNumber": "+1234567890",
+    "street": "123 Main St",
+    "city": "New York",
+    "state": "NY",
+    "country": "USA",
+    "zipCode": "10001",
+    "isDefault": true
+  },
+  "items": [
+    {
+      "productId": {
+        "_id": "65f4b5e8f1a2c3d4e5f6g7h1",
+        "title": "Premium Leather Sofa",
+        "description": "A luxurious leather sofa for your living room.",
+        "category": "Furniture",
+        "shape": "L-Shaped",
+        "color": {
+          "name": "Brown",
+          "hex": "#964B00",
+          "image": "https://example.com/sofa-brown.jpg"
+        },
+        "dimension": "84x36x36 inches",
+        "size": "Large",
+        "stock": 10,
+        "price": 1200,
+        "status": "active",
+        "coverImage": {
+          "public_id": "sofa_123",
+          "url": "https://example.com/sofa.jpg",
+          "type": "image/jpeg"
+        },
+        "images": [
+          {
+            "public_id": "sofa_123_1",
+            "url": "https://example.com/sofa-1.jpg",
+            "type": "image/jpeg"
+          },
+          {
+            "public_id": "sofa_123_2",
+            "url": "https://example.com/sofa-2.jpg",
+            "type": "image/jpeg"
+          }
+        ]
+      },
+      "quantity": 2
+    }
+  ],
+  "couponId": {
+    "_id": "65f4b5e8f1a2c3d4e5f6g7h2",
+    "title": "Spring Sale",
+    "couponCode": "SPRING20",
+    "validFrom": "2024-03-01T00:00:00.000Z",
+    "validUntil": "2024-03-31T23:59:59.000Z",
+    "minimumPurchaseAmount": 100,
+    "discount": 20,
+    "usageLimit": 100,
+    "description": "Get 20% off on all orders above $100.",
+    "redeemedBy": [],
+    "status": "active"
+  },
+  "totalAmount": 2400,
+  "paymentId": {
+    "_id": "65f4b5e8f1a2c3d4e5f6g7h3",
+    "paypalId": "PAYID-123456789",
+    "payerId": "PAYER123",
+    "payerMail": "john.doe@example.com",
+    "transactionId": "CAPTURE123",
+    "amount": {
+      "currencyCode": "USD",
+      "value": "2400.00"
+    },
+    "status": "completed",
+    "createTime": "2024-03-15T12:34:56.000Z"
+  },
+  "status": "delivered",
+  "createdAt": "2024-03-15T12:00:00.000Z",
+  "updatedAt": "2024-03-15T12:00:00.000Z"
+}
