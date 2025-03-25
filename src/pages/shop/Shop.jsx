@@ -9,8 +9,16 @@ import heroImage from "../../assets/ceramics/Gemini_Generated_Image_yzrj9syzrj9s
 import useInventory from "../../hooks/useInventory";
 import Pagination from "../../components/Pagination";
 import LoadingTemplate from "../../components/LoadingTemplate";
+import {
+	FILTER_FORMS_CATEGORIES_OPTIONS,
+	FILTER_FORMS_COMPONENTS,
+	FILTER_FORMS_SIZES_OPTIONS,
+	FILTER_FORMS_SORT_OPTIONS,
+} from "../../constants/filter-form";
+import useSearch from "../../hooks/useSearch";
 
 const Shop = () => {
+	const { searchTerm, handleSearch, clearSearch } = useSearch();
 	const {
 		fetchLoading,
 		data,
@@ -19,9 +27,8 @@ const Shop = () => {
 		handlePage,
 		handleFilter,
 		clearFilter,
-		handleSearch,
-		clearSearch,
-	} = useInventory();
+		pageNumbers,
+	} = useInventory(searchTerm);
 
 	const [setIsOpen, isOpen] = useToggle();
 	const onSubmit = (data) => {
@@ -32,7 +39,34 @@ const Shop = () => {
 		clearFilter();
 		setIsOpen("isOpen");
 	};
-
+	const FieldContents = [
+		{
+			title: "Filter by Category",
+			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
+			props: { name: "categories", options: FILTER_FORMS_CATEGORIES_OPTIONS },
+		},
+		{
+			title: "Filter by Size",
+			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
+			props: { name: "sizes", options: FILTER_FORMS_SIZES_OPTIONS },
+		},
+		{
+			title: "Sort By",
+			type: FILTER_FORMS_COMPONENTS.RADIO,
+			props: { name: "sort", options: FILTER_FORMS_SORT_OPTIONS },
+		},
+		{
+			title: "Filter by Price",
+			type: FILTER_FORMS_COMPONENTS.INPUT,
+			props: {
+				name: "price",
+				options: [
+					{ name: "minPrice", label: "Minimum Price", type: "numbers" },
+					{ name: "maxPrice", label: "Maximum Price", type: "numbers" },
+				],
+			},
+		},
+	];
 	const productList = fetchLoading ? (
 		<div className="flex items-center justify-center ">
 			<LoadingTemplate message="Fetching inventory, please wait..." />
@@ -78,7 +112,11 @@ const Shop = () => {
 							: "-translate-x-full opacity-0 w-0"
 					} sm:translate-x-0 sm:opacity-100  sm:px-4`}
 					aria-hidden={!isOpen("isOpen")}>
-					<FilterForm ON_SUBMIT={onSubmit} ON_CLEAR={onClear} />
+					<FilterForm
+						FIELD_CONTENT={FieldContents}
+						ON_SUBMIT={onSubmit}
+						ON_CLEAR={onClear}
+					/>
 				</aside>
 
 				<div
@@ -91,6 +129,7 @@ const Shop = () => {
 			</div>
 			<div className="container mx-auto mt-6 px-4 py-6">
 				<Pagination
+					pageNumbers={pageNumbers}
 					currentPage={currentPage}
 					totalPages={totalPages}
 					onPageChange={handlePage}
