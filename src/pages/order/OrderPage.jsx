@@ -134,21 +134,6 @@ const OrderPage = () => {
 				),
 			showValue: () => "xl:table-cell",
 		},
-		// {
-		// 	label: "Payment Status",
-		// 	render: (order) => {
-		// 		// isUpdatingCouponStatus && id === Coupon._id && patchLoading ? (
-		// 		// 	<MiniLoader />
-		// 		// ) :
-		// 		return (
-		// 			<Badge
-		// 				// ON_CLICK={() => handleCouponStatus(Coupon)}
-		// 				LABEL={order?.paymentId?.status}
-		// 				STATUS={order?.paymentId?.status === "Completed" ? true : false}
-		// 			/>
-		// 		);
-		// 	},
-		// },
 		{
 			label: "Details",
 			render: (order) => (

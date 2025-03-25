@@ -1,16 +1,14 @@
 import React from "react";
 
-import demoData from "./DemoData.json";
-
-import OrderDetailPage from "../order/OrderDetailPage";
+import ContactPage from "../contact/ContactPage";
 // Now you can use the coupons array
 
 function DemoPage() {
 	
 	return (
-		<div className="container mx-auto">
-			<OrderDetailPage order={demoData} />;
-		</div>
+		// <div className="container mx-auto">
+			<ContactPage  />
+		// </div>
 	);
 }
 

@@ -36,6 +36,7 @@ import ViewCoupon from "../pages/coupon/ViewCoupon";
 import UpdateCoupon from "../pages/coupon/UpdateCoupon";
 import OrderPage from "../pages/order/OrderPage";
 import OrderDetailPage from "../pages/order/OrderDetailPage";
+import AboutPage from "../pages/about/AboutPage";
 
 const router = createBrowserRouter([
 	{
@@ -72,7 +73,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/about",
-				element: <div>About</div>,
+				element: <AboutPage/>,
 			},
 			{
 				path: "/cart",

@@ -7,9 +7,10 @@ const HeroSection = ({ title, subtitle, backgroundImage, buttonText, buttonLink 
             style={{ backgroundImage: `url(${backgroundImage})` }}
         >
             <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-50"></div>
-            <div className="relative flex flex-col items-center justify-center h-full text-white text-center p-4">
-                <h1 className="text-3xl md:text-5xl font-bold">{title}</h1>
-                <p className="mt-2 text-lg md:text-xl">{subtitle}</p>
+            <div className="relative flex flex-col items-center justify-center h-full text-white text-center p-4 animate-fade-in">
+                <h1 className="text-3xl md:text-5xl  font-bold  mb-6 animate-slide-down">{title}</h1>
+                <p className="mt-2 text-lg md:text-xl
+                 max-w-3xl mx-auto animate-slide-up">{subtitle}</p>
                 {buttonText && buttonLink && (
                     <a
                         href={buttonLink}
