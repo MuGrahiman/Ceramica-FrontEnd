@@ -16,6 +16,7 @@ import couponApi from "./features/coupon/couponApi";
 import couponReducer from "./features/coupon/couponSlice";
 import orderReducer from "./features/orders/orderSlice";
 import paymentReducer from "./features/payment/paymentSlice.js";
+import contactApi from "./features/contact/contactApi";
 
 export const store = configureStore( {
 	reducer: {
@@ -35,6 +36,7 @@ export const store = configureStore( {
 		[ stripeApi.reducerPath ]: stripeApi.reducer,
 		[ orderApi.reducerPath ]: orderApi.reducer,
 		[ couponApi.reducerPath ]: couponApi.reducer,
+		[ contactApi.reducerPath ]: contactApi.reducer,
 	},
 	middleware: ( getDefaultMiddleware ) =>
 		getDefaultMiddleware().concat(
@@ -49,6 +51,7 @@ export const store = configureStore( {
 			stripeApi.middleware,
 			orderApi.middleware,
 			couponApi.middleware,
+			contactApi.middleware,
 		),
 } );
 
@@ -69,3 +72,4 @@ export * from "./features/coupon/couponApi";
 export * from "./features/coupon/couponSlice";
 export * from "./features/order/orderApi";
 export * from "./features/orders/orderSlice";
+export * from "./features/contact/contactApi";

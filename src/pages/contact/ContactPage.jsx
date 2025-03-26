@@ -4,6 +4,8 @@ import ContactForm from "./ContactForm";
 import ContactInfo from "./ContactInfo";
 import HeroSection from "../../components/Hero";
 import heroImage from "../../assets/ceramics/image.png";
+import useApiHandler from "../../hooks/useApiHandler";
+import { useSubmitMessageMutation } from "../../redux/store";
 
 /**
  * ContactPage Component
@@ -11,10 +13,20 @@ import heroImage from "../../assets/ceramics/image.png";
  * - Manages form submission state
  */
 const ContactPage = () => {
+	const [handleMutation] = useApiHandler();
+	const [submitMessage, { isLoading }] = handleMutation(
+		useSubmitMessageMutation
+	);
+
 	const [isSubmitted, setIsSubmitted] = useState(false);
 
-	const handleFormSubmit = (success) => {
-		setIsSubmitted(success);
+	const handleFormSubmit = async (formData) => {
+		await submitMessage(formData, {
+			onSuccess: () => "Message submitted successfully",
+			onError: (error) =>
+				error.message || "Failed to submit message. Please try again.",
+			onFinally: setIsSubmitted(true),
+		});
 	};
 
 	return (
@@ -36,7 +48,10 @@ const ContactPage = () => {
 						{isSubmitted ? (
 							<ContactSuccess />
 						) : (
-							<ContactForm onFormSubmit={handleFormSubmit} />
+							<ContactForm
+								onFormSubmit={handleFormSubmit}
+								isLoading={isLoading}
+							/>
 						)}
 					</div>
 				</div>

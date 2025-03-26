@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import MiniLoader from "../../components/MiniLoader";
 /**
  * ContactForm Component
  * - Handles form state and validation
  * - Manages submission to backend
  */
-const ContactForm = ({ onFormSubmit }) => {
+const ContactForm = ({ onFormSubmit, isLoading = false }) => {
 	// Form state
 	const [formData, setFormData] = useState({
 		name: "",
@@ -47,17 +48,33 @@ const ContactForm = ({ onFormSubmit }) => {
 	// Validate form fields
 	const validateForm = () => {
 		const newErrors = {};
+		const messageLength = formData.message.trim().length;
 
-		if (!formData.name.trim()) newErrors.name = "Name is required";
+		// Validate name
+		if (!formData.name.trim()) {
+			newErrors.name = "Name is required";
+		} else if (formData.name.trim().length < 2) {
+			newErrors.name = "Name must be at least 2 characters long";
+		}
+
+		// Validate email
 		if (!formData.email.trim()) {
 			newErrors.email = "Email is required";
 		} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
 			newErrors.email = "Please enter a valid email";
 		}
+
+		// Validate order ID if subject is 'order'
 		if (formData.subject === "order" && !formData.orderId.trim()) {
 			newErrors.orderId = "Order ID is required for order support";
 		}
-		if (!formData.message.trim()) newErrors.message = "Message is required";
+
+		// Validate message
+		if (!formData.message.trim()) {
+			newErrors.message = "Message is required";
+		} else if (messageLength < 200) {
+			newErrors.message = "Message must be at least 200 characters long.";
+		}
 
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
@@ -72,7 +89,11 @@ const ContactForm = ({ onFormSubmit }) => {
 		}
 	};
 
-	return (
+	return isLoading ? (
+		<div className="min-h-full min-w-full flex justify-center items-center">
+			<MiniLoader />
+		</div>
+	) : (
 		<div className="bg-white p-6 rounded-lg shadow-md">
 			<h2 className="text-xl font-semibold text-gray-800 mb-4">
 				Send us a message
@@ -224,5 +245,6 @@ const ContactForm = ({ onFormSubmit }) => {
 };
 ContactForm.propTypes = {
 	onFormSubmit: PropTypes.func.isRequired,
+	isLoading: PropTypes.bool.isRequired,
 };
 export default ContactForm;

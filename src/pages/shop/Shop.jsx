@@ -84,7 +84,7 @@ const Shop = () => {
 				subtitle="Discover beautiful ceramic tableware"
 				backgroundImage={heroImage}
 				buttonText="Shop Now"
-				buttonLink="/products"
+				buttonLink="#shop"
 			/>
 			<div className="container mx-auto mt-6 px-4 py-6 sm:flex items-center justify-between gap-40 md:gap-52 xl:gap-96 ">
 				<BreadCrumb items={[{ label: "Home", to: "/" }, { label: "Shop" }]} />
@@ -120,6 +120,7 @@ const Shop = () => {
 				</aside>
 
 				<div
+					id="shop"
 					className={`flex flex-wrap items-center justify-center gap-6
 							 transition-all duration-700 ease-in-out ${
 									isOpen("isOpen") ? "opacity-0 w-0 " : "opacity-100  w-full"
