@@ -22,7 +22,7 @@ const Badge = ({ LABEL, STATUS, ON_CLICK }) => (
 Badge.propTypes = {
 	LABEL: PropTypes.string.isRequired,
 	STATUS: PropTypes.bool.isRequired,
-	ON_CLICK: PropTypes.func.isRequired,
+	ON_CLICK: PropTypes.func,
 };
 
 export default Badge;

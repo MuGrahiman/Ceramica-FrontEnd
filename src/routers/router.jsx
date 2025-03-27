@@ -38,6 +38,8 @@ import OrderPage from "../pages/order/OrderPage";
 import OrderDetailPage from "../pages/order/OrderDetailPage";
 import AboutPage from "../pages/about/AboutPage";
 import ContactPage from "../pages/contact/ContactPage";
+import InquiryPage from "../pages/inquiry/InquiryPage";
+import InquiryDetailPage from "../pages/inquiry/InquiryDetailPage";
 
 const router = createBrowserRouter([
 	{
@@ -219,6 +221,22 @@ const router = createBrowserRouter([
 				element: (
 					<AdminRoute>
 						<OrderDetailPage />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "inquiries",
+				element: (
+					<AdminRoute>
+						<InquiryPage />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "inquiry-item/:id",
+				element: (
+					<AdminRoute>
+						<InquiryDetailPage />
 					</AdminRoute>
 				),
 			},

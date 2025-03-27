@@ -40,8 +40,8 @@ const navigationItems = [
 		icon: <MdOutlineManageHistory className="h-6 w-6" />,
 	},
 	{
-		label: "Notifications",
-		path: "/dashboard/manage-books",
+		label: "Inquiries",
+		path: "/dashboard/inquiries",
 		icon: <MdNotificationImportant className="h-6 w-6" />,
 	},
 ];

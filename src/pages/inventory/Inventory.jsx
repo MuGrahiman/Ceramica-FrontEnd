@@ -142,7 +142,6 @@ const Inventory = () => {
 	];
 
 	const onSubmit = (data) => {
-		console.log("🚀 ~ onSubmit ~ data:", data);
 		handleFilter(data);
 		setIsOpen((prev) => !prev);
 	};

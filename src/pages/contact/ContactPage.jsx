@@ -5,7 +5,7 @@ import ContactInfo from "./ContactInfo";
 import HeroSection from "../../components/Hero";
 import heroImage from "../../assets/ceramics/image.png";
 import useApiHandler from "../../hooks/useApiHandler";
-import { useSubmitMessageMutation } from "../../redux/store";
+import { useSubmitInquiryMutation } from "../../redux/store";
 
 /**
  * ContactPage Component
@@ -15,7 +15,7 @@ import { useSubmitMessageMutation } from "../../redux/store";
 const ContactPage = () => {
 	const [handleMutation] = useApiHandler();
 	const [submitMessage, { isLoading }] = handleMutation(
-		useSubmitMessageMutation
+		useSubmitInquiryMutation
 	);
 
 	const [isSubmitted, setIsSubmitted] = useState(false);
