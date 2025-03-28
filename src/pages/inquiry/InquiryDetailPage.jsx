@@ -2,9 +2,14 @@ import React from "react";
 import InquiryHeader from "./InquiryHeader";
 import InquiryInfoCard from "./InquiryInfoCard";
 import ReplyForm from "./ReplyForm";
-import { useGetSingleInquiryQuery } from "../../redux/store";
+import {
+	useGetSingleInquiryQuery,
+	useReplyInquiryMutation,
+} from "../../redux/store";
 import { useParams } from "react-router-dom";
 import LoadingTemplate from "../../components/LoadingTemplate";
+import useApiHandler from "../../hooks/useApiHandler";
+import BreadCrumb from "../../components/BreadCrumb";
 
 /**
  * InquiryDetailPage - Displays customer inquiry details and reply form
@@ -26,8 +31,22 @@ const InquiryDetailPage = () => {
 		isLoading: fetchLoading,
 		error: fetchError,
 	} = useGetSingleInquiryQuery(id);
+	const [handleMutation] = useApiHandler();
+	const [replyToInquiry, { isLoading: isReplying, isSuccess }] = handleMutation(
+		useReplyInquiryMutation
+	);
 
-    if (fetchLoading) {
+	const handleSubmit = async (data) => {
+		await replyToInquiry(
+			{ inquiryId: id, replyData: { data } },
+			{
+				onSuccess: () => "Replied successfully",
+				onError: (err) =>
+					err.data.message || "Failed to reply. Please try again",
+			}
+		);
+	};
+	if (fetchLoading) {
 		return (
 			<div className="flex items-center justify-center h-screen">
 				<LoadingTemplate message="Fetching inquiries, please wait..." />
@@ -45,8 +64,13 @@ const InquiryDetailPage = () => {
 	}
 	return (
 		<div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+			
 			<div className="max-w-7xl mx-auto">
 				<InquiryHeader title="Inquiry Details" status={inquiry.status} />
+						<BreadCrumb items={[
+				{ label: "Inquiry", to: "/dashboard/inquiries" },
+				{ label: inquiry._id },
+			]} />
 
 				<div className="flex flex-col  gap-8">
 					<InquiryInfoCard inquiry={inquiry} />
@@ -54,12 +78,14 @@ const InquiryDetailPage = () => {
 					<ReplyForm
 						email={inquiry?.email}
 						defaultSubject={`Re: ${inquiry.subject}`}
+						isSending={isReplying}
+						isSuccess={inquiry.status === "resolved" || isSuccess}
+						onSubmit={handleSubmit}
 					/>
 				</div>
 			</div>
 		</div>
 	);
 };
-
 
 export default InquiryDetailPage;

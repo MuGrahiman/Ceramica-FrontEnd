@@ -50,11 +50,11 @@ const inquiryApi = createApi( {
         } ),
 
         // Update inquiry (admin only)
-        updateInquiry: builder.mutation( {
-            query: ( { inquiryId, updateData } ) => ( {
-                url: `/update/${ inquiryId }`,
-                method: 'PUT',
-                body: updateData,
+        replyInquiry: builder.mutation( {
+            query: ( { inquiryId, replyData } ) => ( {
+                url: `/reply/${ inquiryId }`,
+                method: 'POST',
+                body: replyData,
                 credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
@@ -108,7 +108,7 @@ export const {
     useGetInquiriesQuery,
     useGetSingleInquiryQuery,
     useSubmitInquiryMutation,
-    useUpdateInquiryMutation,
+    useReplyInquiryMutation,
     useDeleteInquiryMutation,
     useAddAdminNotesMutation,
     useUpdateInquiryStatusMutation
