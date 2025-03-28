@@ -6,11 +6,11 @@ import { COUPON_BREAD_CRUMB_ITEMS, COUPON_URL } from "../../constants/coupon";
 import CouponCard from "./CouponCard";
 import CouponUsersList from "./CouponUsersList";
 import useCoupon from "../../hooks/useCoupon";
+import PageTitle from "../../components/PageTitle";
 
-const ViewCoupon = () => {
+const CouponDetailsPage = () => {
 	const { id } = useParams();
-	const { useSingleCoupon, useDeleteCoupon } =
-		useCoupon();
+	const { useSingleCoupon, useDeleteCoupon } = useCoupon();
 
 	const { data, isLoading: fetchLoading } = useSingleCoupon(id);
 	const [deleteCoupon, { isLoading: isDeletingCoupon }] = useDeleteCoupon(id);
@@ -39,8 +39,9 @@ const ViewCoupon = () => {
 	if (!data || !data) <div>{`Sorry couldn't find any product `}</div>;
 	return (
 		<main className="max-w-5xl  mx-auto font-secondary ">
-			<BreadCrumb items={COUPON_BREAD_CRUMB_ITEMS(data.title)} />
-			<div className="  mt-4 p-5  gap-3 ">
+			<PageTitle title="Coupon Details"/>
+			<BreadCrumb items={COUPON_BREAD_CRUMB_ITEMS(data._id)} />
+			<div className="flex flex-col gap-8 mt-2">
 				<CouponCard coupon={data} />
 				<CouponUsersList users={data.redeemedBy} />
 			</div>
@@ -63,4 +64,4 @@ const ViewCoupon = () => {
 	);
 };
 
-export default ViewCoupon;
+export default CouponDetailsPage;

@@ -6,8 +6,9 @@ import BreadCrumb from "../../components/BreadCrumb";
 import useInventory from "../../hooks/useInventory";
 import LoadingTemplate from "../../components/LoadingTemplate";
 import { INVENTORY_BREAD_CRUMB_ITEMS } from "../../constants/inventory";
+import PageTitle from "../../components/PageTitle";
 
-const InventoryItem = () => {
+const InventoryDetailsPage = () => {
 	const { id } = useParams();
 	const { data, isLoading: fetchLoading } = useGetInventoryItemByIdQuery(id);
 	const { handleDelete } = useInventory();
@@ -26,7 +27,9 @@ const InventoryItem = () => {
 	if (!data || !data) <div>{`Sorry couldn't find any product `}</div>;
 	return (
 		<main className="max-w-5xl  mx-auto ">
-			<BreadCrumb items={INVENTORY_BREAD_CRUMB_ITEMS(data.title)} />
+			<PageTitle title="Inventory Details" />
+
+			<BreadCrumb items={INVENTORY_BREAD_CRUMB_ITEMS(data._id)} />
 			<div className=" bg-white rounded-lg shadow-lg mt-4">
 				<ProductPanel
 					productId={data._id}
@@ -62,4 +65,4 @@ const InventoryItem = () => {
 	);
 };
 
-export default InventoryItem;
+export default InventoryDetailsPage;

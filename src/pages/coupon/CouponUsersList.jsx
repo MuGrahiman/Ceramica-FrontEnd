@@ -5,7 +5,7 @@ import ListOptions from "../../components/ListOptions";
 
 const CouponUsersList = ({ users = [], onSelect }) => {
 	return (
-		<div className="my-6  w-full bg-white px-6 py-4 ">
+		<div className=" w-full bg-white px-6 py-4 ">
 			<div className="sm:flex justify-between mb-2 ">
 				<p className="font-semibold">Redeemed Users:</p>
 				<span className="text-gray-600">{users.length}</span>

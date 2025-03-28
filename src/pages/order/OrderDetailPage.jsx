@@ -11,6 +11,7 @@ import LoadingTemplate from "../../components/LoadingTemplate";
 import BreadCrumb from "../../components/BreadCrumb";
 import { ORDER_BREAD_CRUMB_ITEMS } from "../../constants/order";
 import OrderUserDetails from "./OrderUserDetails";
+import PageTitle from "../../components/PageTitle";
 /**
  * Order Detail Page: Displays detailed information about a specific order.
  */
@@ -50,6 +51,8 @@ const OrderDetailPage = () => {
 	return (
 		<div className="">
 			{/* Header Section */}
+			<PageTitle title="Order Details" />
+
 			<BreadCrumb items={ORDER_BREAD_CRUMB_ITEMS(orderData._id)} />
 
 			<div className="grid gap-2">

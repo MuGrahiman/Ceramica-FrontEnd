@@ -16,11 +16,11 @@ const CouponCard = ({ coupon }) => {
 		description,
 		status,
 	} = coupon;
-	
+
 	const [toggle, isToggled] = useToggle();
 
 	return (
-		<div className="bg-white my-6  w-full rounded overflow-hidden shadow transition-transform duration-300 hover:shadow-xl">
+		<div className="bg-white  w-full rounded overflow-hidden shadow transition-transform duration-300 hover:shadow-xl">
 			<div className="px-6 py-4 text-center sm:text-left ">
 				<div className="sm:flex justify-between mb-2 ">
 					<div className="font-bold text-xl mb-2">{title}</div>
@@ -46,11 +46,15 @@ const CouponCard = ({ coupon }) => {
 				<div className="sm:flex justify-between mb-2">
 					<div>
 						<p className="font-semibold">Valid From:</p>
-						<span className="text-gray-600">{setDateAsDayMonthYear(validFrom)}</span>
+						<span className="text-gray-600">
+							{setDateAsDayMonthYear(validFrom)}
+						</span>
 					</div>
 					<div>
 						<p className="font-semibold">Valid Until:</p>
-						<span className="text-gray-600">{setDateAsDayMonthYear(validUntil)}</span>
+						<span className="text-gray-600">
+							{setDateAsDayMonthYear(validUntil)}
+						</span>
 					</div>
 				</div>
 				<div className="sm:flex justify-between mb-2">

@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import LoadingTemplate from "../../components/LoadingTemplate";
 import useApiHandler from "../../hooks/useApiHandler";
 import BreadCrumb from "../../components/BreadCrumb";
+import PageTitle from "../../components/PageTitle";
 
 /**
  * InquiryDetailPage - Displays customer inquiry details and reply form
@@ -24,7 +25,7 @@ import BreadCrumb from "../../components/BreadCrumb";
  * @param {string} inquiry.createdAt - ISO date string
  * @param {string} inquiry.updatedAt - ISO date string
  */
-const InquiryDetailPage = () => {
+const InquiryDetailsPage = () => {
 	const { id } = useParams();
 	const {
 		data: inquiry,
@@ -66,13 +67,13 @@ const InquiryDetailPage = () => {
 		<div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
 			
 			<div className="max-w-7xl mx-auto">
-				<InquiryHeader title="Inquiry Details" status={inquiry.status} />
+				<PageTitle title="Inquiry Details"/>
 						<BreadCrumb items={[
 				{ label: "Inquiry", to: "/dashboard/inquiries" },
 				{ label: inquiry._id },
 			]} />
 
-				<div className="flex flex-col  gap-8">
+				<div className="flex flex-col  gap-8 mt-2">
 					<InquiryInfoCard inquiry={inquiry} />
 
 					<ReplyForm
@@ -88,4 +89,4 @@ const InquiryDetailPage = () => {
 	);
 };
 
-export default InquiryDetailPage;
+export default InquiryDetailsPage;

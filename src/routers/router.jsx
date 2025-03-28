@@ -4,15 +4,9 @@ import Home from "../pages/home/Home";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import Auth from "../pages/auth/Auth";
-// import Login from "../components/Login";
-// import Register from "../components/Register";
-// import Auth from "../components/Auth";
-// import CartPage from "../pages/books/CartPage";
-import CheckoutPage from "../pages/books/CheckoutPage";
 import SingleBook from "../pages/books/SingleBook";
 import PrivateRoute from "./PrivateRoute";
 import AdminRoute from "./AdminRoute";
-import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import Dashboard from "../pages/dashboard/Dashboard";
 import ManageBooks from "../pages/dashboard/manageBooks/ManageBooks";
 import AddBook from "../pages/dashboard/addBook/AddBook";
@@ -22,24 +16,24 @@ import OTP from "../pages/auth/OTP";
 import Mail from "../pages/auth/Mail";
 import AdminLayout from "../components/AdminLayout";
 import DemoPage from "../pages/demo/DemoPage";
-import Inventory from "../pages/inventory/Inventory";
 import AddToInventory from "../pages/inventory/AddToInventory";
 import ModifyInventory from "../pages/inventory/UpdateInventory";
-import InventoryItem from "../pages/inventory/InventoryItem";
+import InventoryDetailsPage from "../pages/inventory/InventoryDetailsPage";
 import Shop from "../pages/shop/Shop";
 import CartPage from "../pages/cart/CartPage";
 import CheckOutPage from "../pages/checkout/CheckOutPage";
 import SuccessPaymentPage from "../pages/success/SuccessPaymentPage";
-import Coupon from "../pages/coupon/Coupon";
+import CouponPage from "../pages/coupon/CouponPage";
 import CreateCoupon from "../pages/coupon/CreateCoupon";
-import ViewCoupon from "../pages/coupon/ViewCoupon";
+import CouponDetailsPage from "../pages/coupon/CouponDetailsPage";
 import UpdateCoupon from "../pages/coupon/UpdateCoupon";
 import OrderPage from "../pages/order/OrderPage";
 import OrderDetailPage from "../pages/order/OrderDetailPage";
 import AboutPage from "../pages/about/AboutPage";
 import ContactPage from "../pages/contact/ContactPage";
 import InquiryPage from "../pages/inquiry/InquiryPage";
-import InquiryDetailPage from "../pages/inquiry/InquiryDetailPage";
+import InquiryDetailsPage from "../pages/inquiry/InquiryDetailsPage";
+import InventoryPage from "../pages/inventory/InventoryPage";
 
 const router = createBrowserRouter([
 	{
@@ -148,7 +142,7 @@ const router = createBrowserRouter([
 				path: "inventory",
 				element: (
 					<AdminRoute>
-						<Inventory />
+						<InventoryPage />
 					</AdminRoute>
 				),
 			},
@@ -172,7 +166,7 @@ const router = createBrowserRouter([
 				path: "inventory-item/:id",
 				element: (
 					<AdminRoute>
-						<InventoryItem />
+						<InventoryDetailsPage />
 					</AdminRoute>
 				),
 			},
@@ -180,7 +174,7 @@ const router = createBrowserRouter([
 				path: "coupon",
 				element: (
 					<AdminRoute>
-						<Coupon />
+						<CouponPage />
 					</AdminRoute>
 				),
 			},
@@ -196,7 +190,7 @@ const router = createBrowserRouter([
 				path: "view-coupon/:id",
 				element: (
 					<AdminRoute>
-						<ViewCoupon />
+						<CouponDetailsPage />
 					</AdminRoute>
 				),
 			},
@@ -236,7 +230,7 @@ const router = createBrowserRouter([
 				path: "inquiry-item/:id",
 				element: (
 					<AdminRoute>
-						<InquiryDetailPage />
+						<InquiryDetailsPage />
 					</AdminRoute>
 				),
 			},

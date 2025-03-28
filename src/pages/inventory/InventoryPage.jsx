@@ -22,7 +22,7 @@ import {
 import FilterFormLayout from "../../components/FilterFormLayout";
 
 // Inventory Component
-const Inventory = () => {
+const InventoryPage = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
 
@@ -256,4 +256,4 @@ const Inventory = () => {
 	);
 };
 
-export default Inventory;
+export default InventoryPage;

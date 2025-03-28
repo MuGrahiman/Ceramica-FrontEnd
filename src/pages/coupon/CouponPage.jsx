@@ -15,7 +15,7 @@ import useSearch from "../../hooks/useSearch";
 import useCoupon from "../../hooks/useCoupon";
 
 // Coupon Component
-const Coupon = () => {
+const CouponPage = () => {
 	const [id, setId] = useState(null);
 
 	const { useGetCoupons, isUpdatingCouponStatus, useUpdateCouponStatus } =
@@ -190,4 +190,4 @@ const Coupon = () => {
 	);
 };
 
-export default Coupon;
+export default CouponPage;
