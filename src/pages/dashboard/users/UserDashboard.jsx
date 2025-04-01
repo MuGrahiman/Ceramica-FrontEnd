@@ -1,7 +1,7 @@
 import React from 'react';
-import { useAuth } from '../../../context/AuthContext';
 import { useGetOrderByEmailQuery } from '../../../redux/store';
 import { getDate } from '../../../utils/date';
+import { useAuth } from '../../../hooks/useAuth';
 
 const UserDashboard = () => {
     const { currentUser } = useAuth();

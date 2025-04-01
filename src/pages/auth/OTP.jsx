@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import AuthLayout from "../../components/AuthLayout";
 import {
 	useResendOTPMutation,
-	useSendOTPQuery,
+	useGetOTPQuery,
 	useVerifyOTPMutation,
 } from "../../redux/store";
 import { useNavigate, useParams } from "react-router-dom";
 import useToast from "../../hooks/useToast";
 import LoadingTemplate from "../../components/LoadingTemplate";
+import useApiHandler from "../../hooks/useApiHandler";
+import MiniLoader from "../../components/MiniLoader";
 
 // Constants
 const OTP_LENGTH = 4;
@@ -16,11 +18,12 @@ const INITIAL_TIMER = 19;
 const OTP = () => {
 	// Hooks
 	const { userId } = useParams();
-	const { data, error, isLoading } = useSendOTPQuery(userId);
-	const [verifyOTP, result] = useVerifyOTPMutation();
-	const [resendOTP, resendResult] = useResendOTPMutation();
+	const { data, error, isLoading } = useGetOTPQuery(userId);
 	const navigate = useNavigate();
 	const showToast = useToast();
+	const [handleMutation] = useApiHandler();
+	const [verifyOTP, verificationResult] = handleMutation(useVerifyOTPMutation);
+	const [resendOTP, resendResult] = handleMutation(useResendOTPMutation);
 
 	// States
 	const [value, setValue] = useState(Array(OTP_LENGTH).fill(""));
@@ -30,13 +33,13 @@ const OTP = () => {
 	const buttonRef = useRef(null);
 	const inputs = useRef([]);
 
-	// Effects
-	useEffect(() => {
-		if (data) {
-			const toastType = data.success ? "success" : "error";
-			showToast(data.message, toastType);
-		}
-	}, [data]);
+	// // Effects
+	// useEffect(() => {
+	// 	if (data) {
+	// 		const toastType = data.success ? "success" : "error";
+	// 		showToast(data.message, toastType);
+	// 	}
+	// }, [data]);
 
 	useEffect(() => {
 		const timerId = setInterval(() => {
@@ -96,15 +99,19 @@ const OTP = () => {
 	};
 
 	const handleResendOTP = async () => {
-		try {
-			const response = await resendOTP(data.otpId).unwrap();
-			const toastType = response.success ? "success" : "error";
-			showToast(response.message, toastType);
-			if (response.success) setTime(INITIAL_TIMER);
-		} catch (error) {
-			console.error("Resend otp error:", error)
-			showToast("Failed to resend OTP", "error");
-		}
+		resendOTP(data.data.otpId, {
+			onSuccess: (res) => {
+				if (res.success) {
+					showToast(res.message, "success");
+					setTime(INITIAL_TIMER);
+				} else throw new Error(res.message);
+			},
+			onError: (err) =>
+				showToast(
+					err.data.message || err.message || "Failed to resend OTP",
+					"error"
+				),
+		});
 	};
 
 	const handleSubmit = async (e) => {
@@ -115,19 +122,30 @@ const OTP = () => {
 			return;
 		}
 
-		try {
-			const verified = await verifyOTP({ otpId: data.otpId, otp: otpCode }).unwrap();
-			if (verified.success) {
-				showToast(verified.message, "success");
-				navigate("/login");
-			} else throw new Error(verified.message);
-		} catch (err) {
-			showToast(err?.data?.message || "Verification failed", "error");
-		}
+		await verifyOTP(
+			{
+				otpId: data.data.otpId,
+				otp: otpCode,
+			},
+			{
+				onSuccess: (res) => {
+					if (res.success) {
+						showToast(res.message, "success");
+						navigate("/login");
+					} else throw new Error(res.message);
+				},
+				onError: (err) =>
+					showToast(
+						err?.data?.message || err.message || "OTP Verification failed",
+						"error"
+					),
+			}
+		);
 	};
 
 	if (isLoading) return <LoadingTemplate />;
-
+	const getBtnWithLoader = (text, isLoading) =>
+		isLoading ? <MiniLoader /> : text;
 	return (
 		<AuthLayout>
 			<div className=" text-center">
@@ -162,7 +180,7 @@ const OTP = () => {
 							ref={buttonRef}
 							onClick={handleSubmit}
 							className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150">
-							Verify Account
+							{getBtnWithLoader("Verify Account", verificationResult.isLoading)}
 						</button>
 					</div>
 				</form>
@@ -170,10 +188,10 @@ const OTP = () => {
 					Didn't receive code?{" "}
 					{time === 0 ? (
 						<button
-							disabled={resendResult.isLoading}
+							disabled={resendResult.isLoading || verificationResult.isLoading}
 							onClick={handleResendOTP}
 							className="font-medium text-indigo-500 hover:text-indigo-600">
-							Resend
+							{getBtnWithLoader("Resend", resendResult.isLoading)}
 						</button>
 					) : (
 						<span className="font-bold text-indigo-500">

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useContextAuth } from "../../context/AuthContext";
 
 import Swal from "sweetalert2";
 import { useCreateOrderMutation } from "../../redux/features/orders/ordersApi";
@@ -12,7 +12,7 @@ const CheckoutPage = () => {
 	// useSelector(state => state.cart.cartItems);
 	const totalPrice = 0;
 	// cartItems.reduce((acc, item) => acc + item.newPrice, 0).toFixed(2);
-	const { currentUser } = useAuth();
+	const { currentUser } = useContextAuth();
 	const {
 		register,
 		handleSubmit,

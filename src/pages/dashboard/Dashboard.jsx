@@ -5,6 +5,7 @@ import LoadingTemplate from '../../components/LoadingTemplate';
 import getBaseUrl from '../../utils/baseUrl';
 import { MdIncompleteCircle } from 'react-icons/md'
 import RevenueChart from './RevenueChart';
+import { APP } from '../../constants/app';
 
 const Dashboard = () => {
     const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ const Dashboard = () => {
             try {
                 const response =  await axios.get(`${getBaseUrl()}/api/admin`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Authorization': `Bearer ${localStorage.getItem(APP)}`,
                         'Content-Type': 'application/json',
                     },
                 })

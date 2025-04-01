@@ -4,11 +4,12 @@ import React, { useEffect, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { HiViewGridAdd } from "react-icons/hi";
 import { MdOutlineManageHistory } from "react-icons/md";
+import { APP } from "../../constants/app";
 
 const DashboardLayout = () => {
 	const navigate = useNavigate();
 	const handleLogout = () => {
-		localStorage.removeItem("token");
+		localStorage.removeItem(APP);
 		navigate("/");
 	};
 

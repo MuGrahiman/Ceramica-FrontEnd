@@ -1,66 +1,77 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import getBaseUrl from "../../../utils/baseUrl";
+import { APP } from "../../../constants/app";
 
-const baseQuery = fetchBaseQuery({
-	baseUrl: `${getBaseUrl()}/api/auth`,
+const baseQuery = fetchBaseQuery( {
+	baseUrl: `${ getBaseUrl() }/api/auth`,
 	credentials: "include",
-	prepareHeaders: (Headers) => {
-		const token = localStorage.getItem("token");
-		if (token) {
-			Headers.set("Authorization", `Bearer ${token}`);
+	prepareHeaders: ( Headers ) => {
+
+		const jsonValue = localStorage.getItem( APP );
+		if ( jsonValue ) {
+			try {
+				const { token } = JSON.parse( jsonValue );
+				if ( token ) {
+					// headers.set("Authorization", `Bearer ${token}`);
+					Headers.set( "Authorization", `Bearer ${ token }` );
+				}
+			} catch ( error ) {
+				console.error( "Failed to parse APP data from localStorage:", error );
+			}
 		}
+
 		return Headers;
 	},
-});
+} );
 
-const usersApi = createApi({
+const usersApi = createApi( {
 	reducerPath: "userApi",
 	baseQuery,
-	tagTypes: ["Users"],
-	endpoints: (builder) => ({
-		fetchAllUsers: builder.query({
+	tagTypes: [ "Users" ],
+	endpoints: ( builder ) => ( {
+		fetchAllUsers: builder.query( {
 			query: () => "/",
-			providesTags: ["Users"],
-		}),
-		fetchUserById: builder.query({
-			query: (id) => `/${id}`,
-			providesTags: (result, error, id) => [{ type: "Users", id }],
-		}),
-		registerUser: builder.mutation({
-			query: (newUser) => ({
+			providesTags: [ "Users" ],
+		} ),
+		fetchUserById: builder.query( {
+			query: ( id ) => `/${ id }`,
+			providesTags: ( result, error, id ) => [ { type: "Users", id } ],
+		} ),
+		registerUser: builder.mutation( {
+			query: ( newUser ) => ( {
 				url: `/sign-up`,
 				method: "POST",
 				body: newUser,
-			}),
-			invalidatesTags: ["Users"],
-		}),
-		loginUser: builder.mutation({
-			query: (existUser) => ({
+			} ),
+			invalidatesTags: [ "Users" ],
+		} ),
+		loginUser: builder.mutation( {
+			query: ( existUser ) => ( {
 				url: `/sign-in`,
 				method: "POST",
 				body: existUser,
-			}),
-			invalidatesTags: ["Users"],
-		}),
-		forgotUser: builder.mutation({
-			query: (userMail) => ({
+			} ),
+			invalidatesTags: [ "Users" ],
+		} ),
+		forgotUser: builder.mutation( {
+			query: ( userMail ) => ( {
 				url: `/forgot`,
 				method: "POST",
 				body: userMail,
-			}),
-			invalidatesTags: ["Users"],
-		}),
-		updateUser: builder.mutation({
-			query: ({ id, ...rest }) => ({
-				url: `/edit/${id}`,
+			} ),
+			invalidatesTags: [ "Users" ],
+		} ),
+		updateUser: builder.mutation( {
+			query: ( { id, ...rest } ) => ( {
+				url: `/edit/${ id }`,
 				method: "PUT",
 				body: rest,
 				headers: {
 					"Content-Type": "application/json",
 				},
-			}),
-			invalidatesTags: ["Users"],
-		}),
+			} ),
+			invalidatesTags: [ "Users" ],
+		} ),
 		// deleteUser: builder.mutation({
 		//     query: (id) => ({
 		//         url: `/${id}`,
@@ -68,8 +79,8 @@ const usersApi = createApi({
 		//     }),
 		//     invalidatesTags: ["Users"]
 		// })
-	}),
-});
+	} ),
+} );
 
 export const {
 	useFetchAllUsersQuery,

@@ -12,7 +12,6 @@ export const useAuth = ( role ) => {
     currentUser.token &&
     currentUser.role === role
   );
-
   /**
    * Validate user authentication.
    * @throws {Error} If the user is not authorized.

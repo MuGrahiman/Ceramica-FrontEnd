@@ -23,10 +23,10 @@ const Mail = () => {
 
 		try {
 			// API Call
-			const { success, message, userId } = await forgotUser({ email }).unwrap();
+			const { success, message, data } = await forgotUser({ email }).unwrap();
 			if (success) {
 				showToast(message, "success");
-				navigate(`/otp/${userId}`);
+				navigate(`/otp/${data.userId}`);
 			} else {
 				throw new Error(message);
 			}

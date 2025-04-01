@@ -22,7 +22,10 @@ const useExtract = () => {
         setError(null);
 
         try {
-            const result = await fn(...args).then((res) => res.user);
+            if (typeof fn !== 'function') {
+                throw new Error('The provided argument is not a function.');
+            }
+                        const result = await fn(...args).then((res) => res.user);
             const extractedData = {
                 email: result.email || result.providerData?.[0]?.email,
                 uid: result.uid,

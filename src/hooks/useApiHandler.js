@@ -21,7 +21,6 @@ const useApiHandler = () => {
         onError = null,
         onFinally = null
     } = {} ) => {
-
         try {
             // apiCall validation
             if ( typeof apiCall !== 'function' ) {

@@ -18,7 +18,7 @@ const otpApi = createApi({
 	baseQuery,
 	tagTypes: ["OTP"],
 	endpoints: (builder) => ({
-		sendOTP: builder.query({
+		getOTP: builder.query({
 			query: (userId) => `/${userId}`,
 			providesTags: ["OTP"],
 		}),
@@ -40,6 +40,6 @@ const otpApi = createApi({
 	}),
 });
 
-export const { useSendOTPQuery, useResendOTPMutation, useVerifyOTPMutation } =
+export const { useGetOTPQuery, useResendOTPMutation, useVerifyOTPMutation } =
 	otpApi;
 export default otpApi;

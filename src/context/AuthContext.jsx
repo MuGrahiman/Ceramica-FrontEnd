@@ -13,7 +13,7 @@ import {
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
+export const useContextAuth = () => {
 	return useContext(AuthContext);
 };
 

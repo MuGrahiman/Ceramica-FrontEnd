@@ -3,7 +3,7 @@ import React from "react";
 
 const AuthLayout = ({ children }) => {
 	return (
-		<div className="h-[calc(100vh-120px)]  flex justify-center items-center ">
+		<div className="min-h-[calc(100vh-120px)]  flex justify-center items-center ">
 			<div className="w-full max-w-md mx-auto bg-white  shadow-2xl shadow-black rounded-lg px-8 pt-6 pb-8 mb-4">
 				{children}
 				<p className="mt-5 text-center text-gray-500 text-xs">

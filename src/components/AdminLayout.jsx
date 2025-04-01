@@ -12,6 +12,7 @@ import {
 	MdOutlineInventory,
 	MdOutlineManageHistory,
 } from "react-icons/md";
+import { APP } from "../constants/app";
 
 const navigationItems = [
 	{
@@ -61,7 +62,7 @@ const AdminLayout = () => {
 	const navigate = useNavigate();
 
 	const handleLogout = () => {
-		localStorage.removeItem("token");
+		localStorage.removeItem(APP);
 		navigate("/");
 	};
 

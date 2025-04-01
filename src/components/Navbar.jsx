@@ -9,7 +9,6 @@ import { HiOutlineUser } from "react-icons/hi";
 import avatarImg from "../assets/avatar.png";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useAuth } from "../context/AuthContext";
 import { removeUser } from "../redux/store";
 
 const navigation = [
