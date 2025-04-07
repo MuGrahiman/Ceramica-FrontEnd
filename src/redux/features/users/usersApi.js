@@ -30,11 +30,19 @@ const usersApi = createApi( {
 	tagTypes: [ "Users" ],
 	endpoints: ( builder ) => ( {
 		fetchAllUsers: builder.query( {
-			query: () => "/",
+			query: ( {
+				searchTerm = '', sort = '', status = []
+			} ) => ( {
+				url: '/get',
+				method: 'GET',
+				params: {
+					searchTerm, sort, status
+				},
+			} ),
 			providesTags: [ "Users" ],
 		} ),
 		fetchUserById: builder.query( {
-			query: ( id ) => `/${ id }`,
+			query: ( id ) => `get/${ id }`,
 			providesTags: ( result, error, id ) => [ { type: "Users", id } ],
 		} ),
 		registerUser: builder.mutation( {
@@ -46,10 +54,10 @@ const usersApi = createApi( {
 			invalidatesTags: [ "Users" ],
 		} ),
 		loginUser: builder.mutation( {
-			query: ( existUser ) => ( {
+			query: ( userData ) => ( {
 				url: `/sign-in`,
 				method: "POST",
-				body: existUser,
+				body: userData,
 			} ),
 			invalidatesTags: [ "Users" ],
 		} ),
@@ -61,11 +69,11 @@ const usersApi = createApi( {
 			} ),
 			invalidatesTags: [ "Users" ],
 		} ),
-		updateUser: builder.mutation( {
-			query: ( { id, ...rest } ) => ( {
+		updateUserStatus: builder.mutation( {
+			query: ( { id, status } ) => ( {
 				url: `/edit/${ id }`,
 				method: "PUT",
-				body: rest,
+				body: { status },
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -88,6 +96,6 @@ export const {
 	useLoginUserMutation,
 	useRegisterUserMutation,
 	useForgotUserMutation,
-	useUpdateUserMutation /*useDeleteUserMutation*/,
+	useUpdateUserStatusMutation /*useDeleteUserMutation*/,
 } = usersApi;
 export default usersApi;

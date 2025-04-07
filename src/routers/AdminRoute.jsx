@@ -1,17 +1,23 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import { Navigate, Outlet } from "react-router-dom";
-import useToast from "../hooks/useToast";
 import { useAuth } from "../hooks/useAuth";
 
 const AdminRoute = ({ children }) => {
-	const showToast = useToast();
 	const { isAuthorized } = useAuth("admin");
+	return isAuthorized ? (
+		children ? (
+			children
+		) : (
+			<Outlet />
+		)
+	) : (
+		<Navigate to="/admin" />
+	);
+};
 
-	if (!isAuthorized) {
-		showToast("Please login", "error");
-		return <Navigate to="/admin" />;
-	}
-	return children ? children : <Outlet />;
+AdminRoute.propTypes = {
+    children: PropTypes.node,
 };
 
 export default AdminRoute;

@@ -21,7 +21,6 @@ export const prepareHeaders = ( headers = {} ) => {
     } else {
         console.warn( "No APP data found in localStorage." );
     }
-    console.log( headers ); // Ensure headers include Authorization
     return headers;
 };
 

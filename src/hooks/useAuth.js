@@ -2,26 +2,42 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useToast from "./useToast";
+import { useEffect, useState } from "react";
 
 export const useAuth = ( role ) => {
   const currentUser = useSelector( ( state ) => state.auth.currentUser );
   const navigate = useNavigate();
-  const showToast = useToast()
-  const isAuthorized = !!(
+  const showToast = useToast();
+
+  // State to hold authorization status
+  const [ isAuthorized, setIsAuthorized ] = useState( !!(
     currentUser &&
     currentUser.token &&
-    currentUser.role === role
-  );
+    currentUser.roles === role
+  ) );
+
+  useEffect( () => {
+
+    setIsAuthorized( !!(
+      currentUser &&
+      currentUser.token &&
+      currentUser.roles === role
+    ) );
+  }, [ currentUser, role ] );
+
   /**
    * Validate user authentication.
    * @throws {Error} If the user is not authorized.
    */
-  const validateAuthentication = ( message = '' ) => {
+  const validateAuthentication = ( message = "Please login", location = "/login" ) => {
     if ( !isAuthorized ) {
-      navigate( "/login" );
-      showToast( message || "Please login " )
-      throw new Error( "Please login " );
+      navigate( location );
+      showToast( message );
+      // throw new Error( "Please login" );
+      return isAuthorized
     }
+    return isAuthorized
   };
+
   return { isAuthorized, currentUser, validateAuthentication };
 };

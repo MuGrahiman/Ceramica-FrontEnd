@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from '../assets/logo/logo.png'
+import logo from "../assets/logo/logo.png";
 import PropTypes from "prop-types";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
@@ -22,7 +22,7 @@ const navigationItems = [
 	},
 	{
 		label: "Users",
-		path: "/folders",
+		path: "/dashboard/clients",
 		icon: <MdManageAccounts className="h-6 w-6" />,
 	},
 	{

@@ -77,7 +77,7 @@ const Login = () => {
 		<AuthLayout>
 			<h2 className="text-xl font-semibold mb-4 text-center">Login</h2>
 			<AuthForm
-				onSubmit={(data)=>handleLogin(data,"mail")}
+				onSubmit={(data)=>handleLogin(data,"local")}
 				btnText={"Login"}
 				isLoading={isLoading}
 			/>

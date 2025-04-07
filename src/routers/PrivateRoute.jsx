@@ -1,17 +1,23 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Navigate, Outlet } from "react-router-dom";
-import useToast from "../hooks/useToast";
 import { useAuth } from "../hooks/useAuth";
 
 const PrivateRoute = ({ children }) => {
 	const { isAuthorized } = useAuth("client");
-	const showToast = useToast();
+	return isAuthorized ? (
+		children ? (
+			children
+		) : (
+			<Outlet />
+		)
+	) : (
+		<Navigate to="/login" replace />
+	);
+};
 
-	if (!isAuthorized) {
-		showToast("Please login", "error");
-		return <Navigate to="/login" replace />;
-	}
-	return children ? children : <Outlet />;
+PrivateRoute.propTypes = {
+	children: PropTypes.node,
 };
 
 export default PrivateRoute;

@@ -34,6 +34,8 @@ import ContactPage from "../pages/contact/ContactPage";
 import InquiryPage from "../pages/inquiry/InquiryPage";
 import InquiryDetailsPage from "../pages/inquiry/InquiryDetailsPage";
 import InventoryPage from "../pages/inventory/InventoryPage";
+import UserPage from "../pages/user/UserPage";
+import UserDetailPage from "../pages/user/UserDetailPage";
 
 const router = createBrowserRouter([
 	{
@@ -135,6 +137,22 @@ const router = createBrowserRouter([
 				element: (
 					<AdminRoute>
 						<Dashboard />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "clients",
+				element: (
+					<AdminRoute>
+						<UserPage />
+					</AdminRoute>
+				),
+			},
+			{
+				path: "client/:id",
+				element: (
+					<AdminRoute>
+						<UserDetailPage />
 					</AdminRoute>
 				),
 			},

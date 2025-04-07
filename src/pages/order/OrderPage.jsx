@@ -28,15 +28,16 @@ import MiniLoader from "../../components/MiniLoader";
 const OrderPage = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [id, setId] = useState(null);
-	const [handleMutation] = useApiHandler();
+	
 	const showToast = useToast();
+	const [handleMutation] = useApiHandler();
+	const { currentUser } = useAuth('admin');
 
-	const { currentUser } = useAuth();
 	const {
 		data: ordersData,
 		isLoading: fetchLoading,
 		error: fetchError,
-	} = useGetOrdersQuery(currentUser.role);
+	} = useGetOrdersQuery(currentUser.roles);
 
 	const [
 		updateOrderStatus,

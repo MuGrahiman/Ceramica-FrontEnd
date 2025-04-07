@@ -1,16 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchBar from "../../components/SearchBar";
 import {
-	useDeleteInquiryMutation,
-	useGetInquiriesQuery,
+	useFetchAllUsersQuery,
+	useUpdateUserStatusMutation,
 } from "../../redux/store";
 import useSearch from "../../hooks/useSearch";
 import FilterFormLayout from "../../components/FilterFormLayout";
 import Table from "../../components/Table";
-import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { ImEye } from "react-icons/im";
-import Badge from "../../components/Badge";
 import { FILTER_FORMS_COMPONENTS } from "../../constants/filter-form";
 import Pagination from "../../components/Pagination";
 import usePagination from "../../hooks/usePagination";
@@ -18,35 +16,41 @@ import LoadingTemplate from "../../components/LoadingTemplate";
 import useApiHandler from "../../hooks/useApiHandler";
 import Swal from "sweetalert2";
 import MiniLoader from "../../components/MiniLoader";
+import { CgBlock, CgUnblock } from "react-icons/cg";
 
-const InquiryPage = () => {
+const UserPage = () => {
+	const [userData, setUserData] = useState([]);
 	const [isOpen, setIsOpen] = useState(false);
 	const [id, setId] = useState(null);
-	const [sort, setSort] = useState(null);
-	const [status, setStatus] = useState(null);
+	const [sort, setSort] = useState("");
+	const [status, setStatus] = useState([]);
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
 	const [handleMutation] = useApiHandler();
 
 	// RTK Query hook with all filter parameters
 	const {
-		data: ordersData,
+		data,
 		isLoading: fetchLoading,
 		error: fetchError,
 		isFetching,
 		refetch,
-	} = useGetInquiriesQuery(
+	} = useFetchAllUsersQuery(
 		{ searchTerm, sort, status },
-		{ refetchOnMountOrArgChange: true } 
+		{ refetchOnMountOrArgChange: true }
 	);
 
+	useEffect(() => {
+		if (data && data.success) setUserData(data.data);
+	}, [data]);
+
 	// Mutation for deleting inventory item
-	const [deleteInquiry, { isLoading: deleteLoading }] = handleMutation(
-		useDeleteInquiryMutation
+	const [updateStatus, { isLoading: isUpdating }] = handleMutation(
+		useUpdateUserStatusMutation
 	);
 
 	// Pagination hook now works directly with API data
 	const { pageNumbers, currentPage, totalPages, handlePage, currentItems } =
-		usePagination(ordersData || [], 5);
+		usePagination(userData || [], 5);
 
 	const onSubmit = (data) => {
 		if (data.sort) {
@@ -60,30 +64,23 @@ const InquiryPage = () => {
 	};
 
 	const onClear = () => {
-		setSort(null);
-		setStatus(null);
+		setSort("");
+		setStatus([]);
 		setIsOpen((prev) => !prev);
 	};
 
-	const handleDelete = async (id) => {
+	const handleUpdate = async (id, status) => {
 		setId(id);
-		const result = await Swal.fire({
-			title: "Are you sure?",
-			text: "You won't be able to revert this!",
-			icon: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#b10202",
-			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Yes, delete it!",
-		});
-
-		if (!result.isConfirmed) return setId(null);
-
-		await deleteInquiry(id, {
-			onSuccess: () => "Deleted successfully",
-			onError: (err) =>
-				err.message || "Failed to delete the product. Please try again",
-		});
+		await updateStatus(
+			{ id, status },
+			{
+				onSuccess: () => "Updated successfully",
+				onError: (err) =>
+					err?.data?.message ||
+					err?.message ||
+					"Failed to update user status. Please try again",
+			}
+		);
 		setId(null);
 	};
 
@@ -95,13 +92,10 @@ const InquiryPage = () => {
 	const FieldContents = [
 		{
 			title: "Filter by status",
-			type: FILTER_FORMS_COMPONENTS.RADIO,
+			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
 			props: {
 				name: "status",
-				options: [
-					{ value: "pending", label: "Pending query" },
-					{ value: "resolved", label: "Resolved query" },
-				],
+				options: ["pending", "registered", "verified", "blocked"],
 			},
 		},
 		{
@@ -117,52 +111,85 @@ const InquiryPage = () => {
 		},
 	];
 
+	const getColor = (color) => {
+		return `border border-${color}-500 dark:border-${color}-500 hover:ring-${color}-800 text-${color}-900 dark:text-${color}-800 hover:text-${color}-300 placeholder-${color}-700 dark:placeholder-${color}-500 bg-${color}-50 dark:bg-gray-100 hover:bg-${color}-900 `;
+	};
+
 	const headers = [
 		{
+			hide: true,
+			label: "Image",
+			render: (user) => (
+				<img
+					className="w-10 h-10 rounded-full"
+					src={user.profilePhoto}
+					alt={user._id || "user Image"}
+				/>
+			),
+			showValue: () => "lg:table-cell",
+		},
+		{
 			label: "Name",
-			render: (inquiry) => inquiry.name,
+			render: (user) => user.firstName + " " + user.lastName,
 		},
 		{
 			hide: true,
 			label: "Mail",
-			render: (inquiry) => `${inquiry.email}`,
+			render: (user) => `${user.email}`,
 			showValue: () => "md:table-cell",
 		},
 		{
 			label: "Status",
-			render: (inquiry) => (
-				<Badge
-					LABEL={inquiry?.status}
-					STATUS={inquiry?.status === "resolved"}
-				/>
+			render: (user) => (
+				<span
+					className={`inline-flex items-center px-2 py-1 me-2 text-sm font-medium cursor-pointer rounded ${getColor(
+						user?.status === "registered"
+							? "blue"
+							: user?.status === "verified"
+							? "green"
+							: user?.status === "pending"
+							? "yellow"
+							: user?.status === "blocked"
+							? "red"
+							: "gray"
+					)}`}>
+					{user?.status?.toUpperCase()}
+				</span>
 			),
 		},
 		{
+			label: "Action",
+			render: (user) =>
+				isUpdating && user._id === id ? (
+					<MiniLoader />
+				) : user.status === "blocked" ? (
+					<CgUnblock
+						id={user._id}
+						onClick={() => handleUpdate(user._id, "unBlock")}
+						className="h-7 w-7 text-gray-500 cursor-pointer hover:text-red-700"
+						aria-label={`Update ${user._id}`}
+					/>
+				) : (
+					<CgBlock
+						id={user._id}
+						onClick={() => handleUpdate(user._id, "block")}
+						className="h-7 w-7 text-gray-500 cursor-pointer hover:text-red-700"
+						aria-label={`Update ${user.name}`}
+					/>
+				),
+		},
+		{
 			label: "Details",
-			render: (inquiry) => (
+			render: (user) => (
 				<Link
-					to={`/dashboard/inquiry-item/${inquiry._id}`}
-					aria-label={`Item ${inquiry.name}`}>
+					to={`/dashboard/client/${user._id}`}
+					aria-label={`Item ${user._id}`}>
 					<ImEye
 						className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700"
 						aria-label="Details"
 					/>
 				</Link>
 			),
-		},
-		{
-			label: "Delete",
-			render: (inquiry) =>
-				deleteLoading && inquiry._id === id ? (
-					<MiniLoader />
-				) : (
-					<MdDelete
-						id={inquiry._id}
-						onClick={() => handleDelete(inquiry._id)}
-						className="h-6 w-6 text-gray-500 cursor-pointer hover:text-red-700"
-						aria-label={`Delete ${inquiry.name}`}
-					/>
-				),
 		},
 	];
 
@@ -202,6 +229,7 @@ const InquiryPage = () => {
 					BUTTON_STYLE="p-2.5 h-full text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 dark:border-gray-700 dark:text-white rounded-e-lg hover:bg-gray-200 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-800"
 					ON_SUBMIT={handleSearch}
 					CLEAR_SEARCH={clearSearch}
+					IS_LOADING={isFetching}
 				/>
 			</div>
 
@@ -211,28 +239,20 @@ const InquiryPage = () => {
 				onClear={onClear}
 				defaultValues={FILTER_FORMS_DEFAULT_VALUES}
 				fieldContents={FieldContents}>
-				{isFetching ? (
-					<div className="flex items-center justify-center h-screen">
-						<LoadingTemplate message="Fetching inquiries, please wait..." />
-					</div>
-				) : (
-					<>
-						<Table
-							CONFIG={headers}
-							DATA={currentItems}
-							KEYFN={(order) => order._id}
-						/>
-						<Pagination
-							pageNumbers={pageNumbers}
-							currentPage={currentPage}
-							totalPages={totalPages}
-							onPageChange={handlePage}
-						/>
-					</>
-				)}
+				<Table
+					CONFIG={headers}
+					DATA={currentItems}
+					KEYFN={(order) => order._id}
+				/>
+				<Pagination
+					pageNumbers={pageNumbers}
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={handlePage}
+				/>
 			</FilterFormLayout>
 		</>
 	);
 };
 
-export default InquiryPage;
+export default UserPage;
