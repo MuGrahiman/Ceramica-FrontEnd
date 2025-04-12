@@ -64,7 +64,7 @@ const UserDetailPage = () => {
 	}
 
 	return (
-		<div className="container mx-auto">
+		<div className="container mx-auto ">
 			<PageTitle title="User Details" />
 			<BreadCrumb
 				items={[{ label: "Users", to: "/dashboard/clients" }, { label: id }]}

@@ -10,37 +10,28 @@ const AddressList = ({
 	ON_SELECTION,
 	ADDRESS_ID,
 }) => {
-	return (
-		<div className="w-full  md:w-1/2 lg:w-1/3 bg-white p-6   ">
-			<h2 className="text-xl font-semibold mb-6">Saved Addresses</h2>
-			{/* Address list container */}
-			{IS_LOADING ? (
-					<Skeleton />
-				) : (
-			<div className="max-h-[85%] flex md:flex-col gap-4 items-center justify-between overflow-x-auto md:overflow-y-scroll">
-				{/* Show loading indicator while fetching addresses */}
-				
-					<ListOptions
-						OPTIONS={ADDRESS_LIST}
-						EMPTY_MESSAGE="No Address Found"
-						RENDER_ITEM={(option) => {
-							return (
-								<AddressCard
-									key={option._id}
-									ADDRESS_ID={ADDRESS_ID}
-									ITEMS={option}
-									ON_SELECTION={ON_SELECTION}
-								/>
-							);
-						}}
-					/>
-			</div>
-				)}
+	return IS_LOADING ? (
+		<Skeleton />
+	) : (
+		<div className="p-3 flex md:flex-col gap-4 items-center justify-between overflow-x-auto md:overflow-y-auto max-h-[calc(100vh-200px)]">
+			<ListOptions
+				OPTIONS={ADDRESS_LIST}
+				EMPTY_MESSAGE="No Address Found"
+				RENDER_ITEM={(option) => {
+					return (
+						<AddressCard
+							key={option._id}
+							ADDRESS_ID={ADDRESS_ID}
+							ITEMS={option}
+							ON_SELECTION={ON_SELECTION}
+						/>
+					);
+				}}
+			/>
 		</div>
 	);
 };
 
-// Define PropTypes for better type checking
 AddressList.propTypes = {
 	ADDRESS_LIST: PropTypes.array.isRequired,
 	IS_LOADING: PropTypes.bool.isRequired,

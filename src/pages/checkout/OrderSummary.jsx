@@ -6,9 +6,9 @@ import ListOptions from "../../components/ListOptions";
 import Skeleton from "../../components/Skeleton";
 
 const OrderSummary = ({ CART_SUMMARY, IS_LOADING }) => (
-	<div className="w-full max-h-[80%] lg:w-2/3 bg-white p-6">
-		<h2 className="text-xl font-semibold mb-6">Order Summary</h2>
-
+	// <div className="w-full max-h-[80%] lg:w-2/3 bg-white p-6">
+	// 	<h2 className="text-xl font-semibold mb-6">Order Summary</h2>
+	<>
 		{/* Scrollable List Container */}
 		<div className="h-[80%] border rounded-md mb-3">
 			<ul
@@ -37,7 +37,8 @@ const OrderSummary = ({ CART_SUMMARY, IS_LOADING }) => (
 				Edit The Cart <span aria-hidden="true">&rarr;</span>
 			</Link>
 		</div>
-	</div>
+	</>
+	// </div>
 );
 
 // PropTypes Validation

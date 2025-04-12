@@ -67,7 +67,7 @@ const AdminLayout = () => {
 	};
 
 	return (
-		<section className="flex min-h-screen max-h-screen overflow-hidden">
+		<section className="flex min-h-screen max-h-screen overflow-hidden font-primary">
 			<aside
 				className={`${
 					isSidebarOpen
@@ -75,8 +75,8 @@ const AdminLayout = () => {
 						: "-translate-x-full opacity-100"
 				} sm:translate-x-0 sm:opacity-100 flex-shrink-0
 				      w-full sm:w-fit md:w-1/3 lg:w-1/5 flex flex-col bg-gray-800 text-gray-500 text-lg fixed sm:relative z-[100] min-h-full
-				      transition-transform duration-700 ease-in-out`}>
-				<div className="flex justify-between items-center mx-4 mt-4">
+				      transition-transform duration-700 ease-in-out font-secondary`}>
+				<div className="flex justify-between items-center mx-4 mt-4 ">
 					<Link
 						to="/"
 						className="inline-flex items-center gap-5 p-3 h-20 rounded-lg">

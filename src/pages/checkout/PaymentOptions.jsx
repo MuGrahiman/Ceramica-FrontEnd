@@ -94,8 +94,8 @@ const PaymentOptions = ({ cartSummary = [], addressId, isLoading = false }) => {
 	};
 
 	return (
-		<div className="w-full lg:w-1/3 bg-white p-6">
-			<h2 className="text-xl font-semibold mb-6">Payment</h2>
+		// <div className="w-full lg:w-1/3 bg-white p-6">
+		// 	<h2 className="text-xl font-semibold mb-6">Payment</h2>
 			<div className="space-y-4">
 				<div className="flex justify-between font-medium">
 					<p className="text-gray-700">Subtotal</p>
@@ -136,7 +136,7 @@ const PaymentOptions = ({ cartSummary = [], addressId, isLoading = false }) => {
 					/>
 				</div>
 			</div>
-		</div>
+		// </div>
 	);
 };
 

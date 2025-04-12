@@ -28,12 +28,16 @@ const InputField = ({
 
 	return (
 		<div className=" w-full text-sm">
-			<label htmlFor={NAME} className={`font-semibold ${labelClass}`}>
+			<label
+				htmlFor={NAME}
+				className={`block text-sm font-medium text-gray-700 mb-1 ${labelClass}`}>
 				{LABEL}
 			</label>
 			<input
-				className={`h-10 border  rounded px-4  bg-gray-50
-					focus:outline-none dark:bg-white text-sm font-normal  block w-full p-2.5 ${getInputClass()}`}
+				className={`w-full px-3 py-2 border border-gray-300 rounded focus:outline-none 
+					${getInputClass()}`}
+				// className={`h-10 border  rounded px-4  bg-gray-50
+				// 	focus:outline-none dark:bg-white text-sm font-normal  block w-full p-2.5 ${getInputClass()}`}
 				{...REGISTER(NAME, VALIDATION_RULES[NAME])}
 				type={TYPE}
 				id={NAME}

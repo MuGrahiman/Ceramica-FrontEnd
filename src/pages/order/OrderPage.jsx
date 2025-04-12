@@ -98,7 +98,7 @@ const OrderPage = () => {
 	const headers = [
 		{
 			label: "Mail",
-			render: (order) => order.userId.email,
+			render: (order) => order?.userId?.email,
 		},
 		{
 			label: "Quantity",
@@ -155,7 +155,6 @@ const OrderPage = () => {
 
 	const { pageNumbers, currentPage, totalPages, handlePage, currentItems } =
 		usePagination(sortedOrders, 5);
-
 	const FieldContents = [
 		{
 			title: "Filter by Order Status",

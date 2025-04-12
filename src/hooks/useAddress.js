@@ -9,10 +9,11 @@ import { ADDRESS_FIELDS } from "../constants/address";
 const useAddress = () => {
     const showToast = useToast();
     const { isAuthorized, currentUser } = useAuth( "client" );
-
+    if ( !isAuthorized ) showToast( 'Please Login', 'error' )
     // State for managing selected address ID and address list
     const [ addressId, setAddressId ] = useState( null );
-    const [ addressList, setAddressList ] = useState( null );
+    const [ addressList, setAddressList ] = useState( [] );
+    const [ addressDetails, setAddressDetails ] = useState( {} );
 
     // API queries and mutations
     const { data, error: fetchError, isLoading: isFetching } = useGetAddressesQuery( null, { skip: !isAuthorized } );
@@ -28,7 +29,11 @@ const useAddress = () => {
         setValue,
         watch, clearErrors,
 
-    } = useForm();
+    } = useForm( {
+        defaultValues: createDefaultState( ADDRESS_FIELDS, "",
+            { email: currentUser.email, isDefault: false }
+        )
+    } );
 
     /**
      * Pre-fills email field if user is authorized
@@ -48,10 +53,22 @@ const useAddress = () => {
             console.error( fetchError );
             showToast( "Failed to fetch addresses. Please try again.", "error" );
         }
+
         if ( data && data.length ) {
-            setAddressList( data );
+            const sortedAddresses = [ ...data ].sort( ( a, b ) => {
+                if ( a.isDefault && !b.isDefault ) {
+                    return -1;
+                }
+                if ( !a.isDefault && b.isDefault ) {
+                    return 1;
+                }
+                return 0;
+            } );
+
+            setAddressList( sortedAddresses );
         }
     }, [ data, fetchError, showToast ] );
+
 
     /**
      * Validates form before submission
@@ -95,6 +112,7 @@ const useAddress = () => {
      */
     const editAddress = async () => {
         if ( !validateForm() ) return;
+        if ( !addressId ) return showToast( "Please choose any address for edit.", "warning" );
 
         try {
             const currentFormValues = watch();
@@ -131,12 +149,18 @@ const useAddress = () => {
         if ( addressId === address._id ) return; // Prevent redundant updates
 
         setAddressId( address._id );
-        reset( createDefaultState( ADDRESS_FIELDS, "", { ...address, email: currentUser.email } ) );
+        const addressData = createDefaultState(
+            ADDRESS_FIELDS, "",
+            { ...address, email: currentUser.email }
+        )
+        setAddressDetails( addressData )
+        reset( addressData );
     };
 
     return {
         addressId,
         addressList,
+        addressDetails,
         handleSubmit: handleSubmit( onSubmit ),
         editAddress,
         reset: resetForm,

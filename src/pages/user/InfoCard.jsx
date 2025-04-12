@@ -8,9 +8,9 @@ import PropTypes from 'prop-types';
  */
 const InfoCard = ({ title = "Untitled", children }) => {
     return (
-        <div className="animate-slide-up bg-white rounded-lg shadow overflow-hidden">
+        <div className="animate-slide-up bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg ">
             <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-                <h3 id="info-card-title" className="text-lg font-medium text-gray-900">
+                <h3 id="info-card-title" className="text-xl font-semibold text-gray-900">
                     {title}
                 </h3>
             </div>

@@ -43,7 +43,6 @@ const UserPage = () => {
 		if (data && data.success) setUserData(data.data);
 	}, [data]);
 
-	// Mutation for deleting inventory item
 	const [updateStatus, { isLoading: isUpdating }] = handleMutation(
 		useUpdateUserStatusMutation
 	);
@@ -144,11 +143,11 @@ const UserPage = () => {
 				<span
 					className={`inline-flex items-center px-2 py-1 me-2 text-sm font-medium cursor-pointer rounded ${getColor(
 						user?.status === "registered"
-							? "blue"
+							? "yellow"
 							: user?.status === "verified"
 							? "green"
 							: user?.status === "pending"
-							? "yellow"
+							? "orange"
 							: user?.status === "blocked"
 							? "red"
 							: "gray"
