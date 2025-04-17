@@ -1,6 +1,4 @@
 import React from "react";
-import DemoProfile from "../profile/DemoProfile";
-import UserProfile from "../profile/UserProfilePage";
 
 
 // Now you can use the coupons array
@@ -8,8 +6,7 @@ import UserProfile from "../profile/UserProfilePage";
 function DemoPage() {
 	
 	return (
-		<div className="container mx-auto">
-			<DemoProfile/>
+		<div className="container mx-auto">Demo
 		</div>
 	);
 }

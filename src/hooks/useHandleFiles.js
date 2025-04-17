@@ -14,6 +14,17 @@ const useHandleFiles = () => {
     const updateLoadingState = ( label, isLoading ) =>
         setFileLoading( ( prev ) => ( { ...prev, [ label ]: isLoading } ) );
 
+    const validateParams = ( { clearErrors, onError } ) => {
+        if ( clearErrors && typeof ( clearErrors ) === "function" )
+            clearErrors();
+        if ( !onError || typeof ( onError ) === "function" )
+            throw new Error( 'Please provide the error functionality ' )
+    }
+    
+    const validateSuccess = ( onSuccess ) =>
+        ( onSuccess && typeof ( onSuccess ) === "function" ) &&
+        onSuccess();
+
     /**
      * Handles file change events for uploading images.
      * 
@@ -30,16 +41,16 @@ const useHandleFiles = () => {
     const handleFileChange = async ( {
         label,
         files,
-        clearErrors,
+        clearErrors = null,
         maxFiles = 1, minFile = 1,
         currentFields = [],
         onSuccess,
         onError,
         appendData,
     } ) => {
+        await validateParams( { clearErrors, onError } )
         // Set loading state for the specific label
         updateLoadingState( label, true )
-        clearErrors();
         if ( !files || !files.length ) {
             updateLoadingState( label, false )
             return onError( "Please upload a file." );
@@ -79,8 +90,9 @@ const useHandleFiles = () => {
         );
 
         // Check if all files are successfully processed
-        if ( results.every( Boolean ) ) onSuccess();
 
+        if ( results.every( Boolean ) )
+            validateSuccess( onSuccess )
 
         // Reset loading state for the specific label
         updateLoadingState( label, false )
@@ -106,7 +118,8 @@ const useHandleFiles = () => {
         // Set loading state to true
         updateLoadingState( label, true )
         // Clear any existing errors for the field
-        clearErrors( label );
+        await validateParams( { clearErrors, onError } )
+
 
         // Validate publicId
         if ( !publicId ) {
@@ -122,11 +135,11 @@ const useHandleFiles = () => {
             const isImageRemove = await removeFile( publicId );
 
             // Set loading state to false after the operation
-            updateLoadingState( label, false )
+            // updateLoadingState( label, false )
 
             // Call the appropriate callback based on the result
             if ( isImageRemove ) {
-                onSuccess();
+                validateSuccess( onSuccess )
             } else {
                 onError( "Failed to remove the image. Please try again." );
             }

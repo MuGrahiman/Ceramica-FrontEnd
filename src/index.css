@@ -3,65 +3,77 @@
 @tailwind utilities;
 
 @layer utilities {
-  @keyframes glow-ring {
-    0%, 100% {
-      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
-    }
-    50% {
-      box-shadow: 0 0 12px 4px rgba(5, 150, 105, 0.9);
-    }
-  }
+	@keyframes glow-ring {
+		0%,
+		100% {
+			box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+		}
+		50% {
+			box-shadow: 0 0 12px 4px rgba(5, 150, 105, 0.9);
+		}
+	}
 
-  .animate-glow-ring {
-    animation: glow-ring 2.5s ease-in-out infinite;
-  }
+	.animate-glow-ring {
+		animation: glow-ring 2.5s ease-in-out infinite;
+	}
 
-  @keyframes shake {
-    0% { transform: translate(0px, 0px); }
-    20% { transform: translate(-1px, 1px); }
-    40% { transform: translate(1px, -1px); }
-    60% { transform: translate(-1px, 1px); }
-    80% { transform: translate(1px, -1px); }
-    100% { transform: translate(0px, 0px); }
-  }
+	@keyframes shake {
+		0% {
+			transform: translate(0px, 0px);
+		}
+		20% {
+			transform: translate(-1px, 1px);
+		}
+		40% {
+			transform: translate(1px, -1px);
+		}
+		60% {
+			transform: translate(-1px, 1px);
+		}
+		80% {
+			transform: translate(1px, -1px);
+		}
+		100% {
+			transform: translate(0px, 0px);
+		}
+	}
 
-  .animate-shake {
-    animation: shake 0.6s ease-in-out;
-  }
+	.animate-shake {
+		animation: shake 0.6s ease-in-out;
+	}
 
-  @keyframes ping-once {
-    0% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    70% {
-      transform: scale(1.5);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 0;
-    }
-  }
+	@keyframes ping-once {
+		0% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		70% {
+			transform: scale(1.5);
+			opacity: 0;
+		}
+		100% {
+			transform: scale(1);
+			opacity: 0;
+		}
+	}
 
-  .animate-ping-once {
-    animation: ping-once 1.4s cubic-bezier(0, 0, 0.2, 1) forwards;
-  }
+	.animate-ping-once {
+		animation: ping-once 1.4s cubic-bezier(0, 0, 0.2, 1) forwards;
+	}
 }
 
 @layer utilities {
-    @keyframes orbit {
-      0% {
-        transform: rotate(0deg) translateX(40px) rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg) translateX(40px) rotate(-360deg);
-      }
-    }
-  
-    .animate-orbit {
-      animation: orbit 3s linear infinite;
-      transform-origin: center;
-    }
-  }
-  
+	@keyframes orbit {
+		0% {
+			transform: rotate(0deg) translateX(40px) rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg) translateX(40px) rotate(-360deg);
+		}
+	}
+
+	.animate-orbit {
+		animation: orbit 3s linear infinite;
+		transform-origin: center;
+	}
+}

@@ -1,15 +1,22 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
+import useErrorManager from "../../hooks/useErrorManager";
+import useSuccessManager from "../../hooks/useSuccessManager";
+import { createDefaultState } from "../../utils/generals";
 
-const ChangePasswordForm = () => {
-	const [formData, setFormData] = useState({
-		currentPassword: "",
-		newPassword: "",
-		confirmPassword: "",
+const ChangePasswordForm = ({ onSubmit, isUpdating = false }) => {
+	const defaultPasswordValue = [
+		"currentPassword",
+		"newPassword",
+		"confirmPassword",
+	];
+	const defaultFormValue = createDefaultState(defaultPasswordValue, "");
+	const [formData, setFormData] = useState(defaultFormValue);
+	const [isError, setErrors, resetErrors] = useErrorManager({
+		defaultErrorValue: defaultFormValue,
 	});
-	const [errors, setErrors] = useState({});
-	const [success, setSuccess] = useState(false);
+
 	const [showForgotFlow, setShowForgotFlow] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -17,47 +24,40 @@ const ChangePasswordForm = () => {
 			...prev,
 			[name]: value,
 		}));
-		// Clear error when user types
-		if (errors[name]) {
-			setErrors((prev) => ({ ...prev, [name]: "" }));
+		if (isError[name]) {
+			setErrors(name, "");
 		}
 	};
 
 	const validate = () => {
-		const newErrors = {};
-
+		let isValid = true;
 		if (!showForgotFlow && !formData.currentPassword) {
-			newErrors.currentPassword = "Current password is required";
+			setErrors("currentPassword", "Current password is required");
+			isValid = false;
 		}
 
 		if (!formData.newPassword) {
-			newErrors.newPassword = "New password is required";
+			setErrors("newPassword", "New password is required");
+			isValid = false;
 		} else if (formData.newPassword.length < 8) {
-			newErrors.newPassword = "Password must be at least 8 characters";
+			setErrors("newPassword", "Password must be at least 8 characters");
+			isValid = false;
 		}
 
-		if (formData.newPassword !== formData.confirmPassword) {
-			newErrors.confirmPassword = "Passwords do not match";
+		if (!formData.confirmPassword) {
+			setErrors("confirmPassword", "Confirm password is required");
+			isValid = false;
+		} else if (formData.newPassword !== formData.confirmPassword) {
+			setErrors("confirmPassword", "Passwords do not match");
+			isValid = false;
 		}
-
-		setErrors(newErrors);
-		return Object.keys(newErrors).length === 0;
+		return isValid;
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (validate()) {
-			setIsLoading(true);
-			// Simulate API call
-			setTimeout(() => {
-				setIsLoading(false);
-				setSuccess(true);
-				setFormData({
-					currentPassword: "",
-					newPassword: "",
-					confirmPassword: "",
-				});
-			}, 1500);
+			onSubmit(formData);
 		}
 	};
 
@@ -70,136 +70,137 @@ const ChangePasswordForm = () => {
 
 	const resetForm = () => {
 		setShowForgotFlow(false);
-		setErrors({});
+		resetErrors();
+		setFormData(defaultFormValue);
 	};
 
 	return (
-		<div className="space-y-4"
-        // className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
-        >
-			{/* <h2 className="text-2xl font-bold text-gray-800 mb-6">Change Password</h2> */}
+		<div
+			className="space-y-4"
+			// className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
+		>
 			<h3 className="text-lg font-medium text-gray-900 mb-3">
 				Change Password
 			</h3>
-			{success ? (
-				<div className="p-4 mb-4 text-green-700 bg-green-100 rounded">
-					Password changed successfully!
-				</div>
-			) : (
-				<form className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4"
-                 onSubmit={handleSubmit}>
-					{!showForgotFlow ? (
-						<>
-							<div className="mb-4 col-span-full">
-								<label
-									htmlFor="currentPassword"
-									className="block text-sm font-medium text-gray-700 mb-1">
-									Current Password
-								</label>
-								<div className="relative">
-									<input
-										type="password"
-										id="currentPassword"
-										name="currentPassword"
-										value={formData.currentPassword}
-										onChange={handleChange}
-										className={`w-full px-3 py-2 border ${
-											errors.currentPassword
-												? "border-red-500"
-												: "border-gray-300"
-										} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
-									/>
-									<button
-										type="button"
-										onClick={handleForgotPassword}
-										className="absolute right-2 top-2 text-sm text-blue-600 hover:text-blue-800 focus:outline-none">
-										Forgot?
-									</button>
-								</div>
-								{errors.currentPassword && (
-									<p className="mt-1 text-sm text-red-600">
-										{errors.currentPassword}
-									</p>
-								)}
+
+			<form
+				className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4"
+				onSubmit={handleSubmit}>
+				{!showForgotFlow ? (
+					<>
+						<div className="mb-4 col-span-full">
+							<label
+								htmlFor="currentPassword"
+								className="block text-sm font-medium text-gray-700 mb-1">
+								Current Password
+							</label>
+							<div className="relative">
+								<input
+									type="text"
+									id="currentPassword"
+									name="currentPassword"
+									value={formData.currentPassword}
+									onChange={handleChange}
+									className={`w-full px-3 py-2 border ${
+										isError.currentPassword
+											? "border-red-500"
+											: "border-gray-300"
+									} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
+								/>
+								<button
+									type="button"
+									onClick={handleForgotPassword}
+									className="absolute right-2 top-2 text-sm text-blue-600 hover:text-blue-800 focus:outline-none">
+									Forgot?
+								</button>
 							</div>
-						</>
-					) : (
-						<div className="col-span-full mb-6 p-4 bg-blue-50 rounded-md">
-							<p className="text-blue-800 mb-3">
-								We've sent a password reset link to your email. Please check
-								your inbox.
-							</p>
-							<button
-								type="button"
-								onClick={resetForm}
-								className="text-sm text-blue-600 hover:text-blue-800 focus:outline-none">
-								← Back to change password
-							</button>
+							{isError.currentPassword && (
+								<p className="mt-1 text-sm text-red-600">
+									{isError.currentPassword}
+								</p>
+							)}
 						</div>
-					)}
-
-					<div >
-						<label
-							htmlFor="newPassword"
-							className="block text-sm font-medium text-gray-700 mb-1">
-							New Password
-						</label>
-						<input
-							type="password"
-							id="newPassword"
-							name="newPassword"
-							value={formData.newPassword}
-							onChange={handleChange}
-							className={`w-full px-3 py-2 border ${
-								errors.newPassword ? "border-red-500" : "border-gray-300"
-							} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
-						/>
-						{errors.newPassword && (
-							<p className="mt-1 text-sm text-red-600">{errors.newPassword}</p>
-						)}
-						<p className="mt-1 text-xs text-gray-500">
-							Must be at least 8 characters
+					</>
+				) : (
+					//TODO: Make it as layout ; use in the mail
+					<div className="col-span-full mb-6 p-4 bg-blue-50 rounded-md">
+						<p className="text-blue-800 mb-3">
+							We've sent a password reset link to your email. Please check your
+							inbox.
 						</p>
-					</div>
-
-					<div >
-						<label
-							htmlFor="confirmPassword"
-							className="block text-sm font-medium text-gray-700 mb-1">
-							Confirm New Password
-						</label>
-						<input
-							type="password"
-							id="confirmPassword"
-							name="confirmPassword"
-							value={formData.confirmPassword}
-							onChange={handleChange}
-							className={`w-full px-3 py-2 border ${
-								errors.confirmPassword ? "border-red-500" : "border-gray-300"
-							} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
-						/>
-						{errors.confirmPassword && (
-							<p className="mt-1 text-sm text-red-600">
-								{errors.confirmPassword}
-							</p>
-						)}
-					</div>
-             
-					<div className="flex justify-end col-span-full mb-8">
 						<button
-							type="submit"
-							disabled={isLoading}
-							className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-								isLoading ? "opacity-75 cursor-not-allowed" : ""
-							}`}>
-							{isLoading ? "Processing..." : "Change Password"}
+							type="button"
+							onClick={resetForm}
+							className="text-sm text-blue-600 hover:text-blue-800 focus:outline-none">
+							← Back to change password
 						</button>
 					</div>
+				)}
 
-				</form>
-			)}
+				<div>
+					<label
+						htmlFor="newPassword"
+						className="block text-sm font-medium text-gray-700 mb-1">
+						New Password
+					</label>
+					<input
+						type="password"
+						id="newPassword"
+						name="newPassword"
+						value={formData.newPassword}
+						onChange={handleChange}
+						className={`w-full px-3 py-2 border ${
+							isError.newPassword ? "border-red-500" : "border-gray-300"
+						} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
+					/>
+					{isError.newPassword && (
+						<p className="mt-1 text-sm text-red-600">{isError.newPassword}</p>
+					)}
+					<p className="mt-1 text-xs text-gray-500">
+						Must be at least 8 characters
+					</p>
+				</div>
+
+				<div>
+					<label
+						htmlFor="confirmPassword"
+						className="block text-sm font-medium text-gray-700 mb-1">
+						Confirm New Password
+					</label>
+					<input
+						type="password"
+						id="confirmPassword"
+						name="confirmPassword"
+						value={formData.confirmPassword}
+						onChange={handleChange}
+						className={`w-full px-3 py-2 border ${
+							isError.confirmPassword ? "border-red-500" : "border-gray-300"
+						} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
+					/>
+					{isError.confirmPassword && (
+						<p className="mt-1 text-sm text-red-600">
+							{isError.confirmPassword}
+						</p>
+					)}
+				</div>
+
+				<div className="flex justify-end col-span-full mb-8">
+					<button
+						type="submit"
+						disabled={isUpdating}
+						className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+							isUpdating ? "opacity-75 cursor-not-allowed" : ""
+						}`}>
+						{isUpdating ? "Processing..." : "Change Password"}
+					</button>
+				</div>
+			</form>
 		</div>
 	);
 };
-
+// Define PropTypes for the component
+ChangePasswordForm.propTypes = {
+	onSubmit: PropTypes.func.isRequired,
+	isUpdating: PropTypes.bool.isRequired,
+};
 export default ChangePasswordForm;

@@ -37,7 +37,6 @@ import InventoryPage from "../pages/inventory/InventoryPage";
 import UserPage from "../pages/user/UserPage";
 import UserDetailPage from "../pages/user/UserDetailPage";
 import ProfilePage from "../pages/profile/ProfilePage";
-import UserProfile from "../pages/profile/UserProfilePage";
 
 const router = createBrowserRouter([
 	{
@@ -116,14 +115,7 @@ const router = createBrowserRouter([
 					</PrivateRoute>
 				),
 			},
-			{
-				path: "/user-profile",
-				element: (
-					<PrivateRoute>
-						<UserProfile />
-					</PrivateRoute>
-				),
-			},
+
 			{
 				path: "/books/:id",
 				element: <SingleBook />,

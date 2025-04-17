@@ -12,18 +12,35 @@ import LoadingTemplate from "../../components/LoadingTemplate";
 import useUser from "../../hooks/useUser";
 import { ImPencil2 } from "react-icons/im";
 import { FaCheck } from "react-icons/fa";
-const dummyImage =
-	"https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60";
+import ProfileHeader from "./ProfileHeader";
+import useApiHandler from "../../hooks/useApiHandler";
+import {
+	useUpdateUserMutation,
+	useUpdateUserPasswordMutation,
+} from "../../redux/store";
+import TabSwitcher from "../../components/TabSwitcher";
+
 const ProfilePage = ({ user }) => {
 	const { currentUser, isAuthorized } = useAuth("client");
 	const [userData, setUserData] = useState({});
 	const [isEditing, setIsEditing] = useState(false);
-	const [isIMGEditing, setIsIMGEditing] = useState(false);
 	const TAB = { ADDRESS: "address", PROFILE: "profile" };
-	const [tab, setTab] = useState(TAB.PROFILE);
-	const { userDetails, isUserLoading, userError } = useUser({
-		userId: isAuthorized ? currentUser._id : null,
+	const [selectedTab, setSelectedTab] = useState(TAB.PROFILE);
+
+	const [handleMutation] = useApiHandler();
+	const [
+		updateUser,
+		updateUserResult, //{isLoading,isError,isSuccess}
+	] = handleMutation(useUpdateUserMutation);
+	const [
+		updatePassword,
+		updatePasswordResult, //{isLoading,isError,isSuccess}
+	] = handleMutation(useUpdateUserPasswordMutation);
+	const userId = isAuthorized ? currentUser._id : null;
+	const { userDetails, isUserLoading, isUserFetching, userError } = useUser({
+		userId,
 	});
+
 	useEffect(() => {
 		if (userDetails?.success) {
 			setUserData(userDetails.data);
@@ -50,7 +67,37 @@ const ProfilePage = ({ user }) => {
 
 	const handleIsEditing = () => {
 		setIsEditing(!isEditing);
-		setTab(TAB.PROFILE);
+		setSelectedTab(TAB.PROFILE);
+	};
+
+	const handleUpdateUser = async (data) => {
+		await updateUser(
+			{ id: userId, data },
+			{
+				onSuccess: () => "Account updated successfully ",
+				onError: (err) =>
+					err.data.message ||
+					err.message ||
+					"Failed to update your Account. Please try again.",
+			}
+		);
+		handleIsEditing();
+	};
+
+	const handleUpdatePassword = async (data) => {
+		await updatePassword(
+			{ id: userId, data },
+			{
+				onSuccess: () => {
+					handleIsEditing();
+					return "Password updated successfully ";
+				},
+				onError: (err) =>
+					err.data.message ||
+					err.message ||
+					"Failed to update your Password. Please try again.",
+			}
+		);
 	};
 
 	if (isLoading || isUserLoading) {
@@ -74,66 +121,13 @@ const ProfilePage = ({ user }) => {
 		<div className="min-h-screen  container mx-auto py-8 px-4 ">
 			<div className="max-w-6xl mx-auto">
 				{/* Profile Header with Floating Animation */}
-				<div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-float mb-6">
-					<div className="relative h-40 bg-gradient-to-r from-blue-500 to-indigo-600">
-						<div className="absolute -bottom-16 left-6">
-							<div className="relative group">
-								<img
-									className="h-32 w-32 rounded-full border-4 border-white object-cover shadow-xl "
-									src={userData.profilePhoto || dummyImage}
-									alt={`
-										${userData.firstName || "N/A"} 
-										${userData.lastName || "N/A"}
-										`}
-								/>
-								{/* Editing Badge */}
-								<div
-									onClick={() => setIsIMGEditing(!isIMGEditing)}
-									className={`absolute bottom-0 right-0 rounded-full p-2 border-2  
-										 ${isIMGEditing ? "bg-emerald-500 " : "bg-blue-500"}
-											 border-white animate-pulse cursor-pointer`}>
-									{isIMGEditing ? (
-										<FaCheck className=" text-white text-center" />
-									) : (
-										<ImPencil2 className=" text-white text-center" />
-									)}
-								</div>
-							</div>
-						</div>
-						<div className="absolute bottom-4 right-6">
-							<button
-								onClick={handleIsEditing}
-								className="px-4 py-2 bg-white/90 text-indigo-600 rounded-full shadow-md hover:bg-white transition-all duration-200">
-								{isEditing ? "Cancel" : "Edit Profile"}
-							</button>
-						</div>
-					</div>
-
-					<div className="pt-20 px-6 pb-6">
-						<div className="flex flex-col items-center sm:items-start gap-2">
-							<h1 className="text-3xl font-bold text-gray-900 text-center sm:text-left">
-								{userData.firstName || "N/A"} {userData.lastName || "N/A"}
-							</h1>
-							<p className="text-gray-600 mt-2">{userData.email || "N/A"}</p>
-							{userData.otpVerified && (
-								<span className="mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-									Verified Account
-								</span>
-							)}
-							{/* <div className="mt-4 flex flex-wrap justify-center sm:justify-start gap-2">
-								<span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-									{userData.membership || "Standard Member"}
-								</span>
-								{userData.otpVerified && (
-									<span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-										Verified Account
-									</span>
-								)}
-							</div> */}
-						</div>
-					</div>
-				</div>
-
+				<ProfileHeader
+					user={userData}
+					isEditing={isEditing}
+					onEditing={handleIsEditing}
+					onSubmit={handleUpdateUser}
+					isUpdating={updateUserResult.isLoading || isUserFetching}
+				/>
 				{/* Main Content */}
 				{/* Left Column - Profile Info */}
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
@@ -142,38 +136,31 @@ const ProfilePage = ({ user }) => {
 						{isEditing ? (
 							<div className=" bg-white rounded-2xl shadow-md transition-all duration-300 hover:shadow-lg">
 								{/* Tab Switches  */}
-								<div className="border-b border-gray-200">
-									<nav className="flex -mb-px">
-										<button
-											onClick={() => setTab(TAB.PROFILE)}
-											className={`w-1/2 py-4 px-1 text-center border-b-2 text-md font-semibold mt-3
-											${
-												tab === TAB.PROFILE
-													? "border-blue-500 text-blue-600"
-													: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-											}
-											`}>
-											Profile Log
-										</button>
-										<button
-											onClick={() => setTab(TAB.ADDRESS)}
-											className={`w-1/2 py-4 px-1 text-center border-b-2 text-md font-semibold mt-3
-												${
-													tab === TAB.ADDRESS
-														? "border-blue-500 text-blue-600"
-														: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-												}
-												`}>
-											Address Log
-										</button>
-									</nav>
-								</div>
+								<TabSwitcher
+									tabs={[
+										{ label: "Profile Log", key: TAB.PROFILE },
+										{ label: "Address Log", key: TAB.ADDRESS },
+									]}
+									activeTab={selectedTab}
+									onSelectTab={(key) => setSelectedTab(key)}
+								/>
 								{/* Information Tabs  */}
 								<div className="px-6 py-4">
-									{tab === TAB.PROFILE ? (
+									{selectedTab === TAB.PROFILE ? (
 										<>
-											<UserProfileForm user={userData} />
-											<ChangePasswordForm />
+											<UserProfileForm
+												user={userData}
+												isUpdating={
+													updateUserResult.isLoading || isUserFetching
+												}
+												onSubmit={handleUpdateUser}
+											/>
+											<ChangePasswordForm
+												isUpdating={
+													updatePasswordResult.isLoading || isUserFetching
+												}
+												onSubmit={handleUpdatePassword}
+											/>
 										</>
 									) : (
 										<AddressForm

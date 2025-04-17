@@ -12,9 +12,9 @@ const InputField = ({
 }) => {
 	const getInputClass = () => {
 		if (ERRORS[NAME]) {
-			return "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500";
+			return "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500  dark:text-red-500 dark:placeholder-red-500 dark:border-red-500";
 		} else if (IS_SUCCESS) {
-			return "bg-green-50 border border-green-500 text-green-900 placeholder-green-700 focus:ring-green-500 dark:bg-gray-700 dark:text-green-400 dark:placeholder-green-500 dark:border-green-500";
+			return "bg-green-50 border border-green-500 text-green-900 placeholder-green-700 focus:ring-green-500  dark:text-green-400 dark:placeholder-green-500 dark:border-green-500";
 		} else {
 			return "text-gray-700 dark:text-gray-600";
 		}

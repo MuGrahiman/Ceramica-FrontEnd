@@ -71,8 +71,8 @@ const usersApi = createApi( {
 		} ),
 		updateUserStatus: builder.mutation( {
 			query: ( { id, status } ) => ( {
-				url: `/edit/${ id }`,
-				method: "PUT",
+				url: `/edit/status/${ id }`,
+				method: "PATCH",
 				body: { status },
 				headers: {
 					"Content-Type": "application/json",
@@ -80,13 +80,22 @@ const usersApi = createApi( {
 			} ),
 			invalidatesTags: [ "Users" ],
 		} ),
-		// deleteUser: builder.mutation({
-		//     query: (id) => ({
-		//         url: `/${id}`,
-		//         method: "DELETE"
-		//     }),
-		//     invalidatesTags: ["Users"]
-		// })
+		updateUser: builder.mutation( {
+			query: ( { id, data } ) => ( {
+				url: `/edit/${ id }`,
+				method: "PUT",
+				body: data,
+			} ),
+			invalidatesTags: [ "Users" ]
+		} ),
+		updateUserPassword: builder.mutation( {
+			query: ( { id, data } ) => ( {
+				url: `/change-password/${ id }`,
+				method: "POST",
+				body: data,
+			} ),
+			invalidatesTags: [ "Users" ]
+		} ),
 	} ),
 } );
 
@@ -96,6 +105,143 @@ export const {
 	useLoginUserMutation,
 	useRegisterUserMutation,
 	useForgotUserMutation,
-	useUpdateUserStatusMutation /*useDeleteUserMutation*/,
+	useUpdateUserStatusMutation,
+	useUpdateUserMutation,
+	useUpdateUserPasswordMutation,
 } = usersApi;
 export default usersApi;
+
+// import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+// import getBaseUrl from "../../../utils/baseUrl";
+// import { APP } from "../../../constants/app";
+
+// const baseQuery = fetchBaseQuery( {
+// 	baseUrl: `${ getBaseUrl() }/api/auth`,
+// 	credentials: "include",
+// 	prepareHeaders: ( headers ) => {
+// 		// Retrieve token securely
+// 		const appData = localStorage.getItem( APP );
+
+// 		if ( appData ) {
+// 			try {
+// 				const { token } = JSON.parse( appData );
+// 				if ( token ) {
+// 					headers.set( "Authorization", `Bearer ${ token }` );
+// 				}
+// 			} catch ( error ) {
+// 				console.error( "Failed to parse app data from localStorage:", error );
+// 			}
+// 		}
+
+// 		return headers;
+// 	},
+// } );
+
+// const endpointPaths = {
+// 	fetchUsers: "/get",
+// 	fetchUserById: ( id ) => `/get/${ id }`,
+// 	signUp: "/sign-up",
+// 	signIn: "/sign-in",
+// 	forgotPassword: "/forgot-password",
+// 	updateStatus: ( id ) => `/edit/status/${ id }`,
+// 	updateUser: ( id ) => `/edit/${ id }`,
+// };
+
+// const usersApi = createApi( {
+// 	reducerPath: "userApi",
+// 	baseQuery,
+// 	tagTypes: [ "Users" ],
+// 	endpoints: ( builder ) => ( {
+// 		fetchAllUsers: builder.query( {
+// 			query: ( { searchTerm = "", sort = "", status = [] } ) => {
+// 				const params = {};
+
+// 				// Only set parameters if they exist
+// 				if ( searchTerm ) params.searchTerm = searchTerm;
+// 				if ( sort ) params.sort = sort;
+// 				if ( status.length ) params.status = status;
+
+// 				return {
+// 					url: endpointPaths.fetchUsers,
+// 					method: "GET",
+// 					params, // Only relevant params will be added
+// 				};
+// 			},
+// 			providesTags: ( result ) =>
+// 				result
+// 					? [
+// 						...result.map( ( { id } ) => ( { type: "Users", id } ) ),
+// 						{ type: "Users", id: "LIST" },
+// 					]
+// 					: [ { type: "Users", id: "LIST" } ],
+// 		} ),
+
+// 		fetchUserById: builder.query( {
+// 			query: ( id ) => endpointPaths.fetchUserById( id ),
+// 			providesTags: ( result, error, id ) => {
+// 				alert( 'fetch user ' + id )
+// 				return [ { type: "Users", id } ]
+// 			},
+// 		} ),
+
+// 		registerUser: builder.mutation( {
+// 			query: ( newUser ) => ( {
+// 				url: endpointPaths.signUp,
+// 				method: "POST",
+// 				body: newUser,
+// 			} ),
+// 			invalidatesTags: [ { type: "Users", id: "LIST" } ],
+// 		} ),
+
+// 		loginUser: builder.mutation( {
+// 			query: ( userData ) => ( {
+// 				url: endpointPaths.signIn,
+// 				method: "POST",
+// 				body: userData,
+// 			} ),
+// 			invalidatesTags: [ { type: "Users", id: "LIST" } ],
+// 		} ),
+
+// 		forgotUser: builder.mutation( {
+// 			query: ( userMail ) => ( {
+// 				url: endpointPaths.forgotPassword,
+// 				method: "POST",
+// 				body: userMail,
+// 			} ),
+// 			invalidatesTags: [ { type: "Users", id: "LIST" } ],
+// 		} ),
+
+// 		updateUserStatus: builder.mutation( {
+// 			query: ( { id, status } ) => ( {
+// 				url: endpointPaths.updateStatus( id ),
+// 				method: "PATCH",
+// 				body: { status },
+// 			} ),
+// 			invalidatesTags: ( result, error, { id } ) => [ { type: "Users", id } ],
+// 		} ),
+
+// 		updateUser: builder.mutation( {
+// 			query: ( { id, data } ) => ( {
+// 				url: endpointPaths.updateUser( id ),
+// 				method: "PUT",
+// 				body: data,
+// 			} ),
+// 			invalidatesTags: ( result, error, { id } ) => {
+// 				alert( 'update user ' + id )
+// 				return [ { type: "Users", id } ]
+// 			}
+// 		} ),
+// 	} ),
+// } );
+
+// export const {
+// 	useFetchAllUsersQuery,
+// 	useFetchUserByIdQuery,
+// 	useLoginUserMutation,
+// 	useRegisterUserMutation,
+// 	useForgotUserMutation,
+// 	useUpdateUserStatusMutation,
+// 	useUpdateUserMutation,
+// } = usersApi;
+
+// export default usersApi;

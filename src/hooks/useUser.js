@@ -32,6 +32,7 @@ const useUser = ( { searchTerm = '', sort = '', status = [], userId = null } = {
     const {
         data: userDetails,
         isLoading: isUserLoading,
+        isFetching: isUserFetching,
         error: userError
     } = useFetchUserByIdQuery( userId, {
         skip: !userId // Only run if userId is provided
@@ -53,6 +54,7 @@ const useUser = ( { searchTerm = '', sort = '', status = [], userId = null } = {
         // Single user
         userDetails,
         isUserLoading,
+        isUserFetching,
         userError,
 
         // Update status

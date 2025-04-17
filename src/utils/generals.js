@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
  * @param {any} defaultValue - The default value for unspecified fields (default: '').
  * @returns {Object} - An object representing the initialized state.
  */
-export const createDefaultState = ( fields, defaultValue = null, fieldDefaults = {} ) => {
+export const createDefaultState = ( fields = [], defaultValue = null, fieldDefaults = {} ) => {
     return fields.reduce(
         ( acc, field ) => ( {
             ...acc,
