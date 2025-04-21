@@ -1,10 +1,11 @@
 import { useForm } from "react-hook-form";
-import { useAddAddressMutation, useGetAddressesQuery, useUpdateAddressMutation } from "../redux/store";
+import { useAddAddressMutation, useDeleteAddressMutation, useGetAddressesQuery, useUpdateAddressMutation } from "../redux/store";
 import useToast from "../hooks/useToast";
 import { useAuth } from "./useAuth";
 import { useCallback, useEffect, useState } from "react";
 import { createDefaultState } from "../utils/generals";
 import { ADDRESS_FIELDS } from "../constants/address";
+import useApiHandler from "./useApiHandler";
 
 const useAddress = () => {
     const showToast = useToast();
@@ -15,11 +16,15 @@ const useAddress = () => {
     const [ addressList, setAddressList ] = useState( [] );
     const [ addressDetails, setAddressDetails ] = useState( {} );
 
+    const [ handleMutation ] = useApiHandler();
     // API queries and mutations
     const { data, error: fetchError, isLoading: isFetching } = useGetAddressesQuery( null, { skip: !isAuthorized } );
     const [ addAddress, { isLoading: isAddingAddress } ] = useAddAddressMutation();
     const [ updateAddress, { isLoading: isUpdatingAddress } ] = useUpdateAddressMutation();
-
+    const [
+        deleteAddress,
+        { isLoading: isDeletingAddress }, //{isLoading,isError,isSuccess}
+    ] = handleMutation( useDeleteAddressMutation );
     // React Hook Form setup
     const {
         handleSubmit,
@@ -127,6 +132,19 @@ const useAddress = () => {
             console.error( "Error updating address:", error );
         }
     };
+    /**
+     * Handles delete an existing address.
+     */
+    const handleDeleteAddress = async ( id ) => {
+        if ( !id ) return showToast( "Address id is required for delete", "warning" );
+        await deleteAddress( id, {
+            onSuccess: () => "Address deleted successfully ",
+            onError: ( err ) =>
+                err.data.message ||
+                err.message ||
+                "Failed to delete address. Please try again.",
+        } );
+    };
 
     /**
      * Resets the form and clears the selected address ID
@@ -163,13 +181,15 @@ const useAddress = () => {
         addressDetails,
         handleSubmit: handleSubmit( onSubmit ),
         editAddress,
+        deleteAddress: handleDeleteAddress,
         reset: resetForm,
         register,
         errors,
-        isLoading: isFetching || isAddingAddress || isUpdatingAddress || isSubmitting,
+        isLoading: isFetching || isAddingAddress || isUpdatingAddress || isSubmitting || isDeletingAddress,
         isFetching,
-        isUpdatingAddress,
         isAddingAddress,
+        isUpdatingAddress,
+        isDeletingAddress,
         onSelection,
     };
 };

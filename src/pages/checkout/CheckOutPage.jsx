@@ -19,16 +19,17 @@ const CheckOutPage = () => {
 		addressList,
 		isLoading,
 		onSelection,
+		deleteAddress,
 	} = useAddress();
 
 	const { cartItems, isFetching, isRemoving, isUpdating } = useCart();
 
 	const renderItem = (item) => ({
 		quantity: item.quantity,
-		productId: item.inventory?._id || null, 
-		coverImage: item.inventory?.coverImage || "", 
+		productId: item.inventory?._id || null,
+		coverImage: item.inventory?.coverImage || "",
 		price: item.inventory?.price || 0,
-		title: item.inventory?.title || "Unknown Title", 
+		title: item.inventory?.title || "Unknown Title",
 	});
 	const summaryOfCartItems = handleIteration(cartItems, renderItem);
 
@@ -56,10 +57,11 @@ const CheckOutPage = () => {
 							IS_LOADING={isLoading}
 							ON_SELECTION={onSelection}
 							ADDRESS_ID={addressId}
+							ON_DELETE={deleteAddress}
 						/>
 					</InfoLayout>
 				</div>
-	
+
 				<div className=" col-span-1 md:col-span-2   order-3">
 					<InfoLayout title="Saved Addresses">
 						<OrderSummary

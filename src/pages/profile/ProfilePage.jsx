@@ -55,6 +55,7 @@ const ProfilePage = ({ user }) => {
 	const {
 		handleSubmit,
 		editAddress,
+		deleteAddress,
 		register,
 		errors,
 		reset,
@@ -112,7 +113,7 @@ const ProfilePage = ({ user }) => {
 		);
 	};
 
-	if (isLoading || isUserLoading) {
+	if (isUserLoading) {
 		return (
 			<div className="flex items-center justify-center h-screen">
 				<LoadingTemplate message="Fetching user details, please wait..." />
@@ -146,7 +147,7 @@ const ProfilePage = ({ user }) => {
 					{/* Personal Information Card */}
 					<div className=" lg:col-span-2 order-2 md:order-1 ">
 						{isEditing ? (
-							<div className=" bg-white rounded-2xl shadow-md transition-all duration-300 hover:shadow-lg">
+							<div className=" bg-white h-full rounded-2xl shadow-md transition-all duration-300 hover:shadow-lg">
 								{/* Tab Switches  */}
 								<TabSwitcher
 									tabs={[
@@ -216,6 +217,7 @@ const ProfilePage = ({ user }) => {
 								ADDRESS_LIST={addressList}
 								IS_LOADING={isLoading}
 								ON_SELECTION={(address) => !isEditing || onSelection(address)}
+								ON_DELETE={deleteAddress}
 								ADDRESS_ID={addressId}
 							/>
 						</InfoLayout>

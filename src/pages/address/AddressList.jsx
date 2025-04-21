@@ -9,11 +9,12 @@ const AddressList = ({
 	IS_LOADING,
 	ON_SELECTION,
 	ADDRESS_ID,
+	ON_DELETE,
 }) => {
 	return IS_LOADING ? (
 		<Skeleton />
 	) : (
-		<div className="p-3 flex md:flex-col gap-4 items-center justify-between overflow-x-auto md:overflow-y-auto max-h-[calc(100vh-200px)]">
+		<div className="p-3 flex md:flex-col gap-4 items-center justify-between overflow-x-auto md:overflow-y-auto max-h-[calc(100vh-250px)]">
 			<ListOptions
 				OPTIONS={ADDRESS_LIST}
 				EMPTY_MESSAGE="No Address Found"
@@ -24,6 +25,7 @@ const AddressList = ({
 							ADDRESS_ID={ADDRESS_ID}
 							ITEMS={option}
 							ON_SELECTION={ON_SELECTION}
+							ON_DELETE={ON_DELETE}
 						/>
 					);
 				}}
@@ -36,6 +38,7 @@ AddressList.propTypes = {
 	ADDRESS_LIST: PropTypes.array.isRequired,
 	IS_LOADING: PropTypes.bool.isRequired,
 	ON_SELECTION: PropTypes.func.isRequired,
+	ON_DELETE: PropTypes.func.isRequired,
 	ADDRESS_ID: PropTypes.string,
 };
 

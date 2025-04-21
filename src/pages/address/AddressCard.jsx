@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import { MdStars } from "react-icons/md";
-import useAddress from "../../hooks/useAddress";
+import { MdClose, MdStars } from "react-icons/md";
 
-const AddressCard = ({ ITEMS, ON_SELECTION, ADDRESS_ID }) => {
+const AddressCard = ({ ITEMS, ON_SELECTION, ADDRESS_ID, ON_DELETE }) => {
 	// Destructuring the values from ITEMS in camel case
 	const {
 		_id,
@@ -18,19 +17,26 @@ const AddressCard = ({ ITEMS, ON_SELECTION, ADDRESS_ID }) => {
 		isDefault = false,
 	} = ITEMS;
 
-
 	return (
 		<div
-		onClick={() => ON_SELECTION(ITEMS)}
-		className="p-4 border rounded-lg w-full flex-shrink-0 cursor-pointer hover:shadow">
-			{isDefault && <MdStars className="ms-auto" />}
+			// onClick={() => ON_SELECTION(ITEMS)}
+			className="p-4 border rounded-lg w-full flex-shrink-0  hover:shadow">
+			{isDefault ? (
+				<MdStars className="ms-auto w-5 h-5 rounded-full " />
+			) : (
+				<MdClose
+					className="ms-auto w-5 h-5 cursor-pointer rounded-full hover:shadow hover:text-red-600"
+					onClick={() => ON_DELETE(_id)}
+				/>
+			)}
 			<div className="flex items-center gap-2">
 				<input
+				className="cursor-pointer"
 					type="radio"
 					name="address"
 					checked={ADDRESS_ID === _id}
 					onClick={() => ON_SELECTION(ITEMS)}
-					/>
+				/>
 				<div>
 					<p className="font-medium">{`${firstName} ${lastName}`}</p>
 					<p className="text-sm text-gray-600">{`${street}, ${city}`}</p>
@@ -59,6 +65,7 @@ AddressCard.propTypes = {
 	}).isRequired,
 	ADDRESS_ID: PropTypes.string.isRequired,
 	ON_SELECTION: PropTypes.func.isRequired,
+	ON_DELETE: PropTypes.func.isRequired,
 };
 
 export default AddressCard;
