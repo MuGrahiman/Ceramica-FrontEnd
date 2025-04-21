@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useDispatch } from "react-redux";
@@ -11,8 +11,10 @@ import AuthLayout from "../../components/AuthLayout";
 import useApiHandler from "../../hooks/useApiHandler";
 import { useAuth } from "../../hooks/useAuth";
 import useExtract from "../../hooks/useExtract";
+import AuthHeader from "./AuthHeader";
+import AuthRedirectMessage from "./AuthRedirectMessage";
 
-const Login = () => {
+const UserLoginPage = () => {
 	const { isAuthorized } = useAuth("client");
 	const { signInWithFaceBook, signInWithGoogle } = useContextAuth();
 	const [handleLoginMutation] = useApiHandler();
@@ -61,7 +63,7 @@ const Login = () => {
 		);
 	};
 
-	// Handle social sign-ins
+	// Handle social sign-ins (facebook / google)
 	const handleSocialSignIn = async (signInFunction, provider) => {
 		try {
 			const userData = await execute.extractData(signInFunction);
@@ -75,23 +77,26 @@ const Login = () => {
 
 	return (
 		<AuthLayout>
-			<h2 className="text-xl font-semibold mb-4 text-center">Login</h2>
+			<AuthHeader
+				title="Login"
+				description="Please enter your credentials to access your account."
+			/>
 			<AuthForm
-				onSubmit={(data)=>handleLogin(data,"local")}
+				isLogging
+				onSubmit={(data) => handleLogin(data, "local")}
 				btnText={"Login"}
 				isLoading={isLoading}
 			/>
-			<p className="align-baseline font-medium my-4 text-center text-sm">
-				<Link to="/mail" className="text-blue-500 hover:text-blue-700">
-					Forgotten Password?
-				</Link>
-			</p>
-			<p className="align-baseline font-medium mt-4 text-center text-sm">
-				Haven't an account? Please{" "}
-				<Link to="/register" className="text-blue-500 hover:text-blue-700">
-					Register
-				</Link>
-			</p>
+			<AuthRedirectMessage
+				linkText="Forgotten Password?"
+				linkTo="/verify-mail"
+			/>
+			<AuthRedirectMessage
+				message="Haven't an account? Please "
+				linkText="Register"
+				linkTo="/register"
+			/>
+
 			<div className="mt-4">
 				<button
 					onClick={() => handleSocialSignIn(signInWithGoogle, "google")}
@@ -112,4 +117,4 @@ const Login = () => {
 	);
 };
 
-export default Login;
+export default UserLoginPage;

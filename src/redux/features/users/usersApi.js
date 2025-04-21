@@ -13,7 +13,7 @@ const baseQuery = fetchBaseQuery( {
 				const { token } = JSON.parse( jsonValue );
 				if ( token ) {
 					// headers.set("Authorization", `Bearer ${token}`);
-					Headers.set( "Authorization", `Bearer ${ token }` );
+					Headers.set( "authorization", `Bearer ${ token }` );
 				}
 			} catch ( error ) {
 				console.error( "Failed to parse APP data from localStorage:", error );
@@ -61,11 +61,19 @@ const usersApi = createApi( {
 			} ),
 			invalidatesTags: [ "Users" ],
 		} ),
-		forgotUser: builder.mutation( {
+		forgotPassword: builder.mutation( {
 			query: ( userMail ) => ( {
 				url: `/forgot-password`,
 				method: "POST",
 				body: userMail,
+			} ),
+			// invalidatesTags: [ "Users" ],
+		} ),
+		resetPassword: builder.mutation( {
+			query: ( { token, passwords } ) => ( {
+				url: `/reset-password/${ token }`,
+				method: "POST",
+				body: passwords,
 			} ),
 			invalidatesTags: [ "Users" ],
 		} ),
@@ -81,16 +89,16 @@ const usersApi = createApi( {
 			invalidatesTags: [ "Users" ],
 		} ),
 		updateUser: builder.mutation( {
-			query: ( { id, data } ) => ( {
-				url: `/edit/${ id }`,
+			query: ( data ) => ( {
+				url: `/edit`,
 				method: "PUT",
 				body: data,
 			} ),
 			invalidatesTags: [ "Users" ]
 		} ),
 		updateUserPassword: builder.mutation( {
-			query: ( { id, data } ) => ( {
-				url: `/change-password/${ id }`,
+			query: ( data ) => ( {
+				url: `/change-password`,
 				method: "POST",
 				body: data,
 			} ),
@@ -104,7 +112,8 @@ export const {
 	useFetchUserByIdQuery,
 	useLoginUserMutation,
 	useRegisterUserMutation,
-	useForgotUserMutation,
+	useForgotPasswordMutation,
+	useResetPasswordMutation,
 	useUpdateUserStatusMutation,
 	useUpdateUserMutation,
 	useUpdateUserPasswordMutation,

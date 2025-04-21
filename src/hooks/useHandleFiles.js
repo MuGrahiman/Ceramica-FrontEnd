@@ -15,9 +15,9 @@ const useHandleFiles = () => {
         setFileLoading( ( prev ) => ( { ...prev, [ label ]: isLoading } ) );
 
     const validateParams = ( { clearErrors, onError } ) => {
-        if ( clearErrors && typeof ( clearErrors ) === "function" )
+        if ( clearErrors && typeof ( clearErrors ) !== "function" )
             clearErrors();
-        if ( !onError || typeof ( onError ) === "function" )
+        if ( !onError || typeof ( onError ) !== "function" )
             throw new Error( 'Please provide the error functionality ' )
     }
     

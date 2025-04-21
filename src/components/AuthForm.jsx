@@ -17,7 +17,15 @@ import MiniLoader from "./MiniLoader";
  * @param {boolean} isLoading - Loading state flag
  * @param {boolean} isRegistering - Registration mode flag
  */
-const AuthForm = ({ onSubmit, btnText, isLoading, isRegistering = false }) => {
+const AuthForm = ({
+	onSubmit,
+	btnText,
+	isLoading,
+	isRegistering = false,
+	isLogging = false,
+	isMailing = false,
+	isResetting = false,
+}) => {
 	const {
 		register,
 		handleSubmit,
@@ -55,7 +63,7 @@ const AuthForm = ({ onSubmit, btnText, isLoading, isRegistering = false }) => {
 			},
 		},
 		{
-			showWhen: true, 
+			showWhen: isLogging || isRegistering || isMailing,
 			label: "Email",
 			name: "email",
 			type: "email",
@@ -69,7 +77,7 @@ const AuthForm = ({ onSubmit, btnText, isLoading, isRegistering = false }) => {
 			},
 		},
 		{
-			showWhen: true, 
+			showWhen: isLogging || isRegistering || isResetting,
 			label: "Password",
 			name: "password",
 			type: "text",
@@ -77,17 +85,18 @@ const AuthForm = ({ onSubmit, btnText, isLoading, isRegistering = false }) => {
 			validation: {
 				required: "Password is required",
 				// minLength: {
-				// 	value: 10,
-				// 	message: "Password must be at least 10 characters",
-				// },
-				// pattern: {
-				// 	value: /^(?=.*[0-9])(?=.*[!@#$%^&*])/,
-				// 	message: "Must contain a number and special character",
-				// },
+				// 	value: 8,
+				// 	message: "Password must be at least 8 characters", 
+				//   },
+				//   pattern: {
+				// 	value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/,
+				// 	message:
+				// 	  "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character",
+				//   },
 			},
 		},
 		{
-			showWhen: isRegistering,
+			showWhen: isRegistering || isResetting,
 			label: "Confirm Password",
 			name: "confirmPassword",
 			type: "password",
@@ -153,7 +162,8 @@ const AuthForm = ({ onSubmit, btnText, isLoading, isRegistering = false }) => {
 			}`}>
 			{isLoading ? (
 				<>
-					<MiniLoader/>Processing...
+					<MiniLoader />
+					Processing...
 				</>
 			) : (
 				btnText
@@ -186,7 +196,10 @@ AuthForm.propTypes = {
 	onSubmit: PropTypes.func.isRequired,
 	btnText: PropTypes.string.isRequired,
 	isLoading: PropTypes.bool.isRequired,
-	isRegistering: PropTypes.bool,
+	isRegistering: PropTypes.bool.isRequired,
+	isLogging: PropTypes.bool.isRequired,
+	isResetting: PropTypes.bool.isRequired,
+	isMailing: PropTypes.bool.isRequired,
 };
 
 export default AuthForm;

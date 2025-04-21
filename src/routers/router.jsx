@@ -1,9 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import Home from "../pages/home/Home";
-import Login from "../pages/auth/Login";
-import Register from "../pages/auth/Register";
-import Auth from "../pages/auth/Auth";
+import UserLoginPage from "../pages/auth/UserLoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
+import AdminLoginPage from "../pages/auth/AdminLoginPage";
 import SingleBook from "../pages/books/SingleBook";
 import PrivateRoute from "./PrivateRoute";
 import AdminRoute from "./AdminRoute";
@@ -12,8 +12,8 @@ import ManageBooks from "../pages/dashboard/manageBooks/ManageBooks";
 import AddBook from "../pages/dashboard/addBook/AddBook";
 import UpdateBook from "../pages/dashboard/EditBook/UpdateBook";
 import UserDashboard from "../pages/dashboard/users/UserDashboard";
-import OTP from "../pages/auth/OTP";
-import Mail from "../pages/auth/Mail";
+import OtpPage from "../pages/auth/OtpPage";
+import MailPage from "../pages/auth/MailPage";
 import AdminLayout from "../components/AdminLayout";
 import DemoPage from "../pages/demo/DemoPage";
 import AddToInventory from "../pages/inventory/AddToInventory";
@@ -37,6 +37,7 @@ import InventoryPage from "../pages/inventory/InventoryPage";
 import UserPage from "../pages/user/UserPage";
 import UserDetailPage from "../pages/user/UserDetailPage";
 import ProfilePage from "../pages/profile/ProfilePage";
+import PasswordPage from "../pages/auth/PasswordPage";
 
 const router = createBrowserRouter([
 	{
@@ -53,31 +54,35 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/register",
-				element: <Register />,
+				element: <RegisterPage />,
 			},
 			{
 				path: "/login",
-				element: <Login />,
+				element: <UserLoginPage />,
 			},
 			{
-				path: "/mail",
-				element: <Mail />,
+				path: "/verify-mail",
+				element: <MailPage />,
+			},
+			{
+				path: "/reset-password/:token",
+				element: <PasswordPage />,
 			},
 			{
 				path: "/otp/:userId",
-				element: <OTP />,
+				element: <OtpPage />,
 			},
 			{
 				path: "/shop",
-				element: <Shop/>,
+				element: <Shop />,
 			},
 			{
 				path: "/about",
-				element: <AboutPage/>,
+				element: <AboutPage />,
 			},
 			{
 				path: "/contact",
-				element: <ContactPage/>,
+				element: <ContactPage />,
 			},
 			{
 				path: "/cart",
@@ -132,7 +137,7 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "/admin",
-		element: <Auth />,
+		element: <AdminLoginPage />,
 	},
 	{
 		path: "/dashboard",

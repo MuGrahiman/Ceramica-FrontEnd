@@ -10,36 +10,26 @@ import useToast from "../../hooks/useToast";
 import LoadingTemplate from "../../components/LoadingTemplate";
 import useApiHandler from "../../hooks/useApiHandler";
 import MiniLoader from "../../components/MiniLoader";
+import AuthHeader from "./AuthHeader";
 
 // Constants
 const OTP_LENGTH = 4;
 const INITIAL_TIMER = 19;
 
-const OTP = () => {
-	// Hooks
+const OtpPage = () => {
 	const { userId } = useParams();
-	const { data, error, isLoading } = useGetOTPQuery(userId);
+	const { data, isLoading } = useGetOTPQuery(userId);
 	const navigate = useNavigate();
 	const showToast = useToast();
 	const [handleMutation] = useApiHandler();
 	const [verifyOTP, verificationResult] = handleMutation(useVerifyOTPMutation);
 	const [resendOTP, resendResult] = handleMutation(useResendOTPMutation);
 
-	// States
 	const [value, setValue] = useState(Array(OTP_LENGTH).fill(""));
 	const [time, setTime] = useState(INITIAL_TIMER);
 
-	// Refs
 	const buttonRef = useRef(null);
 	const inputs = useRef([]);
-
-	// // Effects
-	// useEffect(() => {
-	// 	if (data) {
-	// 		const toastType = data.success ? "success" : "error";
-	// 		showToast(data.message, toastType);
-	// 	}
-	// }, [data]);
 
 	useEffect(() => {
 		const timerId = setInterval(() => {
@@ -149,12 +139,10 @@ const OTP = () => {
 	return (
 		<AuthLayout>
 			<div className=" text-center">
-				<header className="mb-8">
-					<h1 className="text-2xl font-bold mb-1">OTP Verification</h1>
-					<p className="text-[15px] text-slate-500">
-						Enter the 4-digit verification code.
-					</p>
-				</header>
+				<AuthHeader
+					title="Verify Your Account"
+					description="Enter the 4-digit OTP sent to your mail."
+				/>
 				<form id="otp-form">
 					<div className="flex items-center justify-center gap-3">
 						{Array.from({ length: OTP_LENGTH }).map((_, index) => (
@@ -204,4 +192,4 @@ const OTP = () => {
 	);
 };
 
-export default OTP;
+export default OtpPage;

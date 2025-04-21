@@ -6,25 +6,24 @@ import AuthLayout from "../../components/AuthLayout";
 import AuthForm from "../../components/AuthForm";
 import useToast from "../../hooks/useToast";
 import { useUserSlice } from "../../redux/store";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useAuth } from "../../hooks/useAuth.js";
+import AuthHeader from "./AuthHeader.jsx";
 
-const Auth = () => {
-	// ** State and Hooks **
+const AdminLoginPage = () => {
 	const { loading } = useSelector((state) => state.auth);
 	const { isAuthorized } = useAuth("admin");
-	
+
 	const showToast = useToast();
 	const { addUser } = useUserSlice();
 	const [message, setMessage] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
-	
+
 	useEffect(() => {
 		if (isAuthorized) navigate("/dashboard");
 	}, [isAuthorized, navigate]);
 
-	// ** Submit Handler **
 	const submitFN = async (data) => {
 		setIsLoading(true);
 		try {
@@ -55,11 +54,14 @@ const Auth = () => {
 		}
 	};
 
-	// ** Component Render **
 	return (
 		<AuthLayout>
-			<h2 className="text-xl font-semibold mb-4 text-center">Admin Login</h2>
+			<AuthHeader
+				title="Admin Login"
+				description="Enter your admin credentials to manage the platform."
+			/>
 			<AuthForm
+				isLogging
 				isLoading={isLoading || loading}
 				onSubmit={submitFN}
 				btnText={"Admin Login"}
@@ -69,4 +71,4 @@ const Auth = () => {
 	);
 };
 
-export default Auth;
+export default AdminLoginPage;

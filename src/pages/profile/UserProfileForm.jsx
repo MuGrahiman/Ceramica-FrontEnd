@@ -7,6 +7,7 @@ import useSuccessManager from "../../hooks/useSuccessManager";
 import useToast from "../../hooks/useToast";
 import { createDefaultState } from "../../utils/generals";
 import useErrorManager from "../../hooks/useErrorManager";
+import FormSubmitButton from "./FormSubmitButton";
 
 const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 	const showToast = useToast();
@@ -29,11 +30,6 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 		register,
 		formState: { errors, isDirty, isSubmitting, isValid },
 	} = useForm({ defaultValues: defaultUserValue });
-	
-	const [isError, setErrors, resetErrors] = useErrorManager({
-		defaultErrorValue: defaultBoolValue,
-		setError,
-	});
 
 	const formFields = [
 		{
@@ -120,15 +116,11 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 					disabled
 				/>
 			</div>
-			<div className="flex justify-end pt-4">
-				<button
-					disabled={isSubmitting || isUpdating}
-					type="submit"
-					className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 shadow-md">
-					Save Changes
-				</button>
-			</div>
-		</form>
+			<FormSubmitButton
+				isLoading={isSubmitting || isUpdating}
+				text={"Save Changes"}
+			/>
+ 		</form>
 	);
 };
 

@@ -15,6 +15,7 @@ import { FaCheck } from "react-icons/fa";
 import ProfileHeader from "./ProfileHeader";
 import useApiHandler from "../../hooks/useApiHandler";
 import {
+	useForgotPasswordMutation,
 	useUpdateUserMutation,
 	useUpdateUserPasswordMutation,
 } from "../../redux/store";
@@ -36,6 +37,10 @@ const ProfilePage = ({ user }) => {
 		updatePassword,
 		updatePasswordResult, //{isLoading,isError,isSuccess}
 	] = handleMutation(useUpdateUserPasswordMutation);
+	const [
+		forgotPassword,
+		forgotPasswordResult, //{isLoading,isError,isSuccess}
+	] = handleMutation(useForgotPasswordMutation);
 	const userId = isAuthorized ? currentUser._id : null;
 	const { userDetails, isUserLoading, isUserFetching, userError } = useUser({
 		userId,
@@ -71,31 +76,38 @@ const ProfilePage = ({ user }) => {
 	};
 
 	const handleUpdateUser = async (data) => {
-		await updateUser(
-			{ id: userId, data },
-			{
-				onSuccess: () => "Account updated successfully ",
-				onError: (err) =>
-					err.data.message ||
-					err.message ||
-					"Failed to update your Account. Please try again.",
-			}
-		);
+		await updateUser(data, {
+			onSuccess: () => "Account updated successfully ",
+			onError: (err) =>
+				err.data.message ||
+				err.message ||
+				"Failed to update your Account. Please try again.",
+		});
 		handleIsEditing();
 	};
 
 	const handleUpdatePassword = async (data) => {
-		await updatePassword(
-			{ id: userId, data },
+		await updatePassword(data, {
+			onSuccess: () => {
+				handleIsEditing();
+				return "Password updated successfully ";
+			},
+			onError: (err) =>
+				err.data.message ||
+				err.message ||
+				"Failed to update your Password. Please try again.",
+		});
+	};
+
+	const handleForgotPassword = async () => {
+		await forgotPassword(
+			{ email: currentUser.email },
 			{
-				onSuccess: () => {
-					handleIsEditing();
-					return "Password updated successfully ";
-				},
+				onSuccess: () => "Sent password reset link successfully ",
 				onError: (err) =>
 					err.data.message ||
 					err.message ||
-					"Failed to update your Password. Please try again.",
+					"Failed to Sent password reset link. Please try again.",
 			}
 		);
 	};
@@ -126,7 +138,7 @@ const ProfilePage = ({ user }) => {
 					isEditing={isEditing}
 					onEditing={handleIsEditing}
 					onSubmit={handleUpdateUser}
-					isUpdating={updateUserResult.isLoading || isUserFetching}
+					isUpdating={updateUserResult.isLoading}
 				/>
 				{/* Main Content */}
 				{/* Left Column - Profile Info */}
@@ -150,16 +162,15 @@ const ProfilePage = ({ user }) => {
 										<>
 											<UserProfileForm
 												user={userData}
-												isUpdating={
-													updateUserResult.isLoading || isUserFetching
-												}
+												isUpdating={updateUserResult.isLoading}
 												onSubmit={handleUpdateUser}
 											/>
 											<ChangePasswordForm
-												isUpdating={
-													updatePasswordResult.isLoading || isUserFetching
-												}
+												isUpdating={updatePasswordResult.isLoading}
 												onSubmit={handleUpdatePassword}
+												handleForgotPassword={handleForgotPassword}
+												isSendingResetLink={forgotPasswordResult.isLoading}
+												isSendedResetLink={forgotPasswordResult.isSuccess}
 											/>
 										</>
 									) : (

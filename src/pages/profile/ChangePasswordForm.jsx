@@ -1,206 +1,175 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import useErrorManager from "../../hooks/useErrorManager";
 import useSuccessManager from "../../hooks/useSuccessManager";
 import { createDefaultState } from "../../utils/generals";
+import { useForm } from "react-hook-form";
+import InputField from "../../components/InputField";
+import ListOptions from "../../components/ListOptions";
+import AuthPasswordComponent from "./AuthPasswordComponent";
+import FormSubmitButton from "./FormSubmitButton";
 
-const ChangePasswordForm = ({ onSubmit, isUpdating = false }) => {
+const ChangePasswordForm = ({
+	onSubmit,
+	isUpdating = false,
+	handleForgotPassword,
+	isSendingResetLink = false,
+	isSendedResetLink = false,
+}) => {
 	const defaultPasswordValue = [
 		"currentPassword",
 		"newPassword",
 		"confirmPassword",
 	];
 	const defaultFormValue = createDefaultState(defaultPasswordValue, "");
-	const [formData, setFormData] = useState(defaultFormValue);
-	const [isError, setErrors, resetErrors] = useErrorManager({
-		defaultErrorValue: defaultFormValue,
-	});
+	const [showForgotFlow, setShowForgotFlow] = useState(isSendedResetLink);
+	useEffect(() => {
+		setShowForgotFlow(isSendedResetLink);
+	}, [isSendedResetLink]);
 
-	const [showForgotFlow, setShowForgotFlow] = useState(false);
+	const {
+		handleSubmit,
+		getValues,
+		clearErrors,
+		register,
+		formState: { errors, isDirty, isSubmitting, isValid },
+	} = useForm({ defaultValues: defaultFormValue });
+	const [isSuccess, setSuccess] = useSuccessManager(
+		createDefaultState(defaultPasswordValue, false)
+	);
 
-	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setFormData((prev) => ({
-			...prev,
-			[name]: value,
-		}));
-		if (isError[name]) {
-			setErrors(name, "");
-		}
+	const formFields = [
+		{
+			component: AuthPasswordComponent,
+			props: {
+				NAME: "currentPassword",
+				LABEL: "Current Password",
+				TYPE: "text",
+				PLACEHOLDER: "Enter Current Password",
+				isResetAlerted: showForgotFlow,
+				onClickForgotPassword: handleForgotPassword,
+				isSending: isSendingResetLink,
+				resetCurrentPassword: () => setShowForgotFlow(false),
+			},
+		},
+		{
+			component: InputField,
+			props: {
+				NAME: "newPassword",
+				LABEL: "New Password",
+				TYPE: "text",
+				PLACEHOLDER: "Enter New Password",
+			},
+		},
+		{
+			component: InputField,
+			props: {
+				NAME: "confirmPassword",
+				LABEL: "Confirm Password",
+				TYPE: "text",
+				PLACEHOLDER: "Enter Confirm Password",
+			},
+		},
+	];
+
+	const validationRules = {
+		currentPassword: {
+			required: "Current Password is required.",
+			minLength: {
+				value: 6,
+				message: "Current Password must be at least 6 characters long.",
+			},
+			onChange: (e) => {
+				const value = e.target.value;
+				clearErrors("currentPassword");
+				setSuccess(
+					"currentPassword",
+					value.length >= 6 && !errors["currentPassword"]
+				);
+			},
+		},
+		newPassword: {
+			required: "New Password is required.",
+			minLength: {
+				value: 6,
+				message: "New Password must be at least 6 characters long.",
+			},
+			validate: (value) => {
+				const { currentPassword } = getValues();
+				return value !== currentPassword || "Please Enter New Password.";
+			},
+			// minLength: {
+			// 	value: 8,
+			// 	message: "Password must be at least 8 characters", 
+			//   },
+			//   pattern: {
+			// 	value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/,
+			// 	message:
+			// 	  "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character",
+			//   },
+			onChange: (e) => {
+				const value = e.target.value;
+				clearErrors("newPassword");
+				setSuccess("newPassword", value.length >= 6 && !errors["newPassword"]);
+			},
+		},
+		confirmPassword: {
+			required: "Confirm Password is required.",
+			validate: (value) => {
+				const { newPassword } = getValues();
+				return value === newPassword || "Passwords do not match.";
+			},
+			onChange: (e) => {
+				const value = e.target.value;
+				clearErrors("confirmPassword");
+				setSuccess(
+					"confirmPassword",
+					value === getValues("newPassword") && !errors["confirmPassword"]
+				);
+			},
+		},
 	};
-
-	const validate = () => {
-		let isValid = true;
-		if (!showForgotFlow && !formData.currentPassword) {
-			setErrors("currentPassword", "Current password is required");
-			isValid = false;
+	// Handle form submission
+	const handleForm = (data) => {
+		if (isDirty && isValid) {
+			return onSubmit(data);
 		}
-
-		if (!formData.newPassword) {
-			setErrors("newPassword", "New password is required");
-			isValid = false;
-		} else if (formData.newPassword.length < 8) {
-			setErrors("newPassword", "Password must be at least 8 characters");
-			isValid = false;
-		}
-
-		if (!formData.confirmPassword) {
-			setErrors("confirmPassword", "Confirm password is required");
-			isValid = false;
-		} else if (formData.newPassword !== formData.confirmPassword) {
-			setErrors("confirmPassword", "Passwords do not match");
-			isValid = false;
-		}
-		return isValid;
-	};
-
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		if (validate()) {
-			onSubmit(formData);
-		}
-	};
-
-	const handleForgotPassword = () => {
-		setShowForgotFlow(true);
-		// In a real app, you would trigger the forgot password flow here
-		// This might involve showing a modal or sending an email
-		console.log("Forgot password flow initiated");
-	};
-
-	const resetForm = () => {
-		setShowForgotFlow(false);
-		resetErrors();
-		setFormData(defaultFormValue);
 	};
 
 	return (
-		<div
-			className="space-y-4"
-			// className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
-		>
+		<div className="space-y-4">
 			<h3 className="text-lg font-medium text-gray-900 mb-3">
 				Change Password
 			</h3>
 
 			<form
 				className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4"
-				onSubmit={handleSubmit}>
-				{!showForgotFlow ? (
-					<>
-						<div className="mb-4 col-span-full">
-							<label
-								htmlFor="currentPassword"
-								className="block text-sm font-medium text-gray-700 mb-1">
-								Current Password
-							</label>
-							<div className="relative">
-								<input
-									type="text"
-									id="currentPassword"
-									name="currentPassword"
-									value={formData.currentPassword}
-									onChange={handleChange}
-									className={`w-full px-3 py-2 border ${
-										isError.currentPassword
-											? "border-red-500"
-											: "border-gray-300"
-									} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
-								/>
-								<button
-									type="button"
-									onClick={handleForgotPassword}
-									className="absolute right-2 top-2 text-sm text-blue-600 hover:text-blue-800 focus:outline-none">
-									Forgot?
-								</button>
-							</div>
-							{isError.currentPassword && (
-								<p className="mt-1 text-sm text-red-600">
-									{isError.currentPassword}
-								</p>
-							)}
-						</div>
-					</>
-				) : (
-					//TODO: Make it as layout ; use in the mail
-					<div className="col-span-full mb-6 p-4 bg-blue-50 rounded-md">
-						<p className="text-blue-800 mb-3">
-							We've sent a password reset link to your email. Please check your
-							inbox.
-						</p>
-						<button
-							type="button"
-							onClick={resetForm}
-							className="text-sm text-blue-600 hover:text-blue-800 focus:outline-none">
-							← Back to change password
-						</button>
-					</div>
-				)}
-
-				<div>
-					<label
-						htmlFor="newPassword"
-						className="block text-sm font-medium text-gray-700 mb-1">
-						New Password
-					</label>
-					<input
-						type="password"
-						id="newPassword"
-						name="newPassword"
-						value={formData.newPassword}
-						onChange={handleChange}
-						className={`w-full px-3 py-2 border ${
-							isError.newPassword ? "border-red-500" : "border-gray-300"
-						} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
-					/>
-					{isError.newPassword && (
-						<p className="mt-1 text-sm text-red-600">{isError.newPassword}</p>
+				onSubmit={handleSubmit(handleForm)}>
+				<ListOptions
+					OPTIONS={formFields}
+					RENDER_ITEM={({ component: Component, props }, index) => (
+						<Component
+							key={index}
+							{...props}
+							IS_SUCCESS={isSuccess[props.NAME] || false}
+							ERRORS={errors}
+							REGISTER={register}
+							VALIDATION_RULES={validationRules}
+						/>
 					)}
-					<p className="mt-1 text-xs text-gray-500">
-						Must be at least 8 characters
-					</p>
-				</div>
-
-				<div>
-					<label
-						htmlFor="confirmPassword"
-						className="block text-sm font-medium text-gray-700 mb-1">
-						Confirm New Password
-					</label>
-					<input
-						type="password"
-						id="confirmPassword"
-						name="confirmPassword"
-						value={formData.confirmPassword}
-						onChange={handleChange}
-						className={`w-full px-3 py-2 border ${
-							isError.confirmPassword ? "border-red-500" : "border-gray-300"
-						} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
-					/>
-					{isError.confirmPassword && (
-						<p className="mt-1 text-sm text-red-600">
-							{isError.confirmPassword}
-						</p>
-					)}
-				</div>
-
-				<div className="flex justify-end col-span-full mb-8">
-					<button
-						type="submit"
-						disabled={isUpdating}
-						className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-							isUpdating ? "opacity-75 cursor-not-allowed" : ""
-						}`}>
-						{isUpdating ? "Processing..." : "Change Password"}
-					</button>
-				</div>
+				/>
+				<FormSubmitButton
+					isLoading={isSubmitting || isUpdating}
+					text={"Change Password"}
+				/>
 			</form>
 		</div>
 	);
 };
-// Define PropTypes for the component
 ChangePasswordForm.propTypes = {
 	onSubmit: PropTypes.func.isRequired,
 	isUpdating: PropTypes.bool.isRequired,
+	handleForgotPassword: PropTypes.func.isRequired,
+	isSendingResetLink: PropTypes.bool.isRequired,
+	isSendedResetLink: PropTypes.bool.isRequired,
 };
 export default ChangePasswordForm;

@@ -6,22 +6,21 @@ import useToast from "../../hooks/useToast";
 import useApiHandler from "../../hooks/useApiHandler";
 import { useAuth } from "../../hooks/useAuth";
 import { useEffect } from "react";
+import AuthHeader from "./AuthHeader";
+import AuthRedirectMessage from "./AuthRedirectMessage";
 
-const Register = () => {
-	// Hooks and State Management
+const RegisterPage = () => {
 	const { isAuthorized } = useAuth("client");
 	const [handleMutation] = useApiHandler();
 	const [registerUser, { isLoading }] = handleMutation(useRegisterUserMutation);
 	const navigate = useNavigate();
 	const showToast = useToast();
 
-	// Submission Handler
 	const submitFN = async (formData) => {
 		if (!formData) {
 			showToast("Please enter the credentials", "warning");
 			return;
 		}
-		// API call to register the user
 		await registerUser(formData, {
 			onSuccess: (res) => {
 				if (res.success) {
@@ -37,36 +36,27 @@ const Register = () => {
 		});
 	};
 
-	// Redirect if already logged in
-    useEffect(() => {
-        if (isAuthorized) {
-            navigate("/");
-        }
-    }, [isAuthorized, navigate]); // Adding dependencies for useEffect
+	useEffect(() => {
+		if (isAuthorized) {
+			navigate("/");
+		}
+	}, [isAuthorized, navigate]); 
 
-
-	// Render Component
 	return (
 		<AuthLayout>
-			<h2 className="text-xl font-semibold mb-4 text-center"> Register </h2>
-
-			{/* Registration Form */}
+			<AuthHeader
+				title="Create Your Account"
+				description="Fill in the details below to register for a new account."
+			/>
 			<AuthForm
 				isRegistering
 				onSubmit={submitFN}
 				btnText="Register"
 				isLoading={isLoading}
 			/>
-
-			{/* Link to Login */}
-			<p className="align-baseline font-medium mt-4 text-center text-sm">
-				Have an account? Please{" "}
-				<Link to="/login" className="text-blue-500 hover:text-blue-700">
-					Login
-				</Link>
-			</p>
+			<AuthRedirectMessage message="Have an account? Please " />
 		</AuthLayout>
 	);
 };
 
-export default Register;
+export default RegisterPage;
