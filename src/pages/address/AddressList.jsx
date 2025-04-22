@@ -10,6 +10,7 @@ const AddressList = ({
 	ON_SELECTION,
 	ADDRESS_ID,
 	ON_DELETE,
+	EDIT_MODE = false,
 }) => {
 	return IS_LOADING ? (
 		<Skeleton />
@@ -26,6 +27,7 @@ const AddressList = ({
 							ITEMS={option}
 							ON_SELECTION={ON_SELECTION}
 							ON_DELETE={ON_DELETE}
+							EDIT_MODE={EDIT_MODE}
 						/>
 					);
 				}}
@@ -37,6 +39,7 @@ const AddressList = ({
 AddressList.propTypes = {
 	ADDRESS_LIST: PropTypes.array.isRequired,
 	IS_LOADING: PropTypes.bool.isRequired,
+	EDIT_MODE: PropTypes.bool.isRequired,
 	ON_SELECTION: PropTypes.func.isRequired,
 	ON_DELETE: PropTypes.func.isRequired,
 	ADDRESS_ID: PropTypes.string,

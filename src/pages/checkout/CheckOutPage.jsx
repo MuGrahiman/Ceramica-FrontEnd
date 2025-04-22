@@ -58,6 +58,7 @@ const CheckOutPage = () => {
 							ON_SELECTION={onSelection}
 							ADDRESS_ID={addressId}
 							ON_DELETE={deleteAddress}
+							EDIT_MODE={true}
 						/>
 					</InfoLayout>
 				</div>

@@ -19,13 +19,16 @@ const useAddress = () => {
     const [ handleMutation ] = useApiHandler();
     // API queries and mutations
     const { data, error: fetchError, isLoading: isFetching } = useGetAddressesQuery( null, { skip: !isAuthorized } );
-    const [ addAddress, { isLoading: isAddingAddress } ] = useAddAddressMutation();
-    const [ updateAddress, { isLoading: isUpdatingAddress } ] = useUpdateAddressMutation();
+    const [ addAddress, { isLoading: isAddingAddress } ] = handleMutation( useAddAddressMutation );
+    const [ updateAddress, { isLoading: isUpdatingAddress } ] = handleMutation( useUpdateAddressMutation );
     const [
         deleteAddress,
         { isLoading: isDeletingAddress }, //{isLoading,isError,isSuccess}
     ] = handleMutation( useDeleteAddressMutation );
     // React Hook Form setup
+    const defaultValues = createDefaultState( ADDRESS_FIELDS, "",
+        { email: currentUser.email, isDefault: false }
+    )
     const {
         handleSubmit,
         register, trigger,
@@ -35,9 +38,7 @@ const useAddress = () => {
         watch, clearErrors,
 
     } = useForm( {
-        defaultValues: createDefaultState( ADDRESS_FIELDS, "",
-            { email: currentUser.email, isDefault: false }
-        )
+        defaultValues
     } );
 
     /**
@@ -97,45 +98,49 @@ const useAddress = () => {
      * Handles form submission to add a new address.
      * @param {Object} formData - The address form data.
      */
-    const onSubmit = async ( formData ) => {
+    const onAddAddress = async ( formData ) => {
         if ( !validateForm() ) return;
-        try {
-            const newAddress = await addAddress( formData ).unwrap();
-            setAddressId( newAddress._id );
-            reset( createDefaultState( ADDRESS_FIELDS, "",
-                { ...newAddress, email: currentUser.email }
-            ) );
-            showToast( "Address added successfully", "success" );
-        } catch ( error ) {
-            showToast( "Failed to add address. Please try again.", "error" );
-            console.error( "Error adding address:", error );
-        }
+        await addAddress( formData, {
+            onSuccess: ( newAddress ) => {
+                setAddressId( newAddress._id );
+                reset( createDefaultState( ADDRESS_FIELDS, "",
+                    { ...newAddress, email: currentUser.email }
+                ) ); return "Address added successfully"
+            },
+            onError: ( err ) =>
+                err.data.message ||
+                err.message ||
+                "Failed to add address. Please try again.",
+        } );
     };
 
     /**
      * Handles updating an existing address.
      */
-    const editAddress = async () => {
+    const onEditAddress = async () => {
         if ( !validateForm() ) return;
         if ( !addressId ) return showToast( "Please choose any address for edit.", "warning" );
 
-        try {
-            const currentFormValues = watch();
-            const updatedAddress = await updateAddress( { addressId, data: currentFormValues } ).unwrap();
-            setAddressId( updatedAddress._id );
-            reset( createDefaultState( ADDRESS_FIELDS, "",
-                { ...updatedAddress, email: currentUser.email }
-            ) );
-            showToast( "Address updated successfully", "success" );
-        } catch ( error ) {
-            showToast( "Failed to update address. Please try again.", "error" );
-            console.error( "Error updating address:", error );
-        }
+        const currentFormValues = watch();
+        await updateAddress( { addressId, data: currentFormValues }, {
+            onSuccess: ( updatedAddress ) => {
+                setAddressId( updatedAddress._id );
+                reset( createDefaultState( ADDRESS_FIELDS, "",
+                    { ...updatedAddress, email: currentUser.email }
+                ) );
+                return "Address updated successfully"
+            },
+            onError: ( err ) =>
+                err.data.message ||
+                err.message ||
+                "Failed to update address. Please try again."
+        } );
+
     };
     /**
      * Handles delete an existing address.
      */
-    const handleDeleteAddress = async ( id ) => {
+    const onDeleteAddress = async ( id ) => {
         if ( !id ) return showToast( "Address id is required for delete", "warning" );
         await deleteAddress( id, {
             onSuccess: () => "Address deleted successfully ",
@@ -151,9 +156,9 @@ const useAddress = () => {
      */
     const resetForm = useCallback( () => {
         clearErrors()
-        reset();
+        reset( defaultValues );
         setAddressId( null );
-    }, [ clearErrors, reset ] );
+    }, [clearErrors, defaultValues, reset] );
 
     /**
      * Handles address selection, updating the form with the selected address.
@@ -179,9 +184,9 @@ const useAddress = () => {
         addressId,
         addressList,
         addressDetails,
-        handleSubmit: handleSubmit( onSubmit ),
-        editAddress,
-        deleteAddress: handleDeleteAddress,
+        handleSubmit: handleSubmit( onAddAddress ),
+        editAddress: onEditAddress,
+        deleteAddress: onDeleteAddress,
         reset: resetForm,
         register,
         errors,

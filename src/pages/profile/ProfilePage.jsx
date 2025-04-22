@@ -219,6 +219,7 @@ const ProfilePage = ({ user }) => {
 								ON_SELECTION={(address) => !isEditing || onSelection(address)}
 								ON_DELETE={deleteAddress}
 								ADDRESS_ID={addressId}
+								EDIT_MODE={isEditing}
 							/>
 						</InfoLayout>
 					</div>
