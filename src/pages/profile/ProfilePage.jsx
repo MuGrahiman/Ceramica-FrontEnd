@@ -20,9 +20,14 @@ import {
 	useUpdateUserPasswordMutation,
 } from "../../redux/store";
 import TabSwitcher from "../../components/TabSwitcher";
+import useWishList from "../../hooks/useWishList";
+import EmptyWishlist from "../wishlist/EmptyWishlist";
+import WishlistDetails from "./WishlistDetails";
 
 const ProfilePage = ({ user }) => {
 	const { currentUser, isAuthorized } = useAuth("client");
+	const { wishListItems } = useWishList();
+
 	const [userData, setUserData] = useState({});
 	const [isEditing, setIsEditing] = useState(false);
 	const TAB = { ADDRESS: "address", PROFILE: "profile" };
@@ -335,60 +340,7 @@ const ProfilePage = ({ user }) => {
 									/>
 								</svg>
 							)}>
-							<div className="px-6 py-4">
-								{user.wishlist?.length > 0 ? (
-									<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-										{user.wishlist.slice(0, 4).map((item, index) => (
-											<div key={index} className="group relative">
-												<div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg ">
-													<img
-														src={item.image}
-														alt={item.name}
-														className="h-full w-full object-cover object-center group-hover:opacity-75 transition-opacity duration-200"
-													/>
-												</div>
-												<p className="mt-2 text-sm font-medium text-gray-900 truncate">
-													{item.name}
-												</p>
-												<p className="text-sm text-gray-500">${item.price}</p>
-											</div>
-										))}
-									</div>
-								) : (
-									<div className="text-center py-8">
-										<svg
-											className="mx-auto h-12 w-12 text-gray-400"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24">
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={1}
-												d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-											/>
-										</svg>
-										<h3 className="mt-2 text-sm font-medium text-gray-900">
-											No items in wishlist
-										</h3>
-										<p className="mt-1 text-sm text-gray-500">
-											Start saving items you love
-										</p>
-										<div className="mt-6">
-											<button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-												Browse Products
-											</button>
-										</div>
-									</div>
-								)}
-								{user.wishlist?.length > 4 && (
-									<div className="mt-6 text-center">
-										<button className="text-indigo-600 hover:text-indigo-800 font-medium">
-											View all {user.wishlist.length} items
-										</button>
-									</div>
-								)}
-							</div>
+							<WishlistDetails wishListItems={wishListItems} />
 						</InfoLayout>
 					</div>
 				</div>
@@ -413,22 +365,7 @@ ProfilePage.defaultProps = {
 			zip: "10001",
 			country: "United States",
 		},
-		wishlist: [
-			{
-				id: "1",
-				name: "Wireless Headphones",
-				price: 199.99,
-				image:
-					"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-			},
-			{
-				id: "2",
-				name: "Smart Watch",
-				price: 249.99,
-				image:
-					"https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-			},
-		],
+		wishlist: [],
 		orders: [
 			{
 				orderNumber: "ORD-12345",

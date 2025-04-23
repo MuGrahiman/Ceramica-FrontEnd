@@ -1,57 +1,110 @@
-// useWishlist.js
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
     useAddToWishListMutation,
     useGetWishlistItemsQuery,
     useRemoveFromWishListMutation,
 } from "../redux/store";
 import { useAuth } from "./useAuth";
+import useApiHandler from "./useApiHandler";
+// import { EMPTY_WISHLIST_MESSAGE } from "../constants/messages";
 
-export const useWishList = ( itemId, showWishlist ) => {
-    const navigate = useNavigate();
-    const { isAuthorized } = useAuth("client");
-    const [ wishListItems, setWishListItems ] = useState( null )
-    const { data } = useGetWishlistItemsQuery( null, {
-        skip: !isAuthorized,
-    } );
 
-    useEffect( () => {
-        if ( data && data.length ) setWishListItems( data );
-        else setWishListItems( null )
-    }, [ data ] )
+// Define a constant for the empty wishlist message
+const EMPTY_WISHLIST_MESSAGE = "Your wishlist is empty.";
 
-    const [ addToWishList, { isLoading: isAdding } ] = useAddToWishListMutation();
-    const [ removeFromWishList, { isLoading: isRemoving } ] =
-        useRemoveFromWishListMutation();
 
-    const isItemInWishlist = ( id ) =>
-        wishListItems?.some( ( { inventory } ) => inventory._id === id );
 
-    const handleWishlistClick = async () => {
+/**
+ * Custom hook to manage wishlist functionality.
+ * @param {boolean} [showWishlist=false] - Whether to show the wishlist.
+ * @returns {object} - Wishlist state and functions.
+ */
+const useWishList = ( showWishlist = false ) => {    const [handleLoginMutation] = useApiHandler();
+    const { isAuthorized, currentUser, validateAuthentication } = useAuth("client");
+    const [wishListItems, setWishListItems] = useState(null);
+    const [wishlistId, setWishlistId] = useState(null);
+
+    const {
+        data: wishListData,
+        isLoading: isWishListLoading,
+        isError: isWishListError,
+        isFetching: isWishListFetching,
+        refetch: refetchWishList,
+    } = useGetWishlistItemsQuery(null, { skip: !isAuthorized });
+
+    const [addToWishList, addToWishListResult] =
+        handleLoginMutation(useAddToWishListMutation);
+
+    const [removeFromWishList, removeFromWishListResult] =
+        handleLoginMutation(useRemoveFromWishListMutation);
+
+    useEffect(() => {
+        if (wishListData && wishListData.length) {
+            setWishListItems(wishListData);
+        } else {
+            setWishListItems(null);
+        }
+    }, [wishListData]);
+
+    /**
+     * Checks if an item ID is in the wishlist.
+     * @param {string} id - The item ID to check.
+     * @returns {boolean} - Whether the item is in the wishlist.
+     */
+    const checkIdInWishlist = (id) =>
+        wishListItems?.some(({ inventory }) => inventory._id === id) || false;
+
+    /**
+     * Handles adding or removing an item from the wishlist.
+     * @param {string} itemId - The item ID to add or remove.
+     */
+    const handleWishlistClick = async (itemId = '') => {
         if (!showWishlist || !itemId) return;
-        if (!isAuthorized) {
-            navigate("/login");
-            return;
+        if (!validateAuthentication()) return;
+        setWishlistId(itemId);
+        if (await checkIdInWishlist(itemId)) {
+            await removeFromWishList(
+                itemId,
+                {
+                    onError: (err) =>
+                        err.data?.message || err?.message || "Failed to remove from wishlist",
+                }
+            );
+        } else {
+            await addToWishList(itemId,
+                {
+                    onError: (err) =>
+                        err.data?.message || err?.message || "Failed to add to wishlist",
+                }
+            );
         }
-    
-        try {
-            if (isItemInWishlist(itemId)) {
-                await removeFromWishList(itemId);
-            } else {
-                await addToWishList(itemId);
-            }
-        } catch (error) {
-            console.error("Error updating wishlist:", error);
-            alert("Failed to update wishlist. Please try again.");
-        }
+        setWishlistId(null);
     };
-    
+
+    const wishlistUser = currentUser
+        ? `${currentUser.firstName} ${currentUser.lastName}`
+        : 'Guest';
+
+    const isLoading = (
+        addToWishListResult.isLoading ||
+        removeFromWishListResult.isLoading
+    );
 
     return {
+        EMPTY_WISHLIST_MESSAGE,
+        wishlistId,
+        wishlistUser,
+        wishListItems,
+        isWishListLoading,
+        isWishListError,
+        isWishListFetching,
+        refetchWishList,
+
         isAuthorized,
-        isItemInWishlist: isItemInWishlist( itemId ),
+        checkIdInWishlist,
         handleWishlistClick,
-        isLoading: isAdding || isRemoving,
+        isLoading
     };
 };
+
+export default useWishList;

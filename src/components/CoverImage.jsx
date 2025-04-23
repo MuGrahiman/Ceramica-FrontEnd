@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { FaHeart } from "react-icons/fa";
 import { ImSpinner9 } from "react-icons/im";
-import { useWishList } from "../hooks/useWishList";
+import useWishList from "../hooks/useWishList";
 import MiniLoader from "./MiniLoader";
 
 const CoverImage = ({
@@ -13,11 +13,9 @@ const CoverImage = ({
 	SHOW_WISHLIST = false,
 	ITEM_ID,
 }) => {
-	const { isItemInWishlist, handleWishlistClick, isLoading } = useWishList(
-		ITEM_ID,
-		SHOW_WISHLIST
-	);
-
+	const { checkIdInWishlist, handleWishlistClick, isLoading, wishlistId } =
+		useWishList(SHOW_WISHLIST);
+	const isItemInWishlist = checkIdInWishlist(ITEM_ID);
 	return (
 		<div style={{ width: WIDTH, height: HEIGHT }} className="relative">
 			<img
@@ -29,18 +27,18 @@ const CoverImage = ({
 			/>
 			{SHOW_WISHLIST && (
 				<button
-					onClick={handleWishlistClick}
+					onClick={() => handleWishlistClick(ITEM_ID)}
 					disabled={isLoading}
 					className={`absolute top-2 end-2 flex items-center justify-center bg-blend-soft-light rounded-full p-1 cursor-pointer ${
 						isLoading ? "opacity-50 cursor-not-allowed" : ""
 					}`}
 					aria-label="Add to wishlist">
-					{isLoading ? (
+					{isLoading && ITEM_ID === wishlistId ? (
 						<MiniLoader />
 					) : (
 						<FaHeart
 							className={`${
-								isItemInWishlist ? "fill-red-400" : "fill-white"
+								isItemInWishlist ? "fill-red-500" : "fill-white"
 							} w-5 h-5 m-1 drop-shadow-lg hover:scale-110`}
 						/>
 					)}

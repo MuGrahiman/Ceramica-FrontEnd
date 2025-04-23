@@ -51,7 +51,7 @@ export const generateId = () => uuidv4();
  * @param {number} [LEN=10] - The maximum length of the trimmed string (default is 10).
  * @returns {string} - The trimmed string.
  */
-export const stringTrimmer = ( TEXT, LEN = 10 ) => TEXT.substring( 0, LEN );
+export const stringTrimmer = ( TEXT, LEN = 10 ) => TEXT?.substring( 0, LEN );
 
 /**
  * Converts a string to uppercase.

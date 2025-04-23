@@ -16,6 +16,7 @@ import {
 	FILTER_FORMS_SORT_OPTIONS,
 } from "../../constants/filter-form";
 import useSearch from "../../hooks/useSearch";
+import ListOptions from "../../components/ListOptions";
 
 const Shop = () => {
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
@@ -67,15 +68,7 @@ const Shop = () => {
 			},
 		},
 	];
-	const productList = fetchLoading ? (
-		<div className="flex items-center justify-center ">
-			<LoadingTemplate message="Fetching inventory, please wait..." />
-		</div>
-	) : Array.isArray(data) && data.length > 0 ? (
-		data.map((product) => <ProductCard key={product._id} product={product} />)
-	) : (
-		<p>No products available.</p>
-	);
+	// const productList =
 
 	return (
 		<section>
@@ -125,7 +118,21 @@ const Shop = () => {
 							 transition-all duration-700 ease-in-out ${
 									isOpen("isOpen") ? "opacity-0 w-0 " : "opacity-100  w-full"
 								}  sm:opacity-100 sm:w-full  `}>
-					{productList}
+					{fetchLoading ? (
+						<div className="flex items-center justify-center ">
+							<LoadingTemplate message="Fetching inventory, please wait..." />
+						</div>
+					) : (
+						Array.isArray(data) && (
+							<ListOptions
+								OPTIONS={data}
+								RENDER_ITEM={(product) => (
+									<ProductCard key={product._id} product={product} />
+								)}
+								EMPTY_MESSAGE="No products available."
+							/>
+						)
+					)}
 				</div>
 			</div>
 			<div className="container mx-auto mt-6 px-4 py-6">

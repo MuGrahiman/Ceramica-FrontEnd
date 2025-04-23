@@ -158,7 +158,7 @@ const useAddress = () => {
         clearErrors()
         reset( defaultValues );
         setAddressId( null );
-    }, [clearErrors, defaultValues, reset] );
+    }, [ clearErrors, defaultValues, reset ] );
 
     /**
      * Handles address selection, updating the form with the selected address.

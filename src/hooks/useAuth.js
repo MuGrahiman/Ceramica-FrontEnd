@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 export const useAuth = ( role ) => {
   const currentUser = useSelector( ( state ) => state.auth.currentUser );
+  
   const navigate = useNavigate();
   const showToast = useToast();
 
@@ -32,7 +33,7 @@ export const useAuth = ( role ) => {
   const validateAuthentication = ( message = "Please login", location = "/login" ) => {
     if ( !isAuthorized ) {
       navigate( location );
-      showToast( message );
+      showToast( message, 'error' );
       // throw new Error( "Please login" );
       return isAuthorized
     }

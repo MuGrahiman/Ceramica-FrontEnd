@@ -40,7 +40,6 @@ const ProductCard = ({ product }) => {
 			</div>
 		</div>
 	);
-	
 };
 
 ProductCard.propTypes = {

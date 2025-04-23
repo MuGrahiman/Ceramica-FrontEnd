@@ -38,6 +38,7 @@ import UserPage from "../pages/user/UserPage";
 import UserDetailPage from "../pages/user/UserDetailPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import PasswordPage from "../pages/auth/PasswordPage";
+import WishlistPage from "../pages/wishlist/WishlistPage";
 
 const router = createBrowserRouter([
 	{
@@ -120,7 +121,14 @@ const router = createBrowserRouter([
 					</PrivateRoute>
 				),
 			},
-
+			{
+				path: "/wishlist",
+				element: (
+					<PrivateRoute>
+						<WishlistPage />
+					</PrivateRoute>
+				),
+			},
 			{
 				path: "/books/:id",
 				element: <SingleBook />,
