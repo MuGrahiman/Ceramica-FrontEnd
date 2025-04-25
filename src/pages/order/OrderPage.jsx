@@ -43,16 +43,16 @@ const OrderPage = () => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const {
+		activeOrderId,
 		ordersData,
-		id,
-		fetchLoading,
-		fetchError,
-		isStatusUpdating,
-		handleSelection,
-		onSearch,
-		onClearSearch,
+		isOrdersLoading,
+		ordersFetchError,
+		handleOrderStatusSelection,
+		isOrderStatusUpdating,
+		onOrderSearch,
+		onClearOrderSearch,
 		filterOrders,
-		clearFilters,
+		clearOrderFilters,
 	} = useOrder("admin");
 
 	// Drop Down Options
@@ -92,14 +92,14 @@ const OrderPage = () => {
 			hide: true,
 			label: "Order  Status",
 			render: (order) =>
-				isStatusUpdating && id === order._id ? (
+				isOrderStatusUpdating && activeOrderId === order._id ? (
 					<MiniLoader />
 				) : (
 					<SelectDropdown
 						keys={order._id}
 						selectedValue={order.status}
+						onChange={(event) => handleOrderStatusSelection(order._id, event.target.value)}
 						options={selectDropDownOptions}
-						onChange={(event) => handleSelection(order._id, event.target.value)}
 					/>
 				),
 			showValue: () => "xl:table-cell",
@@ -185,11 +185,11 @@ const OrderPage = () => {
 	};
 
 	const onClear = () => {
-		clearFilters();
+		clearOrderFilters();
 		setIsOpen((prev) => !prev);
 	};
 
-	if (fetchLoading) {
+	if (isOrdersLoading) {
 		return (
 			<div className="flex items-center justify-center h-screen">
 				<LoadingTemplate message="Fetching orders, please wait..." />
@@ -198,7 +198,7 @@ const OrderPage = () => {
 	}
 
 	// Handle error state
-	if (fetchError) {
+	if (ordersFetchError) {
 		return (
 			<div className="text-center text-gray-500">
 				<p>Error fetching orders. Please try again later.</p>
@@ -226,8 +226,8 @@ const OrderPage = () => {
 				<SearchBar
 					INPUT_STYLE="focus:outline-none block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 focus:ring-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 rounded-e-lg rounded-s-lg dark:text-white border border-gray-300 focus:border-gray-500 dark:border-gray-600 dark:focus:border-gray-500"
 					BUTTON_STYLE="p-2.5 h-full text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 dark:border-gray-700 dark:text-white rounded-e-lg hover:bg-gray-200 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-800"
-					ON_SUBMIT={onSearch}
-					CLEAR_SEARCH={onClearSearch}
+					ON_SUBMIT={onOrderSearch}
+					CLEAR_SEARCH={onClearOrderSearch}
 				/>
 			</div>
 

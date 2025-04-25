@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import InputField from "../../components/InputField";
 import ListOptions from "../../components/ListOptions";
@@ -8,6 +8,13 @@ import useToast from "../../hooks/useToast";
 import { createDefaultState } from "../../utils/generals";
 import FormSubmitButton from "./FormSubmitButton";
 
+/**
+ * Handles the user profile form with validation and success state management.
+ * @param {Object} user - The user object containing details.
+ * @param {function} onSubmit - The function to handle form submission.
+ * @param {boolean} [isUpdating=false] - Indicates whether the form is updating.
+ * @returns {JSX} - The user profile form.
+ */
 const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 	const showToast = useToast();
 	const defaultUserValue = {
@@ -21,10 +28,6 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 	const [isSuccess, setSuccess] = useSuccessManager(defaultBoolValue);
 	const {
 		handleSubmit,
-		control,
-		setValue,
-		getValues,
-		setError,
 		clearErrors,
 		register,
 		formState: { errors, isDirty, isSubmitting, isValid },
@@ -78,7 +81,6 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 		},
 	};
 
-	// Handle form submission
 	const handleForm = (data) => {
 		if (isDirty && isValid) {
 			return onSubmit(data);
@@ -123,7 +125,6 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 	);
 };
 
-// Define PropTypes for the component
 UserProfileForm.propTypes = {
 	user: PropTypes.shape({
 		firstName: PropTypes.string.isRequired,

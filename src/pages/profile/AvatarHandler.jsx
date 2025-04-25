@@ -4,15 +4,23 @@ import Avatar from "./Avatar";
 import { IoCloseSharp } from "react-icons/io5";
 import MiniLoader from "../../components/MiniLoader";
 
+/**
+ * Handles avatar uploads and removals with a hover effect and loading indicator.
+ * @param {Object} file - The uploaded file object containing `url` and `public_id`.
+ * @param {function} onFileRemove - The function to handle file removal.
+ * @param {function} onFileChange - The function to handle file changes.
+ * @param {boolean} isLoading - Indicates whether the component is in a loading state.
+ * @returns {JSX} - The avatar handler component.
+ */
 const AvatarHandler = ({ file, onFileRemove, onFileChange, isLoading }) => {
 	return file && file.public_id ? (
 		<div
 			key={file.public_id}
 			className="relative flex flex-shrink-0 items-center justify-center rounded-full
              bg-white group  overflow-hidden">
-			{/* Overlay for hover effect */}
+
 			<div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-			{/* Centered icon */}
+
 			<button
 				disabled={isLoading}
 				onClick={onFileRemove}
@@ -21,7 +29,6 @@ const AvatarHandler = ({ file, onFileRemove, onFileChange, isLoading }) => {
 				aria-label={`Remove image `}>
 				<IoCloseSharp />
 			</button>
-			{/* Image */}
 
 			<Avatar imgLink={file.url} imgAlt={`Uploaded image `} />
 		</div>
@@ -31,7 +38,6 @@ const AvatarHandler = ({ file, onFileRemove, onFileChange, isLoading }) => {
 			className="mx-auto rounded-full p-[1.26rem] border-4
      border-white bg-white shadow-xl animate-fade-in
      flex flex-col items-center justify-center w-full cursor-pointer">
-			{/* <div className="flex flex-col items-center justify-center"> */}
 			{isLoading ? (
 				<div className="h-20 w-20 flex justify-center items-center">
 					<MiniLoader />
@@ -52,7 +58,6 @@ const AvatarHandler = ({ file, onFileRemove, onFileChange, isLoading }) => {
 					/>
 				</svg>
 			)}
-			{/* </div> */}
 			<input
 				disabled={isLoading}
 				onChange={onFileChange}
@@ -64,6 +69,7 @@ const AvatarHandler = ({ file, onFileRemove, onFileChange, isLoading }) => {
 		</label>
 	);
 };
+
 AvatarHandler.propTypes = {
 	file: PropTypes.shape({
 		url: PropTypes.string,

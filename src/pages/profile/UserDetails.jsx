@@ -1,6 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+/**
+ * Displays user details and address information.
+ * @param {Object} user - The user object containing details.
+ * @param {Object} address - The address object containing details.
+ * @returns {JSX} - The user details component.
+ */
 const UserDetails = ({ user = {}, address = {} }) => {
 	return (
 		<div className="space-y-4 px-6">
@@ -51,7 +57,6 @@ const UserDetails = ({ user = {}, address = {} }) => {
 	);
 };
 
-// Define PropTypes for the component
 UserDetails.propTypes = {
 	user: PropTypes.shape({
 		firstName: PropTypes.string.isRequired,

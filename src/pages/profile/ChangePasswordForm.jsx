@@ -8,6 +8,15 @@ import ListOptions from "../../components/ListOptions";
 import AuthPasswordComponent from "./AuthPasswordComponent";
 import FormSubmitButton from "./FormSubmitButton";
 
+/**
+ * Handles the change password form with validation and forgot password flow.
+ * @param {function} onSubmit - The function to handle form submission.
+ * @param {boolean} [isUpdating=false] - Indicates whether the form is updating.
+ * @param {function} handleForgotPassword - The function to handle forgot password.
+ * @param {boolean} [isSendingResetLink=false] - Indicates whether the reset link is being sent.
+ * @param {boolean} [isSendedResetLink=false] - Indicates whether the reset link has been sent.
+ * @returns {JSX} - The change password form.
+ */
 const ChangePasswordForm = ({
 	onSubmit,
 	isUpdating = false,
@@ -128,7 +137,7 @@ const ChangePasswordForm = ({
 			},
 		},
 	};
-	// Handle form submission
+
 	const handleForm = (data) => {
 		if (isDirty && isValid) {
 			return onSubmit(data);
@@ -165,6 +174,7 @@ const ChangePasswordForm = ({
 		</div>
 	);
 };
+
 ChangePasswordForm.propTypes = {
 	onSubmit: PropTypes.func.isRequired,
 	isUpdating: PropTypes.bool.isRequired,

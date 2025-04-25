@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import {
     useFetchAllUsersQuery,
     useFetchUserByIdQuery,
+    useForgotPasswordMutation,
+    useUpdateUserMutation,
+    useUpdateUserPasswordMutation,
     useUpdateUserStatusMutation
 } from '../redux/store';
 import useApiHandler from './useApiHandler';
@@ -42,6 +45,18 @@ const useUser = ( { searchTerm = '', sort = '', status = [], userId = null } = {
     const [ updateUserStatus, { isLoading: isStatusUpdating } ] = handleMutation(
         useUpdateUserStatusMutation
     );
+    const [
+        updateUser,
+        updateUserResult, //{isLoading,isError,isSuccess}
+    ] = handleMutation( useUpdateUserMutation );
+    const [
+        updatePassword,
+        updatePasswordResult, //{isLoading,isError,isSuccess}
+    ] = handleMutation( useUpdateUserPasswordMutation );
+    const [
+        forgotPassword,
+        forgotPasswordResult, //{isLoading,isError,isSuccess}
+    ] = handleMutation( useForgotPasswordMutation );
 
     return {
         // All users
@@ -59,7 +74,20 @@ const useUser = ( { searchTerm = '', sort = '', status = [], userId = null } = {
 
         // Update status
         updateUserStatus,
-        isStatusUpdating
+        isStatusUpdating,
+
+        // Update user
+        updateUser,
+        updateUserResult,
+
+        // Update user password
+        updatePassword,
+        updatePasswordResult,
+
+        // change user password
+        forgotPassword,
+        forgotPasswordResult,
+
     };
 };
 

@@ -1,5 +1,12 @@
 import React from "react";
 import propType from "prop-types";
+
+/**
+ * A submit button for forms with a loading state.
+ * @param {string} [text="Submit"] - The text to display on the button.
+ * @param {boolean} [isLoading=false] - Whether the button is in a loading state.
+ * @returns {JSX} - The submit button.
+ */
 const FormSubmitButton = ({ text = "Submit", isLoading = false }) => {
 	return (
 		<div className="flex justify-end col-span-full mb-8">
@@ -14,6 +21,7 @@ const FormSubmitButton = ({ text = "Submit", isLoading = false }) => {
 		</div>
 	);
 };
+
 FormSubmitButton.propTypes = {
 	text: propType.string.isRequired,
 	isLoading: propType.bool.isRequired,

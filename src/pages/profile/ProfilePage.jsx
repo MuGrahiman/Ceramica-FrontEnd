@@ -10,12 +10,6 @@ import { useAuth } from "../../hooks/useAuth";
 import LoadingTemplate from "../../components/LoadingTemplate";
 import useUser from "../../hooks/useUser";
 import ProfileHeader from "./ProfileHeader";
-import useApiHandler from "../../hooks/useApiHandler";
-import {
-	useForgotPasswordMutation,
-	useUpdateUserMutation,
-	useUpdateUserPasswordMutation,
-} from "../../redux/store";
 import TabSwitcher from "../../components/TabSwitcher";
 import useWishList from "../../hooks/useWishList";
 import WishlistDetails from "./WishlistDetails";
@@ -24,39 +18,26 @@ import useOrder from "../../hooks/useOrder";
 
 const ProfilePage = () => {
 	const ROLE = "client";
-	// Mock data with default values
-	const { isAuthorized, currentUser } = useAuth(ROLE);
-	const { wishListItems } = useWishList();
-
+	const TAB = { ADDRESS: "address", PROFILE: "profile" };
 	const [userData, setUserData] = useState({});
 	const [isEditing, setIsEditing] = useState(false);
-	const TAB = { ADDRESS: "address", PROFILE: "profile" };
 	const [selectedTab, setSelectedTab] = useState(TAB.PROFILE);
-	const { ordersData } = useOrder(ROLE);
-	const [handleMutation] = useApiHandler();
-	const [
-		updateUser,
-		updateUserResult, //{isLoading,isError,isSuccess}
-	] = handleMutation(useUpdateUserMutation);
-	const [
-		updatePassword,
-		updatePasswordResult, //{isLoading,isError,isSuccess}
-	] = handleMutation(useUpdateUserPasswordMutation);
-	const [
-		forgotPassword,
-		forgotPasswordResult, //{isLoading,isError,isSuccess}
-	] = handleMutation(useForgotPasswordMutation);
+
+	const {  currentUser } = useAuth(ROLE);
 	const userId = currentUser ? currentUser._id : null;
-	const { userDetails, isUserLoading, isUserFetching, userError } = useUser({
+
+	const {
+		userDetails,
+		isUserLoading,
+		updateUser,
+		updateUserResult,
+		updatePassword,
+		updatePasswordResult,
+		forgotPassword,
+		forgotPasswordResult,
+	} = useUser({
 		userId,
 	});
-
-	useEffect(() => {
-		if (userDetails?.success) {
-			setUserData(userDetails.data);
-		}
-	}, [userDetails]);
-
 	const {
 		handleSubmit,
 		editAddress,
@@ -67,9 +48,19 @@ const ProfilePage = () => {
 		addressId,
 		addressList,
 		addressDetails,
-		isLoading,
+		isAddressLoading,
+		isAddressFetching,
 		onSelection,
 	} = useAddress();
+	const { wishListItems, isWishListLoading } = useWishList();
+	const { ordersData, isOrdersLoading } = useOrder(ROLE);
+
+	useEffect(() => {
+		if (userDetails?.success) {
+			setUserData(userDetails.data);
+		}
+	}, [userDetails]);
+
 	useEffect(() => {
 		if (addressList && addressList.length) {
 			onSelection(addressList[0]);
@@ -103,6 +94,7 @@ const ProfilePage = () => {
 				err.message ||
 				"Failed to update your Password. Please try again.",
 		});
+		handleIsEditing();
 	};
 
 	const handleForgotPassword = async () => {
@@ -118,19 +110,15 @@ const ProfilePage = () => {
 		);
 	};
 
-	if (isUserLoading) {
+	if (
+		isUserLoading ||
+		isAddressFetching ||
+		isWishListLoading ||
+		isOrdersLoading
+	) {
 		return (
 			<div className="flex items-center justify-center h-screen">
 				<LoadingTemplate message="Fetching user details, please wait..." />
-			</div>
-		);
-	}
-
-	// Handle error state
-	if (userError) {
-		return (
-			<div className="text-center text-gray-500">
-				<p>Error fetching user detail. Please try again later.</p>
 			</div>
 		);
 	}
@@ -186,7 +174,7 @@ const ProfilePage = () => {
 											HANDLE_SUBMIT={handleSubmit}
 											RESET={reset}
 											ERRORS={errors}
-											IS_LOADING={isLoading}
+											IS_LOADING={isAddressLoading}
 										/>
 									)}
 								</div>
@@ -218,7 +206,7 @@ const ProfilePage = () => {
 						<InfoLayout title="Saved Addresses">
 							<AddressList
 								ADDRESS_LIST={addressList}
-								IS_LOADING={isLoading}
+								IS_LOADING={isAddressLoading}
 								ON_SELECTION={(address) => !isEditing || onSelection(address)}
 								ON_DELETE={deleteAddress}
 								ADDRESS_ID={addressId}

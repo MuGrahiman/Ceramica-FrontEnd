@@ -4,17 +4,17 @@ import useApiHandler from './useApiHandler';
 
 const useOrder = ( role = 'client' ) => {
     const [ ordersData, setOrdersData ] = useState( [] );
-    const [ id, setId ] = useState( null );
+    const [ activeOrderId, setActiveOrderId ] = useState( null );
 
     const [ handleMutation ] = useApiHandler();
 
     const {
         data,
-        isLoading: fetchLoading,
-        error: fetchError,
+        isLoading: isOrdersLoading,
+        error: ordersFetchError,
     } = useGetOrdersByRoleQuery( role );
 
-    const [ updateOrderStatus, { isLoading: isStatusUpdating } ] = handleMutation(
+    const [ updateOrderStatus, { isLoading: isOrderStatusUpdating } ] = handleMutation(
         useUpdateOrderStatusMutation
     );
 
@@ -27,14 +27,14 @@ const useOrder = ( role = 'client' ) => {
     }, [ data ] );
 
     const handleOrderStatus = async ( id, value ) => {
-        setId( id );
+        setActiveOrderId( id );
         const updatedOrder = await updateOrderStatus(
             { orderId: id, orderStatus: value },
             {
                 onSuccess: () => "updated order status successfully",
                 onError: ( err ) =>
                     err.data.message || err.message || "Order not found",
-                onFinally: () => setId( null ),
+                onFinally: () => setActiveOrderId( null ),
             }
         );
         return updatedOrder.status;
@@ -44,7 +44,7 @@ const useOrder = ( role = 'client' ) => {
  * Handle search functionality.
  * @param {Object} search - The search term.
  */
-    const onSearch = ( { searchTerm } ) => {
+    const onOrderSearch = ( { searchTerm } ) => {
         const filteredOrders = data.filter( ( order ) => {
             const orderString = JSON.stringify( order ).toLowerCase();
             return orderString.includes( searchTerm.toLowerCase() );
@@ -55,7 +55,7 @@ const useOrder = ( role = 'client' ) => {
     /**
      * Clear the search and reset the order data.
      */
-    const onClearSearch = () => setOrdersData( data );
+    const onClearOrderSearch = () => setOrdersData( data );
 
     const filterOrders = ( criteria ) => {
         return ordersData.filter( ( order ) => {
@@ -85,15 +85,16 @@ const useOrder = ( role = 'client' ) => {
     }
 
     return {
-        id,
+        activeOrderId,
         ordersData,
-        fetchLoading,fetchError,
-        isStatusUpdating,
-        handleSelection: handleOrderStatus,
-        onSearch,
-        onClearSearch,
+        isOrdersLoading,
+        ordersFetchError,
+        handleOrderStatusSelection: handleOrderStatus,
+        isOrderStatusUpdating,
+        onOrderSearch,
+        onClearOrderSearch,
         filterOrders: ( options ) => setOrdersData( filterOrders( options ) ),
-        clearFilters: () => setOrdersData( data ),
+        clearOrderFilters: () => setOrdersData( data ),
     }
 }
 

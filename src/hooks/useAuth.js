@@ -6,7 +6,10 @@ import { useEffect, useState } from "react";
 
 export const useAuth = ( role ) => {
   const currentUser = useSelector( ( state ) => state.auth.currentUser );
-  
+  const currentUserName = currentUser
+    ? `${ currentUser.firstName } ${ currentUser.lastName }`
+    : 'Guest';
+
   const navigate = useNavigate();
   const showToast = useToast();
 
@@ -40,5 +43,5 @@ export const useAuth = ( role ) => {
     return isAuthorized
   };
 
-  return { isAuthorized, currentUser, validateAuthentication };
+  return { isAuthorized, currentUser, currentUserName, validateAuthentication };
 };

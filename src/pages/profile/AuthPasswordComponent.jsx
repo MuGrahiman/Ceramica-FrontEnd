@@ -2,6 +2,23 @@ import React from "react";
 import PropTypes from "prop-types";
 import PasswordResetNotification from "../../components/PasswordResetNotification";
 
+/**
+ * Displays a password input field with a forgot password link and conditional styling.
+ * @param {string} LABEL - The label for the password input.
+ * @param {string} NAME - The name attribute for the password input.
+ * @param {string} TYPE - The type attribute for the password input.
+ * @param {function} REGISTER - The function to register the input field with form validation.
+ * @param {string} PLACEHOLDER - The placeholder text for the password input.
+ * @param {object} ERRORS - The object containing validation errors.
+ * @param {object} VALIDATION_RULES - The object containing validation rules.
+ * @param {boolean} IS_SUCCESS - Whether the input is in a success state.
+ * @param {boolean} DISABLED - Whether the input is disabled.
+ * @param {boolean} isResetAlerted - Whether the reset alert is displayed.
+ * @param {function} onClickForgotPassword - The function to handle the forgot password link click.
+ * @param {function} resetCurrentPassword - The function to reset the current password.
+ * @param {boolean} isSending - Whether the forgot password link is being sent.
+ * @returns {JSX} - The password input field with a forgot password link.
+ */
 const AuthPasswordComponent = ({
 	LABEL = "Current Password",
 	NAME = "currentPassword",
@@ -18,6 +35,11 @@ const AuthPasswordComponent = ({
 	isSending = false,
 	...REST
 }) => {
+
+	   /**
+     * Returns the appropriate input class based on validation state.
+     * @returns {string} - The Tailwind CSS class for the input field.
+     */
 	const getInputClass = () => {
 		if (ERRORS[NAME]) {
 			return "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500";
@@ -28,6 +50,10 @@ const AuthPasswordComponent = ({
 		}
 	};
 
+   /**
+     * Returns the appropriate input class based on validation state.
+     * @returns {string} - The Tailwind CSS class for the input field.
+     */
 	const labelClass = ERRORS[NAME]
 		? "text-red-700 dark:text-red-500"
 		: IS_SUCCESS
@@ -75,7 +101,6 @@ const AuthPasswordComponent = ({
 	);
 };
 
-// PropTypes for validation
 AuthPasswordComponent.propTypes = {
 	LABEL: PropTypes.string,
 	NAME: PropTypes.string,

@@ -19,10 +19,11 @@ const EMPTY_WISHLIST_MESSAGE = "Your wishlist is empty.";
  * @param {boolean} [showWishlist=false] - Whether to show the wishlist.
  * @returns {object} - Wishlist state and functions.
  */
-const useWishList = ( showWishlist = false ) => {    const [handleLoginMutation] = useApiHandler();
-    const { isAuthorized, currentUser, validateAuthentication } = useAuth("client");
-    const [wishListItems, setWishListItems] = useState(null);
-    const [wishlistId, setWishlistId] = useState(null);
+const useWishList = ( showWishlist = false ) => {
+    const [ handleLoginMutation ] = useApiHandler();
+    const { isAuthorized, currentUserName, validateAuthentication } = useAuth( "client" );
+    const [ wishListItems, setWishListItems ] = useState( null );
+    const [ wishlistId, setWishlistId ] = useState( null );
 
     const {
         data: wishListData,
@@ -30,60 +31,56 @@ const useWishList = ( showWishlist = false ) => {    const [handleLoginMutation]
         isError: isWishListError,
         isFetching: isWishListFetching,
         refetch: refetchWishList,
-    } = useGetWishlistItemsQuery(null, { skip: !isAuthorized });
+    } = useGetWishlistItemsQuery( null, { skip: !isAuthorized } );
 
-    const [addToWishList, addToWishListResult] =
-        handleLoginMutation(useAddToWishListMutation);
+    const [ addToWishList, addToWishListResult ] =
+        handleLoginMutation( useAddToWishListMutation );
 
-    const [removeFromWishList, removeFromWishListResult] =
-        handleLoginMutation(useRemoveFromWishListMutation);
+    const [ removeFromWishList, removeFromWishListResult ] =
+        handleLoginMutation( useRemoveFromWishListMutation );
 
-    useEffect(() => {
-        if (wishListData && wishListData.length) {
-            setWishListItems(wishListData);
+    useEffect( () => {
+        if ( wishListData && wishListData.length ) {
+            setWishListItems( wishListData );
         } else {
-            setWishListItems(null);
+            setWishListItems( null );
         }
-    }, [wishListData]);
+    }, [ wishListData ] );
 
     /**
      * Checks if an item ID is in the wishlist.
      * @param {string} id - The item ID to check.
      * @returns {boolean} - Whether the item is in the wishlist.
      */
-    const checkIdInWishlist = (id) =>
-        wishListItems?.some(({ inventory }) => inventory._id === id) || false;
+    const checkIdInWishlist = ( id ) =>
+        wishListItems?.some( ( { inventory } ) => inventory._id === id ) || false;
 
     /**
      * Handles adding or removing an item from the wishlist.
      * @param {string} itemId - The item ID to add or remove.
      */
-    const handleWishlistClick = async (itemId = '') => {
-        if (!showWishlist || !itemId) return;
-        if (!validateAuthentication()) return;
-        setWishlistId(itemId);
-        if (await checkIdInWishlist(itemId)) {
+    const handleWishlistClick = async ( itemId = '' ) => {
+        if ( !showWishlist || !itemId ) return;
+        if ( !validateAuthentication() ) return;
+        setWishlistId( itemId );
+        if ( await checkIdInWishlist( itemId ) ) {
             await removeFromWishList(
                 itemId,
                 {
-                    onError: (err) =>
+                    onError: ( err ) =>
                         err.data?.message || err?.message || "Failed to remove from wishlist",
                 }
             );
         } else {
-            await addToWishList(itemId,
+            await addToWishList( itemId,
                 {
-                    onError: (err) =>
+                    onError: ( err ) =>
                         err.data?.message || err?.message || "Failed to add to wishlist",
                 }
             );
         }
-        setWishlistId(null);
+        setWishlistId( null );
     };
-
-    const wishlistUser = currentUser
-        ? `${currentUser.firstName} ${currentUser.lastName}`
-        : 'Guest';
 
     const isLoading = (
         addToWishListResult.isLoading ||
@@ -93,7 +90,7 @@ const useWishList = ( showWishlist = false ) => {    const [handleLoginMutation]
     return {
         EMPTY_WISHLIST_MESSAGE,
         wishlistId,
-        wishlistUser,
+        wishlistUser: currentUserName,
         wishListItems,
         isWishListLoading,
         isWishListError,

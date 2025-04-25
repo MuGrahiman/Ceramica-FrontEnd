@@ -17,12 +17,12 @@ const CheckOutPage = () => {
 		reset,
 		addressId,
 		addressList,
-		isLoading,
+		isAddressLoading,
 		onSelection,
 		deleteAddress,
 	} = useAddress();
 
-	const { cartItems, isFetching, isRemoving, isUpdating } = useCart();
+	const { cartItems, isAddressFetching, isRemoving, isUpdating } = useCart();
 
 	const renderItem = (item) => ({
 		quantity: item.quantity,
@@ -46,7 +46,7 @@ const CheckOutPage = () => {
 							HANDLE_SUBMIT={handleSubmit}
 							RESET={reset}
 							ERRORS={errors}
-							IS_LOADING={isLoading}
+							IS_LOADING={isAddressLoading}
 						/>
 					</InfoLayout>
 				</div>
@@ -54,7 +54,7 @@ const CheckOutPage = () => {
 					<InfoLayout title="Saved Addresses">
 						<AddressList
 							ADDRESS_LIST={addressList}
-							IS_LOADING={isLoading}
+							IS_LOADING={isAddressLoading}
 							ON_SELECTION={onSelection}
 							ADDRESS_ID={addressId}
 							ON_DELETE={deleteAddress}
@@ -67,7 +67,7 @@ const CheckOutPage = () => {
 					<InfoLayout title="Saved Addresses">
 						<OrderSummary
 							CART_SUMMARY={summaryOfCartItems}
-							IS_LOADING={isFetching || isRemoving || isUpdating}
+							IS_LOADING={isAddressFetching || isRemoving || isUpdating}
 						/>
 					</InfoLayout>
 				</div>
@@ -76,7 +76,7 @@ const CheckOutPage = () => {
 						<PaymentOptions
 							cartSummary={summaryOfCartItems}
 							addressId={addressId}
-							isLoading={isFetching || isRemoving || isUpdating}
+							isLoading={isAddressFetching || isRemoving || isUpdating}
 						/>
 					</InfoLayout>
 				</div>

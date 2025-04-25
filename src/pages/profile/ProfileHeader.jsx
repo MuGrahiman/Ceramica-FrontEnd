@@ -141,7 +141,7 @@ const ProfileHeader = ({
 		</div>
 	);
 };
-// Added to ProfileHeader.js
+
 ProfileHeader.propTypes = {
 	user: PropTypes.shape({
 		firstName: PropTypes.string,
