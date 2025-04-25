@@ -27,7 +27,7 @@ const useAddress = () => {
     ] = handleMutation( useDeleteAddressMutation );
     // React Hook Form setup
     const defaultValues = createDefaultState( ADDRESS_FIELDS, "",
-        { email: currentUser.email, isDefault: false }
+        { email: currentUser?.email, isDefault: false }
     )
     const {
         handleSubmit,
@@ -45,8 +45,8 @@ const useAddress = () => {
      * Pre-fills email field if user is authorized
      */
     useEffect( () => {
-        if ( isAuthorized && currentUser.role === "client" ) {
-            setValue( "email", currentUser.email );
+        if ( isAuthorized && currentUser?.role === "client" ) {
+            setValue( "email", currentUser?.email );
         }
 
     }, [ isAuthorized, currentUser, reset ] );
@@ -104,7 +104,7 @@ const useAddress = () => {
             onSuccess: ( newAddress ) => {
                 setAddressId( newAddress._id );
                 reset( createDefaultState( ADDRESS_FIELDS, "",
-                    { ...newAddress, email: currentUser.email }
+                    { ...newAddress, email: currentUser?.email }
                 ) ); return "Address added successfully"
             },
             onError: ( err ) =>
@@ -126,7 +126,7 @@ const useAddress = () => {
             onSuccess: ( updatedAddress ) => {
                 setAddressId( updatedAddress._id );
                 reset( createDefaultState( ADDRESS_FIELDS, "",
-                    { ...updatedAddress, email: currentUser.email }
+                    { ...updatedAddress, email: currentUser?.email }
                 ) );
                 return "Address updated successfully"
             },
@@ -174,7 +174,7 @@ const useAddress = () => {
         setAddressId( address._id );
         const addressData = createDefaultState(
             ADDRESS_FIELDS, "",
-            { ...address, email: currentUser.email }
+            { ...address, email: currentUser?.email }
         )
         setAddressDetails( addressData )
         reset( addressData );

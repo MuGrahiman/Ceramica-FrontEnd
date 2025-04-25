@@ -1,7 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-// OptionList component
+/**
+ * Renders a list of options with a custom empty message.
+ * @param {Array} OPTIONS - The list of options to render.
+ * @param {string} [EMPTY_MESSAGE="No options available."] - The message to display if there are no options.
+ * @param {function} RENDER_ITEM - The function to render each item in the list.
+ */
 const ListOptions = ({
 	OPTIONS,
 	EMPTY_MESSAGE = "No options available.",
@@ -17,6 +22,7 @@ const ListOptions = ({
 
 	return <>{OPTIONS.map(RENDER_ITEM)}</>;
 };
+
 ListOptions.propTypes = {
 	OPTIONS: PropTypes.array.isRequired,
 	EMPTY_MESSAGE: PropTypes.string,

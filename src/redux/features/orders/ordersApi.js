@@ -43,7 +43,7 @@ const orderApi = createApi( {
     } ),
 
     // Get all orders based users
-    getOrders: builder.query( {
+    getOrdersByRole: builder.query( {
       query: ( role ) => (
         {
           url: `/get/${ role }`,
@@ -72,7 +72,7 @@ const orderApi = createApi( {
       query: ( { orderId, orderStatus } ) => ( {
         url: `/status/${ orderId }`,
         method: "PATCH",
-        body: { status: orderStatus }, 
+        body: { status: orderStatus },
       } ),
       invalidatesTags: [ "Order" ],
     } ),
@@ -85,7 +85,7 @@ export const {
   useCapturePaymentMutation,
   useGetOrderPaymentByIdQuery,
   useGetOrderByIdQuery,
-  useGetOrdersQuery,
+  useGetOrdersByRoleQuery,
   useUpdateOrderStatusMutation,
 } = orderApi;
 

@@ -5,94 +5,63 @@ import Table from "../../components/Table";
 import LoadingTemplate from "../../components/LoadingTemplate";
 import SearchBar from "../../components/SearchBar";
 import Pagination from "../../components/Pagination";
-import Badge from "../../components/Badge";
 import useSortTable from "../../hooks/useSortTable";
 import SortIcons from "../../components/SetIcons";
-import { useAuth } from "../../hooks/useAuth";
-import {
-	useGetOrdersQuery,
-	useUpdateOrderStatusMutation,
-} from "../../redux/store";
 import { setDateAsDayMonthYear } from "../../utils/date";
 import usePagination from "../../hooks/usePagination";
 import { FILTER_FORMS_COMPONENTS } from "../../constants/filter-form";
 import FilterFormLayout from "../../components/FilterFormLayout";
 import SelectDropdown from "../../components/SelectDropdown";
-import useApiHandler from "../../hooks/useApiHandler";
-import useToast from "../../hooks/useToast";
 import MiniLoader from "../../components/MiniLoader";
+import useOrder from "../../hooks/useOrder";
+
+// const getStatusIcon = (status) => {
+// 	switch(status) {
+// 	  case 'delivered':
+// 		return <FiCheckCircle className="text-green-500" />;
+// 	  case 'shipped':
+// 		return <FiPackage className="text-blue-500" />;
+// 	  case 'processing':
+// 		return <FiClock className="text-yellow-500" />;
+// 	  default:
+// 		return <FiClock className="text-gray-500" />;
+// 	}
+//   };
+// const getStatusColor = (status) => {
+// 	switch(status) {
+// 	  case 'delivered': return 'bg-green-100 text-green-800';
+// 	  case 'shipped': return 'bg-blue-100 text-blue-800';
+// 	  case 'processing': return 'bg-yellow-100 text-yellow-800';
+// 	  default: return 'bg-gray-100 text-gray-800';
+// 	}
+//   };
 
 /**
  * Order Management Page: Displays a list of orders with sorting, pagination, and search functionality.
  */
 const OrderPage = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const [id, setId] = useState(null);
-	
-	const showToast = useToast();
-	const [handleMutation] = useApiHandler();
-	const { currentUser } = useAuth('admin');
 
 	const {
-		data: ordersData,
-		isLoading: fetchLoading,
-		error: fetchError,
-	} = useGetOrdersQuery(currentUser.roles);
+		ordersData,
+		id,
+		fetchLoading,
+		fetchError,
+		isStatusUpdating,
+		handleSelection,
+		onSearch,
+		onClearSearch,
+		filterOrders,
+		clearFilters,
+	} = useOrder("admin");
 
-	const [
-		updateOrderStatus,
-		{ isLoading: isStatusUpdating },
-	] = handleMutation(useUpdateOrderStatusMutation);
-
-	const [orderData, setOrderData] = useState(null);
-
-	// Update order data when fetched
-	useEffect(() => {
-		if (ordersData) {
-			setOrderData(ordersData);
-		}
-	}, [ordersData]);
-
-	/**
-	 * Handle search functionality.
-	 * @param {Object} search - The search term.
-	 */
-	const onSearch = ({ searchTerm }) => {
-		const filteredOrders = ordersData.filter((order) => {
-			const orderString = JSON.stringify(order).toLowerCase();
-			return orderString.includes(searchTerm.toLowerCase());
-		});
-		setOrderData(filteredOrders || ordersData);
-	};
-
-	/**
-	 * Clear the search and reset the order data.
-	 */
-	const onClearSearch = () => setOrderData(ordersData);
-
+	// Drop Down Options
 	const selectDropDownOptions = [
 		"processing",
 		"shipped",
 		"delivered",
 		"cancelled",
 	];
-	const handleSelection = async (id, value) => {
-		setId(id);
-		const updatedOrder = await updateOrderStatus(
-			{ orderId: id, orderStatus: value },
-			{
-				onSuccess: () => "updated order status successfully",
-				onError: (err) =>
-					showToast(
-						err.data.message || err.message || "Coupon not found",
-						"error"
-					),
-				onFinally: () => setId(null),
-			}
-		);
-		return updatedOrder.status
-	};
-
 
 	// Table headers configuration
 	const headers = [
@@ -123,7 +92,7 @@ const OrderPage = () => {
 			hide: true,
 			label: "Order  Status",
 			render: (order) =>
-				isStatusUpdating && id === order._id  ? (
+				isStatusUpdating && id === order._id ? (
 					<MiniLoader />
 				) : (
 					<SelectDropdown
@@ -151,7 +120,7 @@ const OrderPage = () => {
 	];
 
 	const { updateConfig: getTableConfig, sortedData: sortedOrders } =
-		useSortTable(orderData, headers);
+		useSortTable(ordersData, headers);
 
 	const { pageNumbers, currentPage, totalPages, handlePage, currentItems } =
 		usePagination(sortedOrders, 5);
@@ -209,40 +178,14 @@ const OrderPage = () => {
 		minPrice: "",
 		maxPrice: "",
 	};
-	function filterOrders(criteria) {
-		return ordersData.filter((order) => {
-			const paymentStatusMatch = criteria.paymentStatus
-				.map((status) => status.toLowerCase())
-				.includes(order?.paymentId?.status?.toLowerCase());
-			const orderStatusMatch = criteria.orderStatus
-				?.map((status) => status.toLowerCase())
-				.includes(order?.status?.toLowerCase());
-			const minPriceMatch = order?.totalAmount >= parseFloat(criteria.minPrice);
-			const maxPriceMatch = order?.totalAmount <= parseFloat(criteria.maxPrice);
-			const startDateMatch = criteria.startDate;
-			new Date(order?.createdAt) >= new Date(criteria.startDate);
-			const endDateMatch =
-				new Date(order?.createdAt) <= new Date(criteria.endDate);
-
-			// All criteria must match
-			return (
-				paymentStatusMatch ||
-				orderStatusMatch ||
-				minPriceMatch ||
-				maxPriceMatch ||
-				startDateMatch ||
-				endDateMatch
-			);
-		});
-	}
 
 	const onSubmit = (data) => {
-		const filterData = filterOrders(data);
-		setOrderData(filterData);
+		filterOrders(data);
 		setIsOpen((prev) => !prev);
 	};
+
 	const onClear = () => {
-		setOrderData(ordersData);
+		clearFilters();
 		setIsOpen((prev) => !prev);
 	};
 

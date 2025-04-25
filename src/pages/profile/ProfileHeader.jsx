@@ -1,19 +1,13 @@
 import React, { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
 import { FaCheck } from "react-icons/fa";
-import { ImPencil2, ImSpinner9 } from "react-icons/im";
 import useHandleFiles from "../../hooks/useHandleFiles";
-import ImageUploader from "../../components/ImageUploader";
-import { IoCloseSharp } from "react-icons/io5";
 import Avatar from "./Avatar";
 import AvatarHandler from "./AvatarHandler";
-import { MdEdit, MdEditOff } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
 import useToast from "../../hooks/useToast";
-import { useUpdateUserMutation } from "../../redux/store";
-import useApiHandler from "../../hooks/useApiHandler";
-import MiniLoader from "../../components/MiniLoader";
 import Swal from "sweetalert2";
 import PropTypes from "prop-types";
+
 const dummyImage =
 	"https://img.freepik.com/free-vector/user-blue-gradient_78370-4692.jpg?t=st=1741285501~exp=1741289101~hmac=d629ec566545ef3b552d0a991e687ad2ed1aab9f352ae82b2df97cd3ad059148&w=740";
 

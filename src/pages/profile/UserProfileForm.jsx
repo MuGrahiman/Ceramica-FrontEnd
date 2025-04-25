@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import useSuccessManager from "../../hooks/useSuccessManager";
 import useToast from "../../hooks/useToast";
 import { createDefaultState } from "../../utils/generals";
-import useErrorManager from "../../hooks/useErrorManager";
 import FormSubmitButton from "./FormSubmitButton";
 
 const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {

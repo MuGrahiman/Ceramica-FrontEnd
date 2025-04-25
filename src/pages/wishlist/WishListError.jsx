@@ -15,7 +15,7 @@ const WishListError = ({ onRetry }) => {
 			</div>
 			<div className="font-bold flex items-center justify-center gap-3">
 				Failed to load your wishlist. Please check your internet connection or
-				try again later.
+				try again later
 				<div className="cursor-pointer transition animate-[bounce_1.01s_ease-in-out_infinite]">
 					.
 				</div>

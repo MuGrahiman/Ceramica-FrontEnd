@@ -1,12 +1,10 @@
 import React from "react";
-import { useGetWishlistItemsQuery } from "../../redux/store";
-import { useAuth } from "../../hooks/useAuth";
 import WishListError from "./WishListError";
 import WishListLoading from "./WishListLoading";
 import EmptyWishlist from "./EmptyWishlist";
 import ShowcaseWishlist from "./ShowcaseWishlist";
-import WishlistHeader from "./WishlistHeader";
 import useWishList from "../../hooks/useWishList";
+import UserNameHeader from "../../components/UserNameHeader";
 
 const WishlistPage = () => {
 	const {
@@ -32,7 +30,7 @@ const WishlistPage = () => {
 	// Render the wishlist content
 	return (
 		<div className="container mx-auto px-4 py-8">
-			<WishlistHeader wishlistUser={wishlistUser} />
+			<UserNameHeader userName={wishlistUser} />
 			{wishListItems && wishListItems.length ? (
 				<ShowcaseWishlist
 					isWishlistFetching={isWishListFetching}

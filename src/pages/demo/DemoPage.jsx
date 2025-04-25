@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import OrderList from "../order/OrderList";
+import UserOrderPage from "../order/UserOrderPage";
 
 // Now you can use the coupons array
 
 function DemoPage() {
 	return (
 		<div className="container mx-auto">
-			<WishlistPage />
+			<UserOrderPage />
 		</div>
 	);
 }
