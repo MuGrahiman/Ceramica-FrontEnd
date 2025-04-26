@@ -40,6 +40,7 @@ import ProfilePage from "../pages/profile/ProfilePage";
 import PasswordPage from "../pages/auth/PasswordPage";
 import WishlistPage from "../pages/wishlist/WishlistPage";
 import UserOrderPage from "../pages/order/UserOrderPage";
+import UserOrderDetailsPage from "../pages/order/UserOrderDetailsPage";
 
 const router = createBrowserRouter([
 	{
@@ -95,6 +96,14 @@ const router = createBrowserRouter([
 				element: (
 					<PrivateRoute>
 						<UserOrderPage />
+					</PrivateRoute>
+				),
+			},
+			{
+				path: "/order/:id",
+				element: (
+					<PrivateRoute>
+						<UserOrderDetailsPage />
 					</PrivateRoute>
 				),
 			},

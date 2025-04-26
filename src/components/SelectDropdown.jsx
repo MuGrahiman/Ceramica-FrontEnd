@@ -16,8 +16,6 @@ const SelectDropdown = ({
 	onChange,
 	selectedValue,
 }) => {
-	console.log("🚀 ~ selectedValue:", selectedValue)
-
 	return (
 		<form className="max-w-sm mx-auto">
 			<label htmlFor="select_input" className="sr-only">
