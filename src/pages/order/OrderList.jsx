@@ -14,6 +14,7 @@ const OrderList = ({ orders }) => {
 			<ListOptions
 				OPTIONS={orders}
 				RENDER_ITEM={(order, index) => <OrderCard key={index} order={order} />}
+				EMPTY_MESSAGE={"No orders available"}
 			/>
 		</ul>
 	);
