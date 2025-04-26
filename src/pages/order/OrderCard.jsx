@@ -1,6 +1,7 @@
 import React from "react";
 import { formatToLocaleDateString } from "../../utils/date";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 /**
  * Displays a single order card with details.
@@ -27,27 +28,29 @@ const OrderCard = ({ order }) => {
 
 	return (
 		<li key={order._id} className="py-4 group cursor-pointer">
-			<div className="flex items-center justify-between">
-				<div>
-					<p className="text-sm font-medium group-hover:font-bold text-indigo-600">
-						Order #{order._id}
-					</p>
-					<p className="text-sm text-gray-500 group-hover:font-bold">
-						{formatToLocaleDateString(order.createdAt)}
-					</p>
+			<Link to={`/order/${order._id}`}>
+				<div className="flex items-center justify-between">
+					<div>
+						<p className="text-sm font-medium group-hover:font-bold text-indigo-600">
+							Order #{order._id}
+						</p>
+						<p className="text-sm text-gray-500 group-hover:font-bold">
+							{formatToLocaleDateString(order.createdAt)}
+						</p>
+					</div>
+					<div className="text-right">
+						<p className="text-sm font-medium group-hover:font-bold text-gray-900">
+							${order.totalAmount}
+						</p>
+						<p
+							className={`text-xs font-medium group-hover:font-bold ${getStatusColor(
+								order.status
+							)}`}>
+							{order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+						</p>
+					</div>
 				</div>
-				<div className="text-right">
-					<p className="text-sm font-medium group-hover:font-bold text-gray-900">
-						${order.totalAmount}
-					</p>
-					<p
-						className={`text-xs font-medium group-hover:font-bold ${getStatusColor(
-							order.status
-						)}`}>
-						{order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-					</p>
-				</div>
-			</div>
+			</Link>
 		</li>
 	);
 };
