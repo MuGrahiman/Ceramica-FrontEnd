@@ -58,19 +58,19 @@ const useOrder = ( role = 'client' ) => {
     const onClearOrderSearch = () => setOrdersData( data );
 
     const filterOrders = ( criteria ) => {
-        return ordersData.filter( ( order ) => {
-            const paymentStatusMatch = criteria.paymentStatus
-                .map( ( status ) => status.toLowerCase() )
+        return data.filter( ( order ) => {
+            const paymentStatusMatch = criteria?.paymentStatus
+                ?.map( ( status ) => status.toLowerCase() )
                 .includes( order?.paymentId?.status?.toLowerCase() );
-            const orderStatusMatch = criteria.orderStatus
+            const orderStatusMatch = criteria?.orderStatus
                 ?.map( ( status ) => status.toLowerCase() )
                 .includes( order?.status?.toLowerCase() );
-            const minPriceMatch = order?.totalAmount >= parseFloat( criteria.minPrice );
-            const maxPriceMatch = order?.totalAmount <= parseFloat( criteria.maxPrice );
-            const startDateMatch = criteria.startDate;
-            new Date( order?.createdAt ) >= new Date( criteria.startDate );
+            const minPriceMatch = order?.totalAmount >= parseFloat( criteria?.minPrice );
+            const maxPriceMatch = order?.totalAmount <= parseFloat( criteria?.maxPrice );
+            const startDateMatch = criteria?.startDate;
+            new Date( order?.createdAt ) >= new Date( criteria?.startDate );
             const endDateMatch =
-                new Date( order?.createdAt ) <= new Date( criteria.endDate );
+                new Date( order?.createdAt ) <= new Date( criteria?.endDate );
 
             // All criteria must match
             return (
@@ -87,6 +87,7 @@ const useOrder = ( role = 'client' ) => {
     return {
         activeOrderId,
         ordersData,
+        isOrdersLength: data && data.length,
         isOrdersLoading,
         ordersFetchError,
         handleOrderStatusSelection: handleOrderStatus,
