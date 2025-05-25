@@ -12,6 +12,7 @@ import BreadCrumb from "../../components/BreadCrumb";
 import { ORDER_BREAD_CRUMB_ITEMS } from "../../constants/order";
 import OrderUserDetails from "./OrderUserDetails";
 import PageTitle from "../../components/PageTitle";
+import InfoLayout from "../../components/InfoLayout";
 /**
  * Order Detail Page: Displays detailed information about a specific order.
  */
@@ -58,20 +59,32 @@ const OrderDetailPage = () => {
 			<div className="grid gap-2">
 				{/* User and Address Section */}
 				<div className="w-full flex flex-col md:flex-row gap-2">
-					<OrderUserDetails user={orderData.userId} />
-					<OrderAddress address={orderData.addressId} />
+					<InfoLayout title="User Details">
+						<OrderUserDetails user={orderData.userId} />
+					</InfoLayout>
+					<InfoLayout title="Shipping Address">
+						<OrderAddress address={orderData.addressId} />
+					</InfoLayout>
 				</div>
 
 				{/* Payment and Coupon Section */}
 				<div className="w-full flex flex-col md:flex-row gap-2">
-					<OrderPayment payment={orderData.paymentId} />
-					<OrderCoupon coupon={orderData.couponId} />
+					<InfoLayout title="Payment Details">
+						<OrderPayment payment={orderData.paymentId} />
+					</InfoLayout>
+					<InfoLayout title="Coupon Details">
+						<OrderCoupon coupon={orderData.couponId} />
+					</InfoLayout>
 				</div>
 
 				{/* Summary and Items Section */}
 				<div className="w-full flex flex-col gap-2">
-					<OrderSummary summary={orderData} />
-					<OrderItems items={orderData.items} />
+					<InfoLayout title="Order Summary">
+						<OrderSummary summary={orderData} />
+					</InfoLayout>
+					<InfoLayout title="Order Items">
+						<OrderItems items={orderData.items} />
+					</InfoLayout>
 				</div>
 			</div>
 		</div>

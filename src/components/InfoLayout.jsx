@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 const InfoLayout = ({ icon: Icon, title = "Untitled", children }) => {
 	return (
 		<div
-			className="h-full bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg"
+			className="w-full h-full bg-white rounded-2xl shadow-md  transition-all duration-300 hover:shadow-lg"
 			// className="animate-slide-up bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg "
 		>
 			<div

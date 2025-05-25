@@ -2,38 +2,74 @@ import React from "react";
 import PropTypes from "prop-types";
 
 /**
- * Order Address Component: Displays the shipping address for an order.
- *
- * @param {Object} props - Component props.
- * @param {Object} props.address - The address object containing details like name, phone number, street, city, state, zip code, and country.
+ * Displays the shipping address for an order
+ * @param {Object} props - Component props
+ * @param {Object} props.address - Shipping address details
+ * @param {string} props.address.firstName - Recipient's first name
+ * @param {string} props.address.lastName - Recipient's last name
+ * @param {string} props.address.street - Street address
+ * @param {string} props.address.city - City
+ * @param {string} props.address.state - State/province
+ * @param {string} props.address.zipCode - Postal/ZIP code
+ * @param {string} props.address.country - Country
+ * @param {string} props.address.phoneNumber - Contact phone number
  */
 const OrderAddress = ({ address }) => {
+	if (!address) {
+		return (
+			<p className="text-gray-600 text-center py-4">
+				Shipping address not available.
+			</p>
+		);
+	}
+
+	const {
+		firstName,
+		lastName,
+		street,
+		city,
+		state,
+		zipCode,
+		country,
+		phoneNumber,
+	} = address;
+
 	return (
-		<div className="w-full bg-white shadow-md rounded-lg p-4 mt-4">
-			<h2 className="text-2xl font-bold mb-4">Shipping Address</h2>
-			{address ? (
-				<>
-					<p className="text-gray-600">
-						{address.firstName} {address.lastName}
-					</p>
-					<p className="text-gray-600">{address.phoneNumber}</p>
-					<p className="text-gray-600">{address.street}</p>
-					<p className="text-gray-600">
-						{address.city}, {address.state} {address.zipCode}
-					</p>
-					<p className="text-gray-600">{address.country}</p>
-				</>
-			) : (
-				<p className="text-gray-600 text-center py-4">
-					Shipping address not available.
+		<address className="not-italic ">
+			<div className="space-y-1 text-gray-600 text-sm ">
+				<p className="font-medium text-gray-800">
+					{firstName} {lastName}
 				</p>
-			)}
-		</div>
+				<p>{street}</p>
+				<p>
+					{city}, {state} {zipCode}
+				</p>
+				<p>{country}</p>
+				{phoneNumber && (
+					<p className="mt-2">
+						<a
+							href={`tel:${phoneNumber}`}
+							className="text-blue-600 hover:underline">
+							{phoneNumber}
+						</a>
+					</p>
+				)}
+			</div>
+		</address>
 	);
 };
 
 OrderAddress.propTypes = {
-  address: PropTypes.object.isRequired,
+	address: PropTypes.shape({
+		firstName: PropTypes.string,
+		lastName: PropTypes.string,
+		street: PropTypes.string,
+		city: PropTypes.string,
+		state: PropTypes.string,
+		zipCode: PropTypes.string,
+		country: PropTypes.string,
+		phoneNumber: PropTypes.string,
+	}),
 };
 
-export default OrderAddress;
+export default React.memo(OrderAddress);

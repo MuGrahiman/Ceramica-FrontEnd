@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import AnimatedH1 from "./AnimatedH1";
 
 const HeroSection = ({
 	title,
@@ -14,9 +15,7 @@ const HeroSection = ({
 			style={{ backgroundImage: `url(${backgroundImage})` }}>
 			<div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-50"></div>
 			<div className="relative flex flex-col items-center justify-center h-full text-white text-center p-4 animate-fade-in">
-				<h1 className="text-3xl md:text-5xl  font-bold  mb-6 animate-slide-down">
-					{title}
-				</h1>
+				<AnimatedH1 title={title} />
 				<p
 					className="mt-2 text-lg md:text-xl
                  max-w-3xl mx-auto animate-slide-up">

@@ -1,36 +1,60 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { formatCurrency } from "../../utils/generals";
+
 
 /**
- * Order Payment Component: Displays the payment details for an order.
- *
- * @param {Object} props - Component props.
- * @param {Object} props.payment - The payment object containing details like status, transaction ID, and amount.
+ * Displays payment details for an order
+ * @param {Object} props - Component props
+ * @param {Object} props.paymentDetails - Payment information
+ * @param {string} props.paymentDetails.status - Payment status
+ * @param {string} props.paymentDetails.transactionId - Transaction identifier
+ * @param {Object} props.paymentDetails.amount - Payment amount details
  */
-const OrderPayment = ({ payment }) => {
+const OrderPayment = ({ paymentDetails }) => {
+	if (!paymentDetails) {
+		return (
+			<p className="text-gray-600 text-center py-4">
+				Payment details not available.
+			</p>
+		);
+	}
+
+	const { status, transactionId, amount } = paymentDetails;
+
 	return (
-		<div className="w-full h-full bg-white shadow-md rounded-lg p-4">
-			<h2 className="text-2xl font-bold mb-4">Payment Details</h2>
-			{payment ? (
-				<>
-					{" "}
-					<p className="text-gray-600">Payment Status: {payment.status}</p>
-					<p className="text-gray-600">
-						Transaction ID: {payment.transactionId}
-					</p>
-					{/* Uncomment if needed: <p className="text-gray-600">Amount: ${payment.amount.value} {payment.amount.currencyCode}</p> */}
-				</>
-			) : (
-				<p className="text-gray-600 text-center py-4">
-					Payment details not available.
-				</p>
-			)}
+		<div className="space-y-3 text-sm text-gray-600">
+			<h3 className="font-medium text-gray-800">PayPal Transaction</h3>
+
+			<dl className="grid grid-cols-2 gap-2">
+				<dt className="col-span-1 font-medium">Transaction ID:</dt>
+				<dd className="col-span-1 font-mono truncate">
+					{transactionId || "N/A"}
+				</dd>
+
+				<dt className="col-span-1 font-medium">Amount:</dt>
+				<dd className="col-span-1">
+					{formatCurrency(Number(amount.value), amount.currencyCode)}
+				</dd>
+
+				<dt className="col-span-1 font-medium">Status:</dt>
+				<dd className="col-span-1">
+					<span className={`capitalize `}>{status?.toLowerCase()}</span>
+				</dd>
+			</dl>
 		</div>
 	);
 };
 
 OrderPayment.propTypes = {
-	payment: PropTypes.object.isRequired,
+	paymentDetails: PropTypes.shape({
+		status: PropTypes.string,
+		transactionId: PropTypes.string,
+		amount: PropTypes.shape({
+			currencyCode: PropTypes.string,
+			value: PropTypes.string,
+		}),
+	}),
 };
 
-export default OrderPayment;
+export default React.memo(OrderPayment);

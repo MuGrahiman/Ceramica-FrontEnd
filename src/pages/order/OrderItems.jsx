@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import ListOptions from "../../components/ListOptions";
 import CartCard from "../cart/CartCard";
+import TotalPreviewCard from "../../components/TotalPreviewCard";
 
 /**
  * Order Items Component: Displays the list of items in an order.
@@ -11,32 +12,40 @@ import CartCard from "../cart/CartCard";
  */
 const OrderItems = ({ items }) => {
 	return (
-		<div className="bg-white shadow-md rounded-lg p-4">
-			<h2 className="text-2xl font-bold mb-4">Order Items</h2>
-			{items ? (
-				<>
-					<ul className="space-y-2">
-						<ListOptions
-							EMPTY_MESSAGE="No items found in the order!"
-							OPTIONS={items}
-							RENDER_ITEM={(item) => (
-								<CartCard
-									showButtons={false}
-									title={item.productId.title}
-									coverImage={item?.productId?.coverImage}
-									quantity={item.quantity}
-									price={item.productId.price}
-								/>
-							)}
-						/>
-					</ul>
-				</>
-			) : (
-				<p className="text-gray-600 text-center py-4">
-					Order items not available.
-				</p>
-			)}
-		</div>
+		// <div className="bg-white shadow-md rounded-lg p-4">
+		// 	<h2 className="text-2xl font-bold mb-4">Order Items</h2>
+		items ? (
+			<>
+				<ul className="space-y-2">
+					<ListOptions
+						EMPTY_MESSAGE="No items found in the order!"
+						OPTIONS={items}
+						RENDER_ITEM={(item) => (
+							<TotalPreviewCard
+								showButtons={false}
+								title={item.productId.title}
+								coverImage={item?.productId?.coverImage}
+								quantity={item.quantity}
+								price={item.productId.price}
+							/>
+
+							// <CartCard
+							// 	showButtons={false}
+							// 	title={item.productId.title}
+							// 	coverImage={item?.productId?.coverImage}
+							// 	quantity={item.quantity}
+							// 	price={item.productId.price}
+							// />
+						)}
+					/>
+				</ul>
+			</>
+		) : (
+			<p className="text-gray-600 text-center py-4">
+				Order items not available.
+			</p>
+		)
+		// </div>
 	);
 };
 

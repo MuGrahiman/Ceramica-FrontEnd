@@ -9,13 +9,13 @@ import { v4 as uuidv4 } from 'uuid';
  * @returns {Object} - An object representing the initialized state.
  */
 export const createDefaultState = ( fields = [], defaultValue = null, fieldDefaults = {} ) => {
-    return fields.reduce(
-        ( acc, field ) => ( {
-            ...acc,
-            [ field ]: fieldDefaults[ field ] !== undefined ? fieldDefaults[ field ] : defaultValue,
-        } ),
-        {}
-    );
+  return fields.reduce(
+    ( acc, field ) => ( {
+      ...acc,
+      [ field ]: fieldDefaults[ field ] !== undefined ? fieldDefaults[ field ] : defaultValue,
+    } ),
+    {}
+  );
 };
 
 /**
@@ -34,7 +34,7 @@ export const KeyFn = ( data ) => data._id;
  * @returns {Array<JSX.Element>} - An array of rendered options or an empty array if no options are available.
  */
 export const handleIteration = ( options, render ) => {
-    return options && options.length > 0 ? options.map( render ) : [];
+  return options && options.length > 0 ? options.map( render ) : [];
 };
 
 /**
@@ -63,26 +63,68 @@ export const stringTrimmer = ( TEXT, LEN = 10 ) => TEXT?.substring( 0, LEN );
  * @returns {string} - The input string converted to uppercase.
  * @throws {TypeError} - If the input is not a string.
  */
-export const formatToUpperCase = (value) => {
-    if (typeof value !== 'string') {
-      throw new TypeError('Input must be a string');
-    }
-    return value.toUpperCase();
+export const formatToUpperCase = ( value ) => {
+  if ( typeof value !== 'string' ) {
+    throw new TypeError( 'Input must be a string' );
+  }
+  return value.toUpperCase();
+};
+
+/**
+ * Converts a string to lowercase.
+ * 
+ * This function takes a string as input and returns a new string with all characters converted to lowercase.
+ * It throws an error if the input is not a string.
+ * 
+ * @param {string} value - The string to be converted to lowercase.
+ * @returns {string} - The input string converted to lowercase.
+ * @throws {TypeError} - If the input is not a string.
+ */
+export const formatToLowerCase = ( value ) => {
+  if ( typeof value !== 'string' ) {
+    throw new TypeError( 'Input must be a string' );
+  }
+  return value.toLowerCase();
+};
+
+/**
+ * Formats a number as currency string
+ * @param {number} amount - The amount to format
+ * @param {string} [currency='USD'] - ISO 4217 currency code
+ * @param {string} [locale='en-US'] - BCP 47 language tag
+ * @param {Object} [options] - Additional formatting options
+ * @param {number} [options.minFractionDigits] - Minimum fraction digits
+ * @param {number} [options.maxFractionDigits] - Maximum fraction digits
+ * @returns {string} Formatted currency string
+ * @throws {TypeError} If amount is not a finite number
+ */
+export const formatCurrency = (
+  amount,
+  currency = 'USD',
+  locale = 'en-US',
+  { minFractionDigits, maxFractionDigits } = {}
+) => {
+  if ( !amount ) return "N/A";
+
+  if ( typeof amount !== 'number' || !Number.isFinite( amount ) ) {
+    throw new TypeError( 'Amount must be a finite number' );
+  }
+
+  const formatterOptions = {
+    style: 'currency',
+    currency,
+    ...( minFractionDigits !== undefined && { minimumFractionDigits: minFractionDigits } ),
+    ...( maxFractionDigits !== undefined && { maximumFractionDigits: maxFractionDigits } ),
   };
-  
-  /**
-   * Converts a string to lowercase.
-   * 
-   * This function takes a string as input and returns a new string with all characters converted to lowercase.
-   * It throws an error if the input is not a string.
-   * 
-   * @param {string} value - The string to be converted to lowercase.
-   * @returns {string} - The input string converted to lowercase.
-   * @throws {TypeError} - If the input is not a string.
-   */
-  export const formatToLowerCase = (value) => {
-    if (typeof value !== 'string') {
-      throw new TypeError('Input must be a string');
-    }
-    return value.toLowerCase();
-  };
+
+  try {
+    return new Intl.NumberFormat( locale, formatterOptions ).format( amount );
+  } catch ( error ) {
+    console.error( 'Currency formatting error:', error );
+    // Fallback to basic USD formatting
+    return new Intl.NumberFormat( 'en-US', {
+      style: 'currency',
+      currency: 'USD'
+    } ).format( amount );
+  }
+};

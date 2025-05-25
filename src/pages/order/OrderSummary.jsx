@@ -9,24 +9,24 @@ import PropTypes from "prop-types";
  */
 const OrderSummary = ({ summary }) => {
 	return (
-		<div className="w-full h-full bg-white shadow-md rounded-lg p-4">
-			<h2 className="text-2xl font-bold mb-4">Order Summary</h2>
-			{summary ? (
-				<>
-					{" "}
-					<p className="text-gray-600">Order ID: {summary._id}</p>
-					<p className="text-gray-600">Status: {summary.status}</p>
-					<p className="text-gray-600">Total Amount: ${summary.totalAmount}</p>
-					<p className="text-gray-600">
-						Order Date: {new Date(summary.createdAt).toLocaleString()}
-					</p>
-				</>
-			) : (
-				<p className="text-gray-600 text-center py-4">
-					Order summary not available.
+		// <div className="w-full h-full bg-white shadow-md rounded-lg p-4">
+		// 	<h2 className="text-2xl font-bold mb-4">Order Summary</h2>
+		summary ? (
+			<>
+				{" "}
+				<p className="text-gray-600">Order ID: {summary._id}</p>
+				<p className="text-gray-600">Status: {summary.status}</p>
+				<p className="text-gray-600">Total Amount: ${summary.totalAmount}</p>
+				<p className="text-gray-600">
+					Order Date: {new Date(summary.createdAt).toLocaleString()}
 				</p>
-			)}
-		</div>
+			</>
+		) : (
+			<p className="text-gray-600 text-center py-4">
+				Order summary not available.
+			</p>
+		)
+		// </div>
 	);
 };
 

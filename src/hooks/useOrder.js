@@ -41,9 +41,9 @@ const useOrder = ( role = 'client' ) => {
     };
 
     /**
- * Handle search functionality.
- * @param {Object} search - The search term.
- */
+      * Handle search functionality.
+      * @param {Object} search - The search term.
+      */
     const onOrderSearch = ( { searchTerm } ) => {
         const filteredOrders = data.filter( ( order ) => {
             const orderString = JSON.stringify( order ).toLowerCase();
