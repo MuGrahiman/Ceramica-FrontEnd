@@ -107,3 +107,10 @@ body {
 	animation: slideInRight 0.8s ease-out forwards;
 }
 
+.printContent-hide {
+	display: flex;
+  
+	@media print {
+	  display: none;
+	}
+  }

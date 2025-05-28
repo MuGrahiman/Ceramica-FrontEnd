@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import PropTypes from "prop-types";
 import { FiPrinter, FiX } from "react-icons/fi";
 import ListOptions from "../../components/ListOptions";
+import { formatToLocaleDateString } from "../../utils/date";
+import { useReactToPrint } from "react-to-print";
+import LogoLink from "../../components/BrandLogo";
+import AppliedCoupon from "./AppliedCoupon";
 
 /**
  * Displays an order invoice in a modal dialog
@@ -10,6 +14,19 @@ import ListOptions from "../../components/ListOptions";
  * @param {Object} props.orderData - Order details
  */
 const InvoiceModal = ({ onClose, orderData }) => {
+	const contentRef = useRef(null);
+	const reactToPrintFn = useReactToPrint({ contentRef });
+	/**
+	 * Calculates the subtotal of all order items
+	 * @param {Object[]} items - Array of order items
+	 * @returns {number} Calculated subtotal
+	 */
+	const calculateSubtotal = (items) => {
+		return items.reduce(
+			(acc, item) => acc + item.productId.price * item.quantity,
+			0
+		);
+	};
 	const generateMockInvoice = () => {
 		return {
 			invoiceNumber: `INV-${orderData._id}`,
@@ -20,9 +37,8 @@ const InvoiceModal = ({ onClose, orderData }) => {
 				price: item.productId.price,
 				total: (item.productId.price * item.quantity).toFixed(2),
 			})),
-			subtotal: orderData.totalAmount.toFixed(2),
-			tax: (orderData.totalAmount * 0.08).toFixed(2),
-			total: (orderData.totalAmount * 1.08).toFixed(2),
+			subtotal: calculateSubtotal(orderData.items),
+			total: orderData.totalAmount.toFixed(2),
 		};
 	};
 
@@ -31,13 +47,13 @@ const InvoiceModal = ({ onClose, orderData }) => {
 	return (
 		<div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
 			<div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-				<div className="p-6">
+				<div ref={contentRef} className="p-6">
 					{/* Header */}
-					<div className="flex justify-between items-center mb-6">
+					<div className="printContent-hide justify-between items-center mb-6">
 						<h4 className="text-xl font-bold text-gray-900">Order Invoice</h4>
 						<button
 							onClick={onClose}
-							className="text-gray-500 hover:text-gray-700 transition-colors"
+							className=" text-gray-500 hover:text-gray-700 transition-colors"
 							aria-label="Close invoice">
 							<FiX className="h-6 w-6 text-red-500 hover:scale-110" />
 						</button>
@@ -47,16 +63,15 @@ const InvoiceModal = ({ onClose, orderData }) => {
 					<div className="border-b border-gray-200 pb-4 mb-4">
 						<div className="flex justify-between">
 							<div>
-								<h4 className="text-lg font-bold">INVOICE</h4>
-								<p className="text-sm text-gray-600">
-									#{invoice.invoiceNumber}
-								</p>
+								<LogoLink />
 							</div>
 							<div className="text-right">
 								<p className="text-sm text-gray-600">
-									Date: {new Date(invoice.date).toLocaleDateString()}
+									Order Id: #{orderData._id}
 								</p>
-								<p className="text-sm text-gray-600">Order: #{orderData._id}</p>
+								<p className="text-sm text-gray-600">
+									Date: {formatToLocaleDateString(invoice.date)}
+								</p>
 							</div>
 						</div>
 					</div>
@@ -112,23 +127,25 @@ const InvoiceModal = ({ onClose, orderData }) => {
 								</tr>
 							</thead>
 							<tbody className="bg-white divide-y divide-gray-200 ">
-								<ListOptions 
-								OPTIONS={invoice.items} RENDER_ITEM={((item, idx) => (
-									<tr key={idx}>
-										<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-											{item.name}
-										</td>
-										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-											{item.quantity}
-										</td>
-										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-											${item.price}
-										</td>
-										<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-											${item.total}
-										</td>
-									</tr>
-								))} />
+								<ListOptions
+									OPTIONS={invoice.items}
+									RENDER_ITEM={(item, idx) => (
+										<tr key={idx}>
+											<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+												{item.name}
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+												{item.quantity}
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+												${item.price}
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+												${item.total}
+											</td>
+										</tr>
+									)}
+								/>
 							</tbody>
 						</table>
 					</div>
@@ -141,10 +158,14 @@ const InvoiceModal = ({ onClose, orderData }) => {
 									<span>Subtotal</span>
 									<span>${invoice.subtotal}</span>
 								</div>
-								<div className="flex justify-between py-2 text-sm text-gray-600">
-									<span>Tax (8%)</span>
-									<span>${invoice.tax}</span>
-								</div>
+								{orderData.couponId && (
+									<div className="flex justify-between py-2 text-sm text-gray-600">
+										<span>Discount </span>
+										<span>
+											<AppliedCoupon couponDetails={orderData.couponId} />
+										</span>
+									</div>
+								)}
 								<div className="flex justify-between py-2 font-medium text-gray-900">
 									<span>Total</span>
 									<span>${invoice.total}</span>
@@ -159,8 +180,8 @@ const InvoiceModal = ({ onClose, orderData }) => {
 							Thank you for your business!
 						</p>
 						<button
-							className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-							onClick={() => console.log("Download PDF")}>
+							className=" printContent-hide items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors "
+							onClick={reactToPrintFn}>
 							<FiPrinter className="mr-2" />
 							Print Invoice
 						</button>
