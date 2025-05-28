@@ -100,7 +100,15 @@ const UserOrderDetailsPage = () => {
 	}
 	// Handle error state
 	if (error) {
-		return <ErrorTemplate errorMessage={error.message} />;
+		return (
+			<ErrorTemplate
+				errorMessage={
+					typeof error?.data === "string"
+						? error?.data
+						: error?.data?.message || error.message
+				}
+			/>
+		);
 	}
 	// Handle empty state
 	if (!orderData.items?.length) {

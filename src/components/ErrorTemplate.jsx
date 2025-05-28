@@ -1,14 +1,14 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { MdCircleNotifications } from "react-icons/md";
+import { MdOutlineError } from "react-icons/md";
 
-const ErrorTemplate = ({ errorMessage }) => {
+const ErrorTemplate = ({ errorMessage = "Something went wrong" }) => {
 	return (
 		<div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
 			<div className="bg-red-50 border-l-4 border-red-400 p-4">
-				<div className="flex">
+				<div className="flex items-center justify-center">
 					<div className="flex-shrink-0">
-						<MdCircleNotifications className="h-5 w-5 text-red-400" />
+						<MdOutlineError className="h-5 w-5 text-red-400" />
 					</div>
 					<div className="ml-3">
 						<p className="text-sm text-red-700">
