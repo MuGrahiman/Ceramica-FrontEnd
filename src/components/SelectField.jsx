@@ -46,10 +46,10 @@ const SelectField = ({
 		: "text-gray-700 dark:text-gray-600";
 
 	return (
-		<div className="w-full text-sm ">
+		<div className="mb-4 w-full text-sm ">
 			<label
 				htmlFor={NAME}
-				className={`font-semibold ${labelClass}`}
+				className={`mb-1 text-sm font-medium ${labelClass}`}
 				>
 				{LABEL}
 			</label>

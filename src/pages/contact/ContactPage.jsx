@@ -17,7 +17,6 @@ const ContactPage = () => {
 	const [submitMessage, { isLoading }] = handleMutation(
 		useSubmitInquiryMutation
 	);
-
 	const [isSubmitted, setIsSubmitted] = useState(false);
 
 	const handleFormSubmit = async (formData) => {

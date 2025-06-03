@@ -27,10 +27,10 @@ const InputField = ({
 		: "text-gray-700 dark:text-gray-600";
 
 	return (
-		<div className=" w-full text-sm">
+		<div className=" w-full text-sm mb-4">
 			<label
 				htmlFor={NAME}
-				className={`block text-sm font-medium text-gray-700 mb-1 ${labelClass}`}>
+				className={`mb-1 block text-sm font-medium text-gray-700  ${labelClass}`}>
 				{LABEL}
 			</label>
 			<input

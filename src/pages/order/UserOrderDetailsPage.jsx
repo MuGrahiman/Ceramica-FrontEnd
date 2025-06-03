@@ -1,30 +1,28 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { FiMapPin, FiCreditCard, FiTag } from "react-icons/fi";
-import TotalPreviewCard from "../../components/TotalPreviewCard";
 import InfoLayout from "../../components/InfoLayout";
 import OrderPayment from "./OrderPayment";
 import OrderAddress from "./OrderAddress";
 import InvoiceModal from "./InvoiceModal";
 import AppliedCoupon from "./AppliedCoupon";
-import { formatToLocaleDateString } from "../../utils/date";
 import OrderStatusTracker from "./OrderStatusTracker";
 import OrderStatusBanner from "./OrderStatusBanner";
-import { ORDER_STATUS_STEPS } from "../../constants/order";
+import { ORDER_STATUS_STEPS, ORDER_STATUSES } from "../../constants/order";
 import InfoSubHeading from "../../components/InfoSubHeading";
-import ListOptions from "../../components/ListOptions";
 import { useGetOrderByIdQuery } from "../../redux/store";
 import LoadingTemplate from "../../components/LoadingTemplate";
 import { useParams } from "react-router-dom";
-import { formatCurrency } from "../../utils/generals";
 import OrderHeader from "./OrderHeader";
 import TotalPreviewList from "../../components/TotalPreviewList";
-import { MdCircleNotifications } from "react-icons/md";
 import ErrorTemplate from "../../components/ErrorTemplate";
 import EmptyTemplate from "../../components/EmptyTemplate";
+import Swal from "sweetalert2";
+import useOrder from "../../hooks/useOrder";
+import { USER_ROLES } from "../../constants/app";
 
 // Extracted OrderSummary component
-const OrderSummary = ({ orderData, onViewInvoice }) => (
+const OrderSummary = ({ orderData,onCancel, onViewInvoice }) => (
 	<InfoLayout title="Order Summary">
 		<div className="overflow-hidden p-4  grid  sm:grid-cols-4 gap-8 ">
 			<div className="w-full h-full col-span-full sm:col-span-2 lg:col-span-full ">
@@ -67,11 +65,14 @@ const OrderSummary = ({ orderData, onViewInvoice }) => (
 					aria-label="View order invoice">
 					View Invoice
 				</button>
+				{orderData.status !== ORDER_STATUSES.DELIVERED && (
 				<button
+				onClick={onCancel}
 					className="w-full bg-red-100 border border-red-300 rounded-md py-2 px-4 flex items-center justify-center text-sm font-medium text-gray-700 hover:text-white hover:bg-red-500  transition-colors duration-200"
 					aria-label="Cancel order">
 					Cancel Order
 				</button>
+			)}
 			</div>
 		</div>
 	</InfoLayout>
@@ -79,6 +80,7 @@ const OrderSummary = ({ orderData, onViewInvoice }) => (
 OrderSummary.propTypes = {
 	orderData: PropTypes.object.isRequired,
 	onViewInvoice: PropTypes.func.isRequired,
+	onCancel: PropTypes.func.isRequired,
 };
 
 const UserOrderDetailsPage = () => {
@@ -86,6 +88,10 @@ const UserOrderDetailsPage = () => {
 	const { data: orderDetails, isLoading, error } = useGetOrderByIdQuery(id);
 	const [orderData, setOrderData] = useState([]);
 	const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+	const {
+		handleOrderStatusSelection,
+		isOrderStatusUpdating,
+	} = useOrder(USER_ROLES.CLIENT);
 
 	// Update order data when fetched
 	useEffect(() => {
@@ -93,9 +99,26 @@ const UserOrderDetailsPage = () => {
 			setOrderData(orderDetails);
 		}
 	}, [orderDetails]);
+	const handleDelete = async () => {
+		const result = await Swal.fire({
+			title: "Are you sure you want to cancel?",
+			text: "Once cancelled, you won't be able to revert this action.",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#b10202", 
+			cancelButtonColor: "#3085d6",  
+			confirmButtonText: "Yes, cancel it!",
+			cancelButtonText: "No, keep it", 
+		});
+		
+		if (result.isConfirmed)
+			await handleOrderStatusSelection(id, ORDER_STATUSES.CANCELLED);
+
+		return
+	};
 
 	// Handle loading state
-	if (isLoading) {
+	if (isLoading || isOrderStatusUpdating) {
 		return <LoadingTemplate />;
 	}
 	// Handle error state
@@ -141,6 +164,7 @@ const UserOrderDetailsPage = () => {
 					<OrderSummary
 						orderData={orderData}
 						onViewInvoice={handleViewInvoice}
+						onCancel={handleDelete}
 					/>
 				</div>
 			</div>

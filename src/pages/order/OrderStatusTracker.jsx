@@ -3,9 +3,10 @@ import PropTypes from "prop-types";
 import { FaCheck } from "react-icons/fa";
 import ListOptions from "../../components/ListOptions";
 import {
-	ORDER_STATUS,
+	ORDER_STATUSES,
 	ORDER_STATUS_COLOR_VARIANTS,
 } from "../../constants/order";
+import { CONTACT_SUBJECTS } from "../../constants/contacts";
 
 /**
  * Icon component for progress tracker
@@ -87,19 +88,29 @@ ProgressConnector.propTypes = {
  */
 const CancellationBanner = () => (
 	<div
-		className={`${ORDER_STATUS_COLOR_VARIANTS.red} px-6 py-4 my-4 rounded-lg   mx-auto mt-10 animate-fade-in`}>
-		<h2 className="text-lg font-semibold mb-2">We're Sorry to See You Go!</h2>
-		<p className="mb-4">
-			Remember, our products are crafted with care to enhance your experience.
-			If you have any concerns or questions, we're here to help. Don’t miss out
-			on the benefits our product offers—let us assist you in making the right
-			choice. Your satisfaction is our priority!
+		className={`${ORDER_STATUS_COLOR_VARIANTS.red} px-6 py-4 my-4 rounded-lg mx-auto mt-10 animate-fade-in`}>
+		<h2 className="text-xl font-semibold mb-2 ">We're Sorry to See You Go!</h2>
+
+		<p className="mb-3 text-base text-gray-800">
+			Our products are crafted with care to enhance your experience. We’d love
+			to assist you in finding the perfect fit—your satisfaction is our
+			priority!
 		</p>
-		<a
-			href="/contact"
-			className="inline-block bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-300">
-			Contact Us
-		</a>
+
+		<p className="mb-3 text-base text-gray-800">
+			For your refund, please reach out to us via our
+			<a
+				href={`/contact?subject=${CONTACT_SUBJECTS.RETURN_AND_REFUND}`}
+				className="mx-1 text-blue-600 hover:text-blue-800 font-medium underline transition duration-300">
+				Contact Page
+			</a>
+			. Refunds are processed manually within <strong>2–3 business days</strong>{" "}
+			of your request.
+		</p>
+
+		<p className="text-base text-gray-800">
+			Thank you for your patience and understanding!
+		</p>
 	</div>
 );
 
@@ -110,7 +121,7 @@ const CancellationBanner = () => (
  * @returns {React.Element} - Progress tracker component
  */
 const OrderStatusTracker = ({
-	status = ORDER_STATUS.ORDERED,
+	status = ORDER_STATUSES.ORDERED,
 	statusSteps = [],
 }) => {
 	const currentIndex = Math.max(
@@ -119,7 +130,7 @@ const OrderStatusTracker = ({
 	);
 	const currentColor = statusSteps[currentIndex].color;
 
-	if (status === ORDER_STATUS.CANCELLED) {
+	if (status === ORDER_STATUSES.CANCELLED) {
 		return <CancellationBanner color={currentColor} />;
 	}
 
@@ -138,7 +149,7 @@ const OrderStatusTracker = ({
 						const isCurrent = index === currentIndex;
 						const isNext = index === currentIndex + 1;
 						const isLast = index === statusSteps.length - 2;
-						const isCancelled = step.id === ORDER_STATUS.CANCELLED;
+						const isCancelled = step.id === ORDER_STATUSES.CANCELLED;
 
 						return (
 							!isCancelled && (
@@ -176,10 +187,10 @@ const OrderStatusTracker = ({
 };
 
 OrderStatusTracker.propTypes = {
-	status: PropTypes.oneOf(Object.values(ORDER_STATUS)).isRequired,
+	status: PropTypes.oneOf(Object.values(ORDER_STATUSES)).isRequired,
 	statusSteps: PropTypes.arrayOf(
 		PropTypes.shape({
-			id: PropTypes.oneOf(Object.values(ORDER_STATUS)).isRequired,
+			id: PropTypes.oneOf(Object.values(ORDER_STATUSES)).isRequired,
 			label: PropTypes.string.isRequired,
 			icon: PropTypes.elementType.isRequired,
 			color: PropTypes.oneOf(Object.keys(ORDER_STATUS_COLOR_VARIANTS)),

@@ -33,8 +33,8 @@ const TextArea = ({
 		: "text-gray-700 dark:text-gray-600";
 
 	return (
-		<div className="mb-5 w-full text-sm ">
-			<label htmlFor={NAME} className={`font-semibold ${labelClass}`}>
+		<div className="mb-4 w-full text-sm ">
+			<label htmlFor={NAME} className={`mb-1 text-sm font-medium ${labelClass}`}>
 				{LABEL}
 			</label>
 			<textarea

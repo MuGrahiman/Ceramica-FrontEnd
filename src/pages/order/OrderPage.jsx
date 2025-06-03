@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { Link } from "react-router-dom";
 import { ImEye } from "react-icons/im";
 import Table from "../../components/Table";
@@ -9,32 +9,11 @@ import useSortTable from "../../hooks/useSortTable";
 import SortIcons from "../../components/SetIcons";
 import { setDateAsDayMonthYear } from "../../utils/date";
 import usePagination from "../../hooks/usePagination";
-import { FILTER_FORMS_COMPONENTS } from "../../constants/filter-form";
 import FilterFormLayout from "../../components/FilterFormLayout";
 import SelectDropdown from "../../components/SelectDropdown";
 import MiniLoader from "../../components/MiniLoader";
 import useOrder from "../../hooks/useOrder";
-
-// const getStatusIcon = (status) => {
-// 	switch(status) {
-// 	  case 'delivered':
-// 		return <FiCheckCircle className="text-green-500" />;
-// 	  case 'shipped':
-// 		return <FiPackage className="text-blue-500" />;
-// 	  case 'processing':
-// 		return <FiClock className="text-yellow-500" />;
-// 	  default:
-// 		return <FiClock className="text-gray-500" />;
-// 	}
-//   };
-// const getStatusColor = (status) => {
-// 	switch(status) {
-// 	  case 'delivered': return 'bg-green-100 text-green-800';
-// 	  case 'shipped': return 'bg-blue-100 text-blue-800';
-// 	  case 'processing': return 'bg-yellow-100 text-yellow-800';
-// 	  default: return 'bg-gray-100 text-gray-800';
-// 	}
-//   };
+import { ORDER_FIELD_CONTENTS, ORDER_FILTER_FORMS_DEFAULT_VALUES, ORDER_STATUSES } from "../../constants/order";
 
 /**
  * Order Management Page: Displays a list of orders with sorting, pagination, and search functionality.
@@ -55,13 +34,7 @@ const OrderPage = () => {
 		clearOrderFilters,
 	} = useOrder("admin");
 
-	// Drop Down Options
-	const selectDropDownOptions = [
-		"processing",
-		"shipped",
-		"delivered",
-		"cancelled",
-	];
+	const selectDropDownOptions = Object.values(ORDER_STATUSES)
 
 	// Table headers configuration
 	const headers = [
@@ -124,61 +97,7 @@ const OrderPage = () => {
 
 	const { pageNumbers, currentPage, totalPages, handlePage, currentItems } =
 		usePagination(sortedOrders, 5);
-	const FieldContents = [
-		{
-			title: "Filter by Order Status",
-			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
-			props: {
-				name: "orderStatus",
-				options: ["processing", "shipped", "delivered", "cancelled"],
-			},
-		},
-		{
-			title: "Filter by Payment Status",
-			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
-			props: {
-				name: "paymentStatus",
-				options: [
-					"Created",
-					"Saved",
-					"Approved",
-					"Voided",
-					"Completed",
-					"PayerActionRequired",
-				],
-			},
-		},
-		{
-			title: "Filter by Date",
-			type: FILTER_FORMS_COMPONENTS.INPUT,
-			props: {
-				name: "date",
-				options: [
-					{ name: "startDate", label: "Start Date", type: "date" },
-					{ name: "endDate", label: "End Date", type: "date" },
-				],
-			},
-		},
-		{
-			title: "Filter by Price",
-			type: FILTER_FORMS_COMPONENTS.INPUT,
-			props: {
-				name: "price",
-				options: [
-					{ name: "minPrice", label: "Minimum Price", type: "numbers" },
-					{ name: "maxPrice", label: "Maximum Price", type: "numbers" },
-				],
-			},
-		},
-	];
-	const FILTER_FORMS_DEFAULT_VALUES = {
-		paymentStatus: [],
-		StartDate: "",
-		endDate: "",
-		minPrice: "",
-		maxPrice: "",
-	};
-
+	
 	const onSubmit = (data) => {
 		filterOrders(data);
 		setIsOpen((prev) => !prev);
@@ -236,8 +155,8 @@ const OrderPage = () => {
 				isOpen={isOpen}
 				onSubmit={onSubmit}
 				onClear={onClear}
-				defaultValues={FILTER_FORMS_DEFAULT_VALUES}
-				fieldContents={FieldContents}>
+				defaultValues={ORDER_FILTER_FORMS_DEFAULT_VALUES}
+				fieldContents={ORDER_FIELD_CONTENTS}>
 				<Table
 					CONFIG={getTableConfig(({ sortColumn, label, order, sort }) => (
 						<div
