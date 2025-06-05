@@ -34,7 +34,7 @@ const TextArea = ({
 
 	return (
 		<div className="mb-4 w-full text-sm ">
-			<label htmlFor={NAME} className={`mb-1 text-sm font-medium ${labelClass}`}>
+			<label htmlFor={NAME} className={`mb-1 block text-sm font-medium  ${labelClass}`}>
 				{LABEL}
 			</label>
 			<textarea
@@ -43,8 +43,8 @@ const TextArea = ({
 				id={NAME}
 				aria-invalid={!!ERRORS[NAME]}
 				{...REGISTER(NAME, VALIDATION_RULES[NAME])}
-				className={` border  rounded px-4  bg-gray-50
-                    focus:outline-none dark:bg-white font-normal r block w-full p-2.5 ${getTextAreaClass()}`}
+				className={` border  rounded px-4  p-2.5 bg-gray-50
+                    focus:outline-none dark:bg-white font-normal r block w-full ${getTextAreaClass()}`}
 				placeholder={PLACEHOLDER || `Enter ${NAME}`}
 			/>
 
