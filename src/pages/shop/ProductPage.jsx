@@ -18,7 +18,7 @@ import {
 import useSearch from "../../hooks/useSearch";
 import ListOptions from "../../components/ListOptions";
 
-const Shop = () => {
+const ProductPage = () => {
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
 	const {
 		fetchLoading,
@@ -147,4 +147,4 @@ const Shop = () => {
 	);
 };
 
-export default Shop;
+export default ProductPage;

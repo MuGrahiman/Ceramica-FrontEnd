@@ -83,7 +83,7 @@ const useWishList = ( showWishlist = false ) => {
     };
 
     const isLoading = (
-        addToWishListResult.isLoading ||
+        addToWishListResult.isLoading || addToWishListResult.isFetching ||
         removeFromWishListResult.isLoading
     );
 

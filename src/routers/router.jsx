@@ -19,7 +19,7 @@ import DemoPage from "../pages/demo/DemoPage";
 import AddToInventory from "../pages/inventory/AddToInventory";
 import ModifyInventory from "../pages/inventory/UpdateInventory";
 import InventoryDetailsPage from "../pages/inventory/InventoryDetailsPage";
-import Shop from "../pages/shop/Shop";
+import ProductPage from "../pages/shop/ProductPage";
 import CartPage from "../pages/cart/CartPage";
 import CheckOutPage from "../pages/checkout/CheckOutPage";
 import SuccessPaymentPage from "../pages/success/SuccessPaymentPage";
@@ -41,6 +41,7 @@ import PasswordPage from "../pages/auth/PasswordPage";
 import WishlistPage from "../pages/wishlist/WishlistPage";
 import UserOrderPage from "../pages/order/UserOrderPage";
 import UserOrderDetailsPage from "../pages/order/UserOrderDetailsPage";
+import ProductDetailsPage from "../pages/shop/ProductDetailsPage";
 
 const router = createBrowserRouter([
 	{
@@ -77,7 +78,15 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/shop",
-				element: <Shop />,
+				element: <ProductPage />,
+			},
+			{
+				path: "/shop/:id",
+				element: (
+					<PrivateRoute>
+						<ProductDetailsPage />
+					</PrivateRoute>
+				),
 			},
 			{
 				path: "/about",
@@ -89,7 +98,11 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/cart",
-				element: <CartPage />,
+				element: (
+					<PrivateRoute>
+						<CartPage />
+					</PrivateRoute>
+				),
 			},
 			{
 				path: "/orders",

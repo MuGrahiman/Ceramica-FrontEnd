@@ -17,13 +17,16 @@ const CoverImage = ({
 		useWishList(SHOW_WISHLIST);
 	const isItemInWishlist = checkIdInWishlist(ITEM_ID);
 	return (
-		<div style={{ width: WIDTH, height: HEIGHT }} className="relative">
+		<div
+			key={IMAGE.public_id}
+			style={{ width: WIDTH, height: HEIGHT }}
+			className="relative group animate-fade-in duration-700">
 			<img
 				src={IMAGE.url}
 				alt={IMAGE.public_id}
 				loading="lazy"
 				onError={ON_ERROR}
-				className="w-full h-full object-cover rounded-lg shadow-lg transition-transform transform hover:scale-105"
+				className="w-full h-full object-cover rounded-lg shadow-lg  transition-transform transform group-hover:scale-105"
 			/>
 			{SHOW_WISHLIST && (
 				<button
@@ -38,8 +41,8 @@ const CoverImage = ({
 					) : (
 						<FaHeart
 							className={`${
-								isItemInWishlist ? "fill-red-500" : "fill-white"
-							} w-5 h-5 m-1 drop-shadow-lg hover:scale-110`}
+								isItemInWishlist ? "fill-red-500 " : "fill-white "
+							} animate-fade-in  w-5 h-5 m-1 drop-shadow-lg group-hover:scale-110`}
 						/>
 					)}
 				</button>

@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { stringTrimmer } from "../utils/generals";
 import CoverImage from "./CoverImage";
 import { useCart } from "../hooks/useCart";
+import { Link } from "react-router-dom";
 const defaultImage = "https://via.placeholder.com/150";
 
 const ProductCard = ({ product }) => {
@@ -20,7 +21,9 @@ const ProductCard = ({ product }) => {
 				ON_ERROR={handleImageError}
 				ITEM_ID={product._id}
 			/>
-			<div className="p-4 flex-grow flex flex-col justify-between">
+			<Link
+				to={`/shop/${product._id}`}
+				className="p-4 flex-grow flex flex-col justify-between">
 				<h3 className="text-lg font-semibold">{product.title}</h3>
 				<p className="text-gray-600">{`${stringTrimmer(
 					product.description,
@@ -31,13 +34,13 @@ const ProductCard = ({ product }) => {
 					<span className="text-yellow-500">{product.price || "N/A"} ★</span>
 					<span className="text-gray-400 ml-2">({product.stock})</span>
 				</div>
-				<button
-					disabled={isAdding}
-					onClick={() => addToCart(product._id)}
-					className="mt-4 bg-blue-500 text-white p-2 rounded transition-all hover:bg-blue-600">
-					Add to Cart {isAdding && "..."}
-				</button>
-			</div>
+			</Link>
+			<button
+				disabled={isAdding}
+				onClick={() => addToCart(product._id)}
+				className="mt-4 bg-blue-500 text-white p-2 rounded-b transition-all hover:bg-blue-600 hover:scale-105 ">
+				Add to Cart {isAdding && "..."}
+			</button>
 		</div>
 	);
 };
