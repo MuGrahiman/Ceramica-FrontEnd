@@ -5,6 +5,7 @@ import { useGetInventoryItemByIdQuery } from "../../redux/store";
 import { useParams } from "react-router-dom";
 import PageTitle from "../../components/PageTitle";
 import BreadCrumb from "../../components/BreadCrumb";
+import ProductReviews from "./ProductReviews";
 
 const ProductDetailsPage = () => {
 	const { id } = useParams();
@@ -18,8 +19,13 @@ const ProductDetailsPage = () => {
 		);
 	}
 	if (!data || !data) <div>{`Sorry couldn't find any product `}</div>;
+	const handleSubmitReview = (review) => {
+		// In a real app, you would send this to your backend
+		console.log("New review submitted:", review);
+	};
+
 	return (
-		<main className="max-w-5xl  mx-auto my-5">
+		<main className="max-w-5xl  mx-auto py-5">
 			{/* <PageTitle title="Inventory Details" /> */}
 			<BreadCrumb
 				items={[
@@ -47,6 +53,7 @@ const ProductDetailsPage = () => {
 					showWishlist
 				/>
 			</div>
+			<ProductReviews productId="12345" onSubmitReview={handleSubmitReview} />
 		</main>
 	);
 };

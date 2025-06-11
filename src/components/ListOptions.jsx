@@ -8,13 +8,13 @@ import PropTypes from "prop-types";
  * @param {function} RENDER_ITEM - The function to render each item in the list.
  */
 const ListOptions = ({
-	OPTIONS,
+	OPTIONS = [],
 	EMPTY_MESSAGE = "No options available.",
-	RENDER_ITEM,
+	RENDER_ITEM = () => {},
 }) => {
 	if (!OPTIONS || !OPTIONS.length) {
 		return (
-			<div className="text-center text-base font-serif font-semibold">
+			<div className="text-center text-base font-serif font-semibold text-gray-500 py-8">
 				{EMPTY_MESSAGE}
 			</div>
 		);

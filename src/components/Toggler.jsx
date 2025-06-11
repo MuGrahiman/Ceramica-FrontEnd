@@ -46,7 +46,7 @@ const Toggler = ({
 	});
 
 	return (
-		<div className="mb-4 relative">
+		<div className=" relative">
 			<div ref={contentRef} style={getTransitionStyle()}>
 				<p className="text-gray-700 mb-2">
 					{IS_TOG
@@ -55,30 +55,32 @@ const Toggler = ({
 						${TEXT.length > TRIM_LENGTH ? "..." : " "}
 						`}
 
-					<button
-						onClick={(e) => {
-							e.preventDefault();
-							TOG();
-						}}
-						className="ml-2 text-blue-500 hover:text-blue-700 focus:outline-none 
+					{TEXT.length > TRIM_LENGTH && (
+						<button
+							onClick={(e) => {
+								e.preventDefault();
+								TOG();
+							}}
+							className="ml-2 text-blue-500 hover:text-blue-700 focus:outline-none 
                         text-sm font-medium transition-colors duration-200
                        "
-						aria-expanded={IS_TOG}
-						aria-label={IS_TOG ? "Show less content" : "Show more content"}>
-						<span className="flex items-center justify-center">
-							{IS_TOG ? (
-								<>
-									<span>Read Less</span>
-									<IoIosArrowUp />
-								</>
-							) : (
-								<>
-									<span>Read More</span>
-									<IoIosArrowDown />
-								</>
-							)}
-						</span>
-					</button>
+							aria-expanded={IS_TOG}
+							aria-label={IS_TOG ? "Show less content" : "Show more content"}>
+							<span className="flex items-center justify-center">
+								{IS_TOG ? (
+									<>
+										<span>Read Less</span>
+										<IoIosArrowUp />
+									</>
+								) : (
+									<>
+										<span>Read More</span>
+										<IoIosArrowDown />
+									</>
+								)}
+							</span>
+						</button>
+					)}
 				</p>
 			</div>
 		</div>

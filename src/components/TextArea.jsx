@@ -6,13 +6,13 @@ import PropTypes from "prop-types";
  * Displays validation feedback based on error and success states.
  */
 const TextArea = ({
-	LABEL,
-	NAME,
+	LABEL = "",
+	NAME = "",
 	REGISTER,
 	PLACEHOLDER,
 	ERRORS,
-	VALIDATION_RULES,
-	IS_SUCCESS,
+	VALIDATION_RULES = {},
+	IS_SUCCESS = false,
 	...REST
 }) => {
 	// Returns CSS classes based on validation state
@@ -34,7 +34,9 @@ const TextArea = ({
 
 	return (
 		<div className="mb-4 w-full text-sm ">
-			<label htmlFor={NAME} className={`mb-1 block text-sm font-medium  ${labelClass}`}>
+			<label
+				htmlFor={NAME}
+				className={`mb-1 block text-sm font-medium  ${labelClass}`}>
 				{LABEL}
 			</label>
 			<textarea
