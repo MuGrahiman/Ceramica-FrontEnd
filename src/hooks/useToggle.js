@@ -4,33 +4,30 @@ import React, { useState } from 'react';
  * Custom hook for handling multiple toggle functionality
  * @returns {Object} toggle functionality
  */
-const useHandleMultipleToggle = () => {
+const useToggle = () => {
     const [ toggleIndexes, setToggleIndexes ] = useState( [] );
 
     const toggle = ( index ) => {
         setToggleIndexes( ( prevIndexes ) => {
             if ( prevIndexes.includes( index ) ) {
-                // Close the toggle if it's already open 
+                // Remove the index if it's already added 
                 return prevIndexes.filter( ( i ) => i !== index );
             } else {
-                // Open the toggle
+                // Add the index 
                 return [ ...prevIndexes, index ];
             }
         } );
     };
 
+    /**
+     * Checks if a given index is currently toggled
+     * @param {string|number} index - Unique identifier to check
+     * @returns {boolean} - Toggle state
+     */
     const isToggled = ( index ) => toggleIndexes.includes( index );
 
     return [ toggle, isToggled, toggleIndexes ];
 };
 
-/**
- * Main toggle hook that decides which toggle hook to use
- * Currently supports multiple toggles
- * @returns {Object} toggle functionality
- */
-const useToggle = () => {
-    return useHandleMultipleToggle();
-};
 
 export default useToggle;

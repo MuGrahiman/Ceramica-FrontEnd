@@ -14,14 +14,14 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
  * @param {boolean} props.IS_TOG - Current toggle state (controlled by parent)
  * @param {string} props.TEXT - The text content to display
  * @param {function} props.TOG - Toggle handler function
- * @param {number} [props.COLLAPSED_HEIGHT=70] - Height when collapsed (in pixels)
+ * @param {number} [props.COLLAPSED_HEIGHT=50] - Height when collapsed (in pixels)
  * @param {number} [props.TRIM_LENGTH=100] - Character limit when collapsed
  * @param {number} [props.ANIMATION_DURATION=300] - Animation duration in milliseconds
  */
 const Toggler = ({
-	IS_TOG,
-	TEXT,
-	TOG,
+	IS_TOG = false,
+	TEXT = "",
+	TOG = () => {},
 	COLLAPSED_HEIGHT = 50,
 	TRIM_LENGTH = 100,
 	ANIMATION_DURATION = 300,
@@ -40,42 +40,48 @@ const Toggler = ({
 		}
 	}, [IS_TOG, TEXT, COLLAPSED_HEIGHT, TRIM_LENGTH]);
 
+	/**
+	 * Generates transition styles for smooth height animation
+	 * @returns {Object} CSS transition styles
+	 */
 	const getTransitionStyle = () => ({
 		height: contentHeight,
 		transition: `height ${ANIMATION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1)`,
+		overflow: "hidden",
 	});
 
 	return (
-		<div className=" relative">
-			<div ref={contentRef} style={getTransitionStyle()}>
+		<div className="relative" aria-expanded={IS_TOG} aria-live="polite">
+			<div
+				ref={contentRef}
+				style={{ ...getTransitionStyle(), willChange: "height" }}>
 				<p className="text-gray-700 mb-2">
 					{IS_TOG
 						? TEXT
 						: `${stringTrimmer(TEXT, TRIM_LENGTH)}
-						${TEXT.length > TRIM_LENGTH ? "..." : " "}
-						`}
+            ${TEXT?.length > TRIM_LENGTH ? "..." : " "}
+            `}
 
-					{TEXT.length > TRIM_LENGTH && (
+					{TEXT?.length > TRIM_LENGTH && (
 						<button
 							onClick={(e) => {
 								e.preventDefault();
 								TOG();
 							}}
 							className="ml-2 text-blue-500 hover:text-blue-700 focus:outline-none 
-                        text-sm font-medium transition-colors duration-200
-                       "
+                text-sm font-medium transition-colors duration-200"
 							aria-expanded={IS_TOG}
 							aria-label={IS_TOG ? "Show less content" : "Show more content"}>
 							<span className="flex items-center justify-center">
 								{IS_TOG ? (
 									<>
 										<span>Read Less</span>
-										<IoIosArrowUp />
+										<IoIosArrowUp className="ml-1" />
 									</>
 								) : (
 									<>
 										<span>Read More</span>
-										<IoIosArrowDown />
+										<IoIosArrowDown className="ml-1" />
 									</>
 								)}
 							</span>

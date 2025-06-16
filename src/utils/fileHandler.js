@@ -1,3 +1,5 @@
+import { FALL_BACK_IMAGE } from "../constants/app";
+
 const allowedTypes = [ "image/jpeg", "image/png", "image/jpg",
     "upload/jpeg", "upload/png", "upload/jpg" ];
 
@@ -49,3 +51,7 @@ export const iterateFiles = ( files ) => {
 
     return true;
 }
+
+export const handleFileError = (e) => {
+    e.target.src = FALL_BACK_IMAGE;
+};

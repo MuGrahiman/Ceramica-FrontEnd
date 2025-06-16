@@ -17,6 +17,7 @@ import couponReducer from "./features/coupon/couponSlice";
 import orderReducer from "./features/orders/orderSlice";
 import paymentReducer from "./features/payment/paymentSlice.js";
 import inquiryApi from "./features/inquiry/inquiryApi";
+import reviewApi from "./features/reviews/reviewApi.js";
 
 export const store = configureStore( {
 	reducer: {
@@ -37,6 +38,7 @@ export const store = configureStore( {
 		[ orderApi.reducerPath ]: orderApi.reducer,
 		[ couponApi.reducerPath ]: couponApi.reducer,
 		[ inquiryApi.reducerPath ]: inquiryApi.reducer,
+		[ reviewApi.reducerPath ]: reviewApi.reducer,
 	},
 	middleware: ( getDefaultMiddleware ) =>
 		getDefaultMiddleware().concat(
@@ -52,6 +54,7 @@ export const store = configureStore( {
 			orderApi.middleware,
 			couponApi.middleware,
 			inquiryApi.middleware,
+			reviewApi.middleware,
 		),
 } );
 
@@ -73,3 +76,4 @@ export * from "./features/coupon/couponSlice";
 export * from "./features/order/orderApi";
 export * from "./features/orders/orderSlice";
 export * from "./features/inquiry/inquiryApi";
+export * from "./features/reviews/reviewApi.js";

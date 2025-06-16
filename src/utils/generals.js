@@ -128,3 +128,7 @@ export const formatCurrency = (
     } ).format( amount );
   }
 };
+
+export const isValidId = ( id ) => {
+  return typeof id === 'string' && id.trim().length > 0;
+};

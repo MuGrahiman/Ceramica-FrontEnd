@@ -3,38 +3,48 @@ import PropTypes from "prop-types";
 import Toggler from "./Toggler";
 import useToggle from "../hooks/useToggle";
 import ListOptions from "./ListOptions";
-import fallBackImage from "../assets/defualtimage.png";
 import CoverImage from "./CoverImage";
+import { handleFileError } from "../utils/fileHandler";
+
 /**
- * Displays product information with image gallery and details
+ * Displays a product information's.
  * @param {Object} props - Component props
- * @param {string} props.productId - Unique identifier for the product
- * @param {Object} props.coverImage - Primary product image
+ * @param {string} props.productId - Unique identifier for the product (required)
+ * @param {Object} props.coverImage - Primary product image {url, public_id, type}
  * @param {string} props.title - Product title
- * @param {Array} props.images - Array of product images
- * @param {string} props.description - Product description
- * @param {Boolean} props.showWishlist - show Wishlist
+ * @param {Array} props.images - Array of product images [{url, public_id, type}]
+ * @param {string} props.description - Product description (supports HTML/markdown)
+ * @param {Boolean} props.showWishlist - Toggles wishlist button visibility
+ * @param {Object} props.color - Color details {name, hex, image}
+ * @param {number} props.price - Product price (formatted as currency)
+ * @param {String} props.status - Availability status (converted to "Available"/"Out of Stock")
  */
 const ProductPanel = ({
-	productId,
-	coverImage,
-	title,
-	category,
-	shape,
-	color,
-	dimension,
-	size,
-	stock,
-	price,
-	status,
-	description,
-	images,
-	showWishlist = false
+	productId = "",
+	coverImage = {},
+	title = "",
+	category = "",
+	shape = "",
+	color = {},
+	dimension = "",
+	size = "",
+	stock = 0,
+	price = 0,
+	status = "",
+	description = "",
+	images = {},
+	showWishlist = false,
 }) => {
 	const [toggleFunction, isToggledState] = useToggle();
 	const [currentCoverImage, setCurrentCoverImage] = useState(coverImage);
 	const [currentImages, setCurrentImages] = useState(images);
 
+	/**
+	 * Swaps the current cover image and updates the gallery order.
+	 * @param {Object} image - The new cover image to be set.
+	 * @param {string} image.public_id - The unique identifier of the image.
+	 * @returns {void} - This function does not return a value.
+	 */
 	const handleCoverImage = (image) => {
 		const filteredImages = currentImages.filter(
 			(img) => img.public_id !== image.public_id
@@ -42,10 +52,6 @@ const ProductPanel = ({
 		const updatedImages = [currentCoverImage, ...filteredImages];
 		setCurrentCoverImage(image);
 		setCurrentImages(updatedImages);
-	};
-
-	const handleImageError = (e) => {
-		e.target.src = fallBackImage;
 	};
 
 	const productAttributes = [
@@ -88,7 +94,7 @@ const ProductPanel = ({
 							IMAGE={currentCoverImage}
 							WIDTH="100%"
 							HEIGHT="15rem"
-							ON_ERROR={handleImageError}
+							ON_ERROR={handleFileError}
 							SHOW_WISHLIST={showWishlist}
 						/>
 					</div>
@@ -101,7 +107,7 @@ const ProductPanel = ({
 									src={image.url}
 									alt={`Image of ${title} - ${index + 1}`}
 									loading="lazy"
-									onError={handleImageError}
+									onError={handleFileError}
 									onClick={() => handleCoverImage(image)}
 									className="w-12 h-12 sm:w-16 sm:h-16 md:w-[3.6rem] md:h-[3.6rem] lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-cover rounded-lg m-1 shadow-sm transition-transform transform hover:scale-105 cursor-pointer max-w-full"
 								/>
@@ -128,20 +134,18 @@ const ProductPanel = ({
 
 			{/* Description Section */}
 			{!!description && (
-				<div className=" w-full ">
-					<p className="text-gray-600 break-words">
-						<Toggler
-							IS_TOG={isToggledState("productDetails")}
-							TOG={() => toggleFunction("productDetails")}
-							TEXT={description}
-						/>
-					</p>
+				<div className="mb-6 w-full text-gray-600 break-words">
+					<Toggler
+						IS_TOG={isToggledState("productDetails")}
+						TOG={() => toggleFunction("productDetails")}
+						TEXT={description}
+					/>
 				</div>
 			)}
 		</div>
 	);
 };
-// Define prop types for the individual data
+
 ProductPanel.propTypes = {
 	productId: PropTypes.string.isRequired,
 	coverImage: PropTypes.shape({
@@ -170,7 +174,7 @@ ProductPanel.propTypes = {
 			type: PropTypes.string,
 		})
 	),
-	showWishlist:PropTypes.bool
+	showWishlist: PropTypes.bool,
 };
 
 export default ProductPanel;
