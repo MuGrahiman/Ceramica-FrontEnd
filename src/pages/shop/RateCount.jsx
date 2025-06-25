@@ -11,7 +11,7 @@ import StarRating from "../../components/StarRating";
 const RateCount = ({ average = 0, count = 0 }) => {
 	return (
 		<div
-			className=" flex flex-col sm:flex-row sm:items-center gap-4 p-4"
+			className="flex flex-col sm:flex-row sm:items-center gap-4 p-4"
 			aria-label={`Rating summary: 
 					${average ? average.toFixed(1) : "0.0"}
              stars from ${count} reviews`}>

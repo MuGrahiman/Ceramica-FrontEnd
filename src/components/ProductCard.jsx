@@ -12,7 +12,7 @@ const ProductCard = ({ product }) => {
 	};
 
 	return (
-		<div className="bg-white transform transition-transform shadow-lg hover:shadow-2xl rounded-lg overflow-hidden w-full sm:w-80 md:w-[25rem] lg:w-80 xl:w-72 min-h-[26rem] max-h-[26rem] flex flex-col">
+		<div className="flex-shrink-0 bg-white transform transition-transform shadow-lg hover:shadow-2xl rounded-lg overflow-hidden w-full sm:w-80 md:w-[25rem] lg:w-80 xl:w-72 min-h-[26rem] max-h-[26rem] flex flex-col">
 			<CoverImage
 				SHOW_WISHLIST
 				IMAGE={product.coverImage || defaultImage}

@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
  */
 const CallToAction = () => (
 	<section className="text-center">
-		<h2 className="text-3xl font-bold text-blue-950 mb-6">
+		<h2 className="text-3xl font-bold text-blue-950  font-serif  text-center mb-12">
 			Join Our Ceramic Journey
 		</h2>
 		<p className="text-blue-950 mb-8 max-w-3xl mx-auto">
