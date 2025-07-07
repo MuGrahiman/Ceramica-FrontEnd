@@ -132,3 +132,40 @@ export const formatCurrency = (
 export const isValidId = ( id ) => {
   return typeof id === 'string' && id.trim().length > 0;
 };
+/**
+ * Converts a given string to Pascal Case.
+ * Pascal Case capitalizes the first letter of each word and removes spaces.
+ *
+ * @param {string} input - The string to be converted to Pascal Case.
+ * @returns {string} The converted Pascal Case string.
+ * @throws {TypeError} Throws an error if the input is not a string.
+ */
+export const toPascalCase = ( input ) => {
+  // Validate the input to ensure it's a string
+  if ( typeof input !== 'string' ) {
+    throw new TypeError( 'Input must be a string.' );
+  }
+
+  return input
+    .trim()
+    .split( /\s+/ )
+    .map( word =>
+      word.charAt( 0 ).toUpperCase() + word.slice( 1 ).toLowerCase()
+    )
+    .join( '' );
+}
+
+/**
+ * Parses numeric values from strings while preserving suffixes
+ * @param {string|number} value - Input value (e.g., "1.5M" or 1500000)
+ * @returns {Object} { numeric: number, suffix: string }
+ */
+export const parseNumber = ( value ) => {
+  if ( typeof value === "string" ) {
+    const numeric = parseFloat( value.replace( /[^0-9.]/g, "" ) );
+    const suffix = value.match( /[^\d]+$/ )?.[ 0 ] || "";
+    return { numeric, suffix };
+  }
+  return { numeric: value, suffix: "" };
+};
+

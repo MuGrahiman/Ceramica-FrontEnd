@@ -1,79 +1,30 @@
 import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import ListOptions from "../../components/ListOptions";
 
-const CategorySection = () => {
+/**
+ * CategorySection - Infinite horizontal scrolling category display with smooth animations.
+ *
+ * @returns {JSX.Element} A visually appealing category carousel section
+ */
+const CategorySection = ({ categories = [] }) => {
 	const [currentPosition, setCurrentPosition] = useState(0);
-
-	// Updated categories with separate items and proper images
-	const categories = [
-		{
-			name: "Cups",
-			image:
-				"https://images.unsplash.com/photo-1560847975-9e3d66d1b3b2?ixlib=rb-4.1.0&auto=format&fit=crop&w=500&q=80",
-			count: 42,
-		},
-		{
-			name: "Kettle",
-			image:
-				"https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.1.0&auto=format&fit=crop&w=500&q=80",
-			count: 18,
-		},
-		{
-			name: "Plates",
-			image:
-				"https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-4.1.0&auto=format&fit=crop&w=500&q=80",
-			count: 36,
-		},
-		{
-			name: "Bowls",
-			image:
-				"https://images.unsplash.com/photo-1585238342020-15d6e7e7ab0a?ixlib=rb-4.1.0&auto=format&fit=crop&w=500&q=80",
-			count: 28,
-		},
-		{
-			name: "Jars",
-			image:
-				"https://images.unsplash.com/photo-1604176354204-92669b0ff5bd?ixlib=rb-4.1.0&auto=format&fit=crop&w=500&q=80",
-			count: 24,
-		},
-		{
-			name: "Jugs",
-			image:
-				"https://images.unsplash.com/photo-1605000797499-95e51c9bdc5f?ixlib=rb-4.1.0&auto=format&fit=crop&w=500&q=80",
-			count: 15,
-		},
-		{
-			name: "Mugs",
-			image:
-				"https://images.unsplash.com/photo-1597822738124-151fb72dcb79?ixlib=rb-4.1.0&auto=format&fit=crop&w=500&q=80",
-			count: 32,
-		},
-		{
-			name: "Saucer",
-			image:
-				"https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.1.0&auto=format&fit=crop&w=500&q=80",
-			count: 27,
-		},
-		{
-			name: "Decorates",
-			image:
-				"https://images.unsplash.com/photo-1605100804763-247f67b3557e?ixlib=rb-4.1.0&auto=format&fit=crop&w=500&q=80",
-			count: 19,
-		},
-	];
-
-	// Duplicate the categories to create seamless loop
 	const duplicatedCategories = [...categories, ...categories];
 
+	// Auto-scrolling effect
 	useEffect(() => {
+		const scrollSpeed = 0.5;
+		const updateInterval = 20;
+
 		const interval = setInterval(() => {
 			setCurrentPosition((prev) => {
-				// Reset position when we've scrolled through one full set
-				if (prev >= categories.length * 200) {
-					return 0;
-				}
-				return prev + 0.5; // Adjust speed here
+				const itemWidth = 200;
+				const scrollLimit = categories.length * itemWidth;
+
+				// Reset position when reaching the duplicated section
+				return prev >= scrollLimit ? 0 : prev + scrollSpeed;
 			});
-		}, 20);
+		}, updateInterval);
 
 		return () => clearInterval(interval);
 	}, [categories.length]);
@@ -85,6 +36,7 @@ const CategorySection = () => {
 					Shop by Category
 				</h2>
 
+				{/* Scrolling container */}
 				<div className="relative h-64">
 					<div
 						className="flex absolute left-0 gap-4"
@@ -92,31 +44,56 @@ const CategorySection = () => {
 							transform: `translateX(-${currentPosition}px)`,
 							transition: "transform 0.1s linear",
 							width: `${duplicatedCategories.length * 200}px`,
-						}}>
-						{duplicatedCategories.map((category, index) => (
-							<div
-								key={`${category.name}-${index}`}
-								className="w-48 h-64 group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-500">
-								<img
-									src={category.image}
-									alt={category.name}
-									className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+						}}
+						aria-label="Product categories carousel">
+						<ListOptions
+							OPTIONS={duplicatedCategories}
+							RENDER_ITEM={(category, index) => (
+								<CategoryCard
+									key={`clone-${category.name}-${index}`}
+									index={index}
+									{...category}
 								/>
-								<div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-all flex flex-col justify-end p-4">
-									<h3 className="text-white font-bold text-lg">
-										{category.name}
-									</h3>
-									<p className="text-white/90 text-sm">
-										{category.count} items
-									</p>
-								</div>
-							</div>
-						))}
+							)}
+						/>
 					</div>
 				</div>
 			</div>
 		</section>
 	);
+};
+
+// Extracted card component for better readability
+const CategoryCard = ({ index = 0, name = "", count = 0, image = "" }) => (
+	<div
+		className="w-48 h-64 group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-500"
+		role="group"
+		aria-label={`${name} category with ${count} items`}>
+		{/* Category image */}
+		<img
+			src={image}
+			alt={name}
+			className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+			loading={index < 3 ? "eager" : "lazy"}
+		/>
+
+		{/* Overlay with category info */}
+		<div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-all flex flex-col justify-end p-4">
+			<h3 className="text-white font-bold text-lg">{name}</h3>
+			<p className="text-white/90 text-sm">{count} items</p>
+		</div>
+	</div>
+);
+// PropTypes for the category card
+CategoryCard.propTypes = {
+	name: PropTypes.string.isRequired,
+	image: PropTypes.string.isRequired,
+	count: PropTypes.number.isRequired,
+	index: PropTypes.number.isRequired,
+};
+// PropTypes for the category data structure
+CategorySection.propTypes = {
+	categories: PropTypes.array.isRequired,
 };
 
 export default CategorySection;

@@ -2,16 +2,27 @@ import React from "react";
 import PropTypes from "prop-types";
 import AnimatedH1 from "./AnimatedH1";
 
+/**
+ * HeroSection - Full-width hero banner with animated text and optional CTA button.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.title - Main heading text (required)
+ * @param {string} [props.subtitle] - Supporting description text
+ * @param {string} props.backgroundImage - URL for background image (required)
+ * @param {string} [props.buttonText] - CTA button text
+ * @param {string} [props.buttonLink] - CTA button link
+ * @returns {JSX.Element} Hero banner section
+ */
 const HeroSection = ({
-	title,
-	subtitle,
-	backgroundImage,
-	buttonText,
-	buttonLink,
+	title = "",
+	subtitle = "",
+	backgroundImage = "",
+	buttonText = "",
+	buttonLink = "/",
 }) => {
 	return (
 		<div
-			className="relative w-full h-64 md:h-96 bg-cover bg-center"
+			className="relative w-full h-dvh bg-cover bg-center"
 			style={{ backgroundImage: `url(${backgroundImage})` }}>
 			<div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-50"></div>
 			<div className="relative flex flex-col items-center justify-center h-full text-white text-center p-4 animate-fade-in">

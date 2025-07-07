@@ -10,7 +10,8 @@ export const reviewApi = createApi( {
     baseQuery,
     tagTypes: [ "Review" ],
     endpoints: ( builder ) => ( {
-        // Get all reviews for a product
+
+        // Get all reviews of a product
         getProductReviews: builder.query( {
             query: ( productId ) => {
                 return ( {
@@ -25,18 +26,18 @@ export const reviewApi = createApi( {
         } ),
 
         // Get current user review for a product
-        // getUserProductReviews: builder.query( {
-        //     query: ( productId ) => {
-        //         return ( {
-        //             url: `/user/product/${ productId }`,
-        //             method: 'GET',
+        getUserProductReviews: builder.query( {
+            query: ( productId ) => {
+                return ( {
+                    url: `/user/product/${ productId }`,
+                    method: 'GET',
 
-        //         } )
-        //     },
-        //     providesTags: ( result, error, productId ) => [
-        //         { type: "Review", id: productId }
-        //     ],
-        // } ),
+                } )
+            },
+            providesTags: ( result, error, productId ) => [
+                { type: "Review", id: productId }
+            ],
+        } ),
 
         // Get rating stats for a product
         getProductRatingStats: builder.query( {
@@ -95,6 +96,7 @@ export const reviewApi = createApi( {
 // Export hooks for usage in components
 export const {
     useGetProductReviewsQuery,
+    useGetUserProductReviewsQuery,
     useGetProductRatingStatsQuery,
     useAddReviewMutation,
     useUpdateReviewMutation,

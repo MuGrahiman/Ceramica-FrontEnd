@@ -4,8 +4,10 @@ import React from "react";
  * MissionVisionSection - Displays the company's mission and vision in card format
  */
 const MissionVisionSection = () => (
-	<section className="mb-20 p-8">
-		<h2 className="text-3xl font-bold text-blue-950 mb-8 text-center">
+	<section aria-labelledby="principles-heading" className="mb-20 p-8">
+		<h2
+			id="principles-heading"
+			className="text-3xl font-bold text-blue-950 mb-8 text-center">
 			Our Guiding Principles
 		</h2>
 

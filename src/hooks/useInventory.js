@@ -10,7 +10,7 @@ import { INVENTORY_URL } from '../constants/inventory';
 import generatePageNumbers from '../utils/pagination';
 
 // Custom hook to manage inventory
-const useInventory = ( searchTerm ) => {
+const useInventory = ( searchTerm = '' ) => {
     // State variables
     const [ currentPage, setCurrentPage ] = useState( 1 );
     const [ totalPages, setTotalPages ] = useState( 1 );
@@ -41,6 +41,7 @@ const useInventory = ( searchTerm ) => {
         maxPrice,
         search: searchTerm
     } );
+
     // Mutation for deleting inventory item
     const [
         deleteInventory,
@@ -121,6 +122,24 @@ const useInventory = ( searchTerm ) => {
         setSort()
     }
 
+    // Filter top rated products 
+    const getTopRatedProducts = ( products, limit = 4 ) => {
+        if ( !products ) return [];
+        return [ ...products ]
+            .sort( ( a, b ) => {
+                if ( b.averageRating !== a.averageRating ) {
+                    return b.averageRating - a.averageRating;
+                }
+                return b.totalCount - a.totalCount;
+            } )
+            .slice( 0, limit );
+    };
+
+    const topRatedProducts = React.useMemo(
+        () => getTopRatedProducts( data ),
+        [ data ]
+    );
+
     // Return values and functions for use in components
     return {
         // Fetching data
@@ -131,6 +150,8 @@ const useInventory = ( searchTerm ) => {
         currentPage,
         handlePage,
         pageNumbers: generatePageNumbers( currentPage, totalPages ),
+        getTopRatedProducts,
+        topRatedProducts,
 
         // Deleting data
         deleteLoading,

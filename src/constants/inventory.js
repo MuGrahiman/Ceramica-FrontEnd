@@ -1,19 +1,32 @@
+import { toPascalCase } from "../utils/generals";
+
 // Constants for inventory form
+export const CATEGORIES = {
+    CUPS: "cups",
+    KETTLE: "kettle",
+    PLATES: "plates",
+    BOWLS: "bowls",
+    JARS: "jars",
+    JUGS: "jugs",
+    MUGS: "mugs",
+    SAUCER: "saucer",
+    DECORATES: "decorates",
+};
 
 /**
  * Available categories for inventory items.
  * @type {Array<{ value: string, label: string }>}
  */
 export const CATEGORY_OPTIONS = [
-    { value: "cups", label: "Cups" },
-    { value: "kettle", label: "Kettle" },
-    { value: "plates", label: "Plates" },
-    { value: "bowls", label: "Bowls" },
-    { value: "jars", label: "Jars" },
-    { value: "jugs", label: "Jugs" },
-    { value: "mugs", label: "Mugs" },
-    { value: "saucer", label: "Saucer" },
-    { value: "decorates", label: "Decorates" },
+    { value: CATEGORIES.CUPS, label: toPascalCase( CATEGORIES.CUPS ) },
+    { value: CATEGORIES.KETTLE, label: toPascalCase( CATEGORIES.KETTLE ) },
+    { value: CATEGORIES.PLATES, label: toPascalCase( CATEGORIES.PLATES ) },
+    { value: CATEGORIES.BOWLS, label: toPascalCase( CATEGORIES.BOWLS ) },
+    { value: CATEGORIES.JARS, label: toPascalCase( CATEGORIES.JARS ) },
+    { value: CATEGORIES.JUGS, label: toPascalCase( CATEGORIES.JUGS ) },
+    { value: CATEGORIES.MUGS, label: toPascalCase( CATEGORIES.MUGS ) },
+    { value: CATEGORIES.SAUCER, label: toPascalCase( CATEGORIES.SAUCER ) },
+    { value: CATEGORIES.DECORATES, label: toPascalCase( CATEGORIES.DECORATES ) },
 ];
 
 /**

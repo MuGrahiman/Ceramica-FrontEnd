@@ -3,6 +3,7 @@ import { stringTrimmer } from "../utils/generals";
 import CoverImage from "./CoverImage";
 import { useCart } from "../hooks/useCart";
 import { Link } from "react-router-dom";
+import StarRating from "./StarRating";
 const defaultImage = "https://via.placeholder.com/150";
 
 const ProductCard = ({ product }) => {
@@ -25,15 +26,31 @@ const ProductCard = ({ product }) => {
 				to={`/shop/${product._id}`}
 				className="p-4 flex-grow flex flex-col justify-between">
 				<h3 className="text-lg font-semibold">{product.title}</h3>
+				<div className="flex items-center gap-1.5">
+					{/* Rating Stars */}
+					<StarRating
+						size="sm"
+						ratingValue={product.averageRating || 0}
+						defaultClass="text-gray-300 fill-current"
+					/>
+
+					{/* Numerical Rating */}
+					<span className="text-sm font-medium text-amber-700">
+						{product?.averageRating?.toFixed(1) || 0}
+					</span>
+
+					{/* Review Count */}
+					<span className="text-xs text-gray-500">
+						({product?.totalCount || 0}{" "}
+						{product?.totalCount === 1 ? "review" : "reviews"})
+					</span>
+				</div>
+
 				<p className="text-gray-600">{`${stringTrimmer(
 					product.description,
 					50
 				)}...`}</p>
 				<p className="mt-2 font-bold">${product.price || "N/A"}</p>
-				<div className="flex items-center">
-					<span className="text-yellow-500">{product.price || "N/A"} ★</span>
-					<span className="text-gray-400 ml-2">({product.stock})</span>
-				</div>
 			</Link>
 			<button
 				disabled={isAdding}
@@ -55,6 +72,8 @@ ProductCard.propTypes = {
 		price: PropTypes.number,
 		stock: PropTypes.number,
 		_id: PropTypes.string.isRequired,
+		averageRating: PropTypes.number,
+		totalCount: PropTypes.number,
 	}).isRequired,
 	onAddToCart: PropTypes.func,
 };
