@@ -23,7 +23,7 @@ const ProfilePage = () => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [selectedTab, setSelectedTab] = useState(TAB.PROFILE);
 
-	const {  currentUser } = useAuth(ROLE);
+	const { currentUser } = useAuth(ROLE);
 	const userId = currentUser ? currentUser._id : null;
 
 	const {
@@ -221,6 +221,8 @@ const ProfilePage = () => {
 					<div className="col-span-1  w-full">
 						<InfoLayout
 							title="Recent Orders"
+							showLink
+							linkedTo="/orders"
 							icon={() => (
 								<svg
 									className="h-6 w-6 text-indigo-600 inline-block mr-2"
@@ -243,6 +245,8 @@ const ProfilePage = () => {
 					<div className="col-span-1	w-full">
 						<InfoLayout
 							title="Your Wishlist"
+							showLink
+							linkedTo="/wishlist"
 							icon={() => (
 								<svg
 									className="h-6 w-6 text-indigo-600 inline-block mr-2"

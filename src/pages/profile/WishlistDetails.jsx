@@ -11,7 +11,7 @@ import ViewAllItems from "./ViewAllItems";
  */
 const WishlistDetails = ({ wishListItems = [] }) => {
 	return (
-		<div className="px-6 py-4">
+		<div className="p-4">
 			{wishListItems?.length > 0 ? (
 				<>
 					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -34,7 +34,7 @@ const WishlistDetails = ({ wishListItems = [] }) => {
 							)}
 						/>
 					</div>
-					<ViewAllItems length={wishListItems.length} link={"/wishlist"} />
+					{/* <ViewAllItems length={wishListItems.length} link={"/wishlist"} /> */}
 
 				</>
 			) : (

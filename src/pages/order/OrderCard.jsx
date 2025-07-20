@@ -27,7 +27,7 @@ const OrderCard = ({ order }) => {
 	};
 
 	return (
-		<li key={order._id} className="py-4 group cursor-pointer">
+		<li key={order._id} className="py-3 group cursor-pointer">
 			<Link to={`/order/${order._id}`}>
 				<div className="flex items-center justify-between">
 					<div>

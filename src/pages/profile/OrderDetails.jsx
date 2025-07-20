@@ -10,20 +10,12 @@ import PropTypes from "prop-types";
  * @param {Array} orders - The list of orders to display.
  */
 const OrderDetails = ({ orders }) => {
-	return (
-		<div className="px-6 py-4">
-			{orders?.length > 0 ? (
-				<OrderList orders={orders.slice(0, 2)} />
-			) : (
-				<OrderEmptySpot />
-			)}
-			{orders?.length && (
-				<ViewAllItems text="orders" length={orders.length} link={"/orders"} />
-			)}
-		</div>
+	return orders?.length > 0 ? (
+		<OrderList orders={orders.slice(0, 2)} />
+	) : (
+		<OrderEmptySpot />
 	);
 };
-
 OrderDetails.propTypes = {
 	orders: PropTypes.array.isRequired,
 };
