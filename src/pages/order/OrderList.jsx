@@ -14,7 +14,13 @@ const OrderList = ({ orders }) => {
 		<ListContainer divideItems scrollable containerClassName="p-2">
 			<ListOptions
 				OPTIONS={orders}
-				RENDER_ITEM={(order, index) => <OrderCard key={index} order={order} />}
+				RENDER_ITEM={(order, index) => (
+					<OrderCard
+						key={index}
+						order={order}
+						baseLink="/dashboard/order-detail"
+					/>
+				)}
 				EMPTY_MESSAGE={"No orders available"}
 			/>
 		</ListContainer>

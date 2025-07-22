@@ -27,10 +27,11 @@ const DashboardSection = ({
 	title = "",
 	data = [],
 	linkTo = "/",
+	propName = "data",
 	component: Component,
 }) => (
 	<InfoLayout title={title} showLink linkedTo={linkTo}>
-		<Component data={data} />
+		{React.createElement(Component, { [propName]: data })}
 	</InfoLayout>
 );
 
@@ -38,6 +39,7 @@ DashboardSection.propTypes = {
 	title: PropTypes.string.isRequired,
 	data: PropTypes.array.isRequired,
 	linkTo: PropTypes.string.isRequired,
+	propName: PropTypes.string.isRequired,
 	component: PropTypes.elementType.isRequired,
 };
 
@@ -106,26 +108,30 @@ const Dashboard = () => {
 	const dashboardSections = [
 		{
 			title: "Recent Inquiries",
-			data: dashboardData.lists.pendingEnquiries,
+			renderData: (data) => data.pendingEnquiries,
 			linkTo: "/inquiries",
+			propName: "inquiries",
 			component: RecentInquiries,
 		},
 		{
 			title: "Pending Orders",
-			data: dashboardData.lists.pendingOrders,
+			renderData: (data) => data.pendingOrders,
 			linkTo: "/orders",
+			propName: "orders",
 			component: OrderList,
 		},
 		{
 			title: "Low Stock Items",
-			data: dashboardData.lists.lowStockItems,
+			renderData: (data) => data.lowStockItems,
 			linkTo: "/inventory",
+			propName: "products",
 			component: LowStockProducts,
 		},
 		{
 			title: "Expired Coupons",
-			data: dashboardData.lists.expiredCoupons,
+			renderData: (data) => data.expiredCoupons,
 			linkTo: "/coupons",
+			propName: "coupons",
 			component: CouponList,
 		},
 	];
@@ -148,9 +154,10 @@ const Dashboard = () => {
 						<DashboardSection
 							key={index}
 							title={section.title}
-							data={section.data}
+							data={section.renderData(dashboardData.lists)}
 							linkTo={section.linkTo}
 							component={section.component}
+							propName={section.propName}
 						/>
 					)}
 				/>

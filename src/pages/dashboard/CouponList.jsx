@@ -5,6 +5,8 @@ import { setDateAsDayMonthYear } from "../../utils/date";
 import ListContainer from "../../components/ListContainer";
 import ListOptions from "../../components/ListOptions";
 import { STATS_COLOR_CONFIG } from "../../constants/dashboard";
+import { Link } from "react-router-dom";
+
 const couponPropShape = {
 	_id: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
@@ -20,6 +22,7 @@ const couponPropShape = {
 	usageLimit: PropTypes.number.isRequired,
 	discount: PropTypes.number.isRequired,
 };
+
 /**
  * Determines CSS classes for coupon status badge
  * @param {'active'|'inactive'} status - Coupon status
@@ -51,14 +54,15 @@ const getStatusStyle = (status, validUntil) => {
  * @returns {JSX.Element} Coupon card component
  */
 const CouponListCard = ({
-	title,
-	couponCode,
-	status,
-	validFrom,
-	validUntil,
+	_id = "",
+	title = "Title",
+	couponCode = "CODE",
+	validFrom = new Date(),
+	validUntil = new Date(),
+	status = "active",
 	redeemedBy = [],
-	usageLimit,
-	discount,
+	usageLimit = 1,
+	discount = 0,
 }) => {
 	const isExpired = new Date(validUntil) < new Date();
 	const statusText = isExpired
@@ -66,35 +70,48 @@ const CouponListCard = ({
 		: status.charAt(0).toUpperCase() + status.slice(1);
 
 	return (
-		<li className="py-3 group cursor-pointer">
-			<div className="flex items-center justify-between">
-				<div className="min-w-0">
-					<p className="text-sm font-medium text-gray-900 truncate">
-						{title} ({couponCode})
-					</p>
-					<div className="flex space-x-2 text-xs text-gray-500">
-						<span>
-							{setDateAsDayMonthYear(validFrom)} -{" "}
-							{setDateAsDayMonthYear(validUntil)}
+		<Link to={`/dashboard/view-coupon/${_id}`} className="group block">
+			<li
+				className="
+				p-3 rounded-lg transition-all duration-300 ease-in-out
+				transform bg-white hover:shadow-md hover:scale-[1.015] 
+				cursor-pointer
+			">
+				<div className="flex items-center justify-between">
+					{/* Left: Coupon title and validity */}
+					<div className="min-w-0">
+						<p className="text-sm font-medium text-gray-900 truncate group-hover:font-semibold">
+							{title} ({couponCode})
+						</p>
+						<div className="flex space-x-2 text-xs text-gray-500 group-hover:font-medium">
+							<span>
+								{setDateAsDayMonthYear(validFrom)} –{" "}
+								{setDateAsDayMonthYear(validUntil)}
+							</span>
+							<span>•</span>
+							<span>
+								{redeemedBy.length}/{usageLimit} used
+							</span>
+						</div>
+					</div>
+
+					{/* Right: Status + Discount */}
+					<div className="ml-4 flex-shrink-0 flex items-center space-x-2">
+						<span
+							className={`
+							px-2 py-1 text-xs font-medium rounded-full 
+							transition-colors duration-300 group-hover:brightness-110
+							${getStatusStyle(status, validUntil)}
+						`}>
+							{statusText}
 						</span>
-						<span>•</span>
-						<span>
-							{redeemedBy.length}/{usageLimit} used
+						<span className="text-sm font-medium group-hover:font-semibold">
+							{discount}% off
 						</span>
 					</div>
 				</div>
-				<div className="ml-4 flex-shrink-0 flex items-center space-x-2">
-					<span
-						className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusStyle(
-							status,
-							validUntil
-						)}`}>
-						{statusText}
-					</span>
-					<span className="text-sm font-medium">{discount}% off</span>
-				</div>
-			</div>
-		</li>
+			</li>
+		</Link>
 	);
 };
 
