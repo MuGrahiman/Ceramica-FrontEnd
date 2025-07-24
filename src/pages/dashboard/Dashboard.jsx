@@ -69,6 +69,7 @@ const Dashboard = () => {
 			expiredCoupons: [],
 			lowStockItems: [],
 		},
+		revenueData: [],
 	}));
 
 	/**
@@ -84,6 +85,7 @@ const Dashboard = () => {
 				...prev,
 				stats: data.stats,
 				lists: data.lists,
+				revenueData: data.revenueData,
 			}));
 			showToast("Dashboard data loaded", "success");
 		} catch (error) {
@@ -143,7 +145,7 @@ const Dashboard = () => {
 
 			{/* Revenue Chart - Full Width */}
 			<InfoLayout title="Revenue Analytics">
-				<RevenueChart data={dashboardData.stats.revenueData} />
+				<RevenueChart revenueData={dashboardData.revenueData} />
 			</InfoLayout>
 
 			{/* Data Visualization and Lists Section */}
