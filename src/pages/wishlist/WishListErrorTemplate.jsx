@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
  * Provides a retry button to attempt loading the wishlist again.
  * @param {function} onRetry - Function to call when the retry button is clicked.
  */
-const WishListError = ({ onRetry }) => {
+const WishListErrorTemplate = ({ onRetry }) => {
 	return (
 		<div className="text-xl flex flex-col items-center justify-center min-h-96 px-4 text-center">
 			<div className="relative p-6 bg-white rounded-full mb-8">
@@ -34,8 +34,8 @@ const WishListError = ({ onRetry }) => {
 };
 
 // PropTypes validation for the component's props
-WishListError.propTypes = {
+WishListErrorTemplate.propTypes = {
 	onRetry: PropTypes.func.isRequired,
 };
 
-export default WishListError;
+export default WishListErrorTemplate;

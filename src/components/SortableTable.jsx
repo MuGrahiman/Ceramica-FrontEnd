@@ -1,6 +1,5 @@
 import React from "react";
 import Table from "./Table";
-import { GoChevronDown, GoChevronUp } from "react-icons/go";
 import useSort from "../hooks/useSort";
 import SortIcons from "./SetIcons";
 

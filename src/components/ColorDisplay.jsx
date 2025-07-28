@@ -1,7 +1,5 @@
 import React from "react";
-import { FaPlus } from "react-icons/fa";
-import { ImSpinner9 } from "react-icons/im";
-import { IoIosRemove, IoMdAdd } from "react-icons/io";
+import { IoIosRemove } from "react-icons/io";
 
 const ColorDisplay = ({
 	ON_LOADING,

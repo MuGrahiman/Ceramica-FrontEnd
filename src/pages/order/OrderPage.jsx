@@ -1,8 +1,7 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ImEye } from "react-icons/im";
 import Table from "../../components/Table";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import SearchBar from "../../components/SearchBar";
 import Pagination from "../../components/Pagination";
 import useSortTable from "../../hooks/useSortTable";
@@ -13,7 +12,12 @@ import FilterFormLayout from "../../components/FilterFormLayout";
 import SelectDropdown from "../../components/SelectDropdown";
 import MiniLoader from "../../components/MiniLoader";
 import useOrder from "../../hooks/useOrder";
-import { ORDER_FIELD_CONTENTS, ORDER_FILTER_FORMS_DEFAULT_VALUES, ORDER_STATUSES } from "../../constants/order";
+import {
+	ORDER_FIELD_CONTENTS,
+	ORDER_FILTER_FORMS_DEFAULT_VALUES,
+	ORDER_STATUSES,
+} from "../../constants/order";
+import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 
 /**
  * Order Management Page: Displays a list of orders with sorting, pagination, and search functionality.
@@ -25,6 +29,7 @@ const OrderPage = () => {
 		activeOrderId,
 		ordersData,
 		isOrdersLoading,
+		ordersFetchIsError,
 		ordersFetchError,
 		handleOrderStatusSelection,
 		isOrderStatusUpdating,
@@ -34,7 +39,7 @@ const OrderPage = () => {
 		clearOrderFilters,
 	} = useOrder("admin");
 
-	const selectDropDownOptions = Object.values(ORDER_STATUSES)
+	const selectDropDownOptions = Object.values(ORDER_STATUSES);
 
 	// Table headers configuration
 	const headers = [
@@ -71,7 +76,9 @@ const OrderPage = () => {
 					<SelectDropdown
 						keys={order._id}
 						selectedValue={order.status}
-						onChange={(event) => handleOrderStatusSelection(order._id, event.target.value)}
+						onChange={(event) =>
+							handleOrderStatusSelection(order._id, event.target.value)
+						}
 						options={selectDropDownOptions}
 					/>
 				),
@@ -97,7 +104,7 @@ const OrderPage = () => {
 
 	const { pageNumbers, currentPage, totalPages, handlePage, currentItems } =
 		usePagination(sortedOrders, 5);
-	
+
 	const onSubmit = (data) => {
 		filterOrders(data);
 		setIsOpen((prev) => !prev);
@@ -108,32 +115,21 @@ const OrderPage = () => {
 		setIsOpen((prev) => !prev);
 	};
 
-	if (isOrdersLoading) {
-		return (
-			<div className="flex items-center justify-center h-screen">
-				<LoadingTemplate message="Fetching orders, please wait..." />
-			</div>
-		);
-	}
-
-	// Handle error state
-	if (ordersFetchError) {
-		return (
-			<div className="text-center text-gray-500">
-				<p>Error fetching orders. Please try again later.</p>
-			</div>
-		);
-	}
-
 	return (
-		<>
+		<LoadingErrorBoundary
+			isLoading={isOrdersLoading}
+			isError={ordersFetchIsError}
+			errorMessage={
+				ordersFetchError?.data?.message ||
+				ordersFetchError?.message ||
+				"Failed to fetch order data"
+			}>
 			{/* Header Section */}
 			<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
 				<h2 className="text-4xl font-extrabold font-serif text-gray-700">
 					Orders
 				</h2>
 			</div>
-
 			{/* Filter and Search Section */}
 			<div className="flex flex-col sm:flex-row justify-between items-center mt-4 mb-4 gap-10">
 				<button
@@ -149,7 +145,6 @@ const OrderPage = () => {
 					CLEAR_SEARCH={onClearOrderSearch}
 				/>
 			</div>
-
 			{/* Orders Table */}
 			<FilterFormLayout
 				isOpen={isOpen}
@@ -176,7 +171,7 @@ const OrderPage = () => {
 					onPageChange={handlePage}
 				/>
 			</FilterFormLayout>
-		</>
+		</LoadingErrorBoundary>
 	);
 };
 

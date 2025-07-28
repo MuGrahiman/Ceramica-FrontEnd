@@ -6,19 +6,24 @@ import {
 } from "../../redux/store";
 import InventoryForm from "./InventoryForm";
 import { createDefaultState } from "../../utils/generals";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import {
 	INVENTORY_BREAD_CRUMB_ITEMS,
 	INVENTORY_URL,
 } from "../../constants/inventory";
 import useApiHandler from "../../hooks/useApiHandler";
+import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 
 // Page Component: Handles updating a product in the inventory
 const UpdateInventory = () => {
 	const { id } = useParams();
-	const [handleMutation, handleApiCall] = useApiHandler();
+	const [handleMutation] = useApiHandler();
 
-	const { data, isLoading: fetchLoading } = useGetInventoryItemByIdQuery(id);
+	const {
+		data,
+		isLoading: fetchLoading,
+		isError,
+		error,
+	} = useGetInventoryItemByIdQuery(id);
 	const [updateInventory, { isLoading: updateLoading }] = handleMutation(
 		useUpdateInventoryMutation
 	);
@@ -79,24 +84,24 @@ const UpdateInventory = () => {
 		);
 	};
 
-	// Handle loading state
-	if (fetchLoading) {
-		return (
-			<div className="flex items-center justify-center h-screen">
-				<LoadingTemplate message="Fetching inventory, please wait..." />
-			</div>
-		);
-	}
-
 	return (
-		<InventoryForm
-			LOADING={fetchLoading || updateLoading}
-			ON_SUBMIT={onSubmit}
-			BREAD_CRUMB_ITEMS={INVENTORY_BREAD_CRUMB_ITEMS(Title)}
-			TITLE={Title}
-			DEFAULT_VALUES={defaultValues}
-			DEFAULT_SUCCESS_VALUE={defaultSuccessValue}
-		/>
+		<LoadingErrorBoundary
+			isLoading={fetchLoading}
+			isError={isError}
+			errorMessage={
+				error?.data?.message ||
+				error?.message ||
+				"Failed to fetch product details"
+			}>
+			<InventoryForm
+				LOADING={fetchLoading || updateLoading}
+				ON_SUBMIT={onSubmit}
+				BREAD_CRUMB_ITEMS={INVENTORY_BREAD_CRUMB_ITEMS(Title)}
+				TITLE={Title}
+				DEFAULT_VALUES={defaultValues}
+				DEFAULT_SUCCESS_VALUE={defaultSuccessValue}
+			/>
+		</LoadingErrorBoundary>
 	);
 };
 

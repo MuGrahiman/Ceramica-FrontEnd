@@ -7,10 +7,10 @@ import {
 } from "../../redux/store";
 import { useNavigate, useParams } from "react-router-dom";
 import useToast from "../../hooks/useToast";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import useApiHandler from "../../hooks/useApiHandler";
 import MiniLoader from "../../components/MiniLoader";
 import AuthHeader from "./AuthHeader";
+import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 
 // Constants
 const OTP_LENGTH = 4;
@@ -18,7 +18,7 @@ const INITIAL_TIMER = 19;
 
 const OtpPage = () => {
 	const { userId } = useParams();
-	const { data, isLoading } = useGetOTPQuery(userId);
+	const { data, isLoading, isError, error } = useGetOTPQuery(userId);
 	const navigate = useNavigate();
 	const showToast = useToast();
 	const [handleMutation] = useApiHandler();
@@ -133,62 +133,74 @@ const OtpPage = () => {
 		);
 	};
 
-	if (isLoading) return <LoadingTemplate />;
 	const getBtnWithLoader = (text, isLoading) =>
 		isLoading ? <MiniLoader /> : text;
+
 	return (
-		<AuthLayout>
-			<div className=" text-center">
-				<AuthHeader
-					title="Verify Your Account"
-					description="Enter the 4-digit OTP sent to your mail."
-				/>
-				<form id="otp-form">
-					<div className="flex items-center justify-center gap-3">
-						{Array.from({ length: OTP_LENGTH }).map((_, index) => (
-							<input
-								key={index}
-								type="text"
-								maxLength="1"
-								ref={(el) => {
-									if (el && !inputs.current.includes(el))
-										inputs.current[index] = el;
-								}}
-								onKeyDown={(e) => handleKeyDown(e, index)}
-								onInput={(e) => handleInput(e, index)}
-								onFocus={handleFocus}
-								onPaste={handlePaste}
-								className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border ring-1 hover:border-slate-200 appearance-none rounded p-4 outline-none focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-							/>
-						))}
+		<LoadingErrorBoundary
+			isLoading={isLoading}
+			isError={isError}
+			errorMessage={
+				error?.data?.message || error?.message || "Failed to check otp "
+			}>
+			<AuthLayout>
+				<div className=" text-center">
+					<AuthHeader
+						title="Verify Your Account"
+						description="Enter the 4-digit OTP sent to your mail."
+					/>
+					<form id="otp-form">
+						<div className="flex items-center justify-center gap-3">
+							{Array.from({ length: OTP_LENGTH }).map((_, index) => (
+								<input
+									key={index}
+									type="text"
+									maxLength="1"
+									ref={(el) => {
+										if (el && !inputs.current.includes(el))
+											inputs.current[index] = el;
+									}}
+									onKeyDown={(e) => handleKeyDown(e, index)}
+									onInput={(e) => handleInput(e, index)}
+									onFocus={handleFocus}
+									onPaste={handlePaste}
+									className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border ring-1 hover:border-slate-200 appearance-none rounded p-4 outline-none focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+								/>
+							))}
+						</div>
+						<div className="max-w-[260px] mx-auto mt-4">
+							<button
+								type="submit"
+								ref={buttonRef}
+								onClick={handleSubmit}
+								className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150">
+								{getBtnWithLoader(
+									"Verify Account",
+									verificationResult.isLoading
+								)}
+							</button>
+						</div>
+					</form>
+					<div className="text-sm text-slate-500 mt-4">
+						Didn't receive code?{" "}
+						{time === 0 ? (
+							<button
+								disabled={
+									resendResult.isLoading || verificationResult.isLoading
+								}
+								onClick={handleResendOTP}
+								className="font-medium text-indigo-500 hover:text-indigo-600">
+								{getBtnWithLoader("Resend", resendResult.isLoading)}
+							</button>
+						) : (
+							<span className="font-bold text-indigo-500">
+								{Math.floor(time / 60)}:{time % 60}s
+							</span>
+						)}
 					</div>
-					<div className="max-w-[260px] mx-auto mt-4">
-						<button
-							type="submit"
-							ref={buttonRef}
-							onClick={handleSubmit}
-							className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150">
-							{getBtnWithLoader("Verify Account", verificationResult.isLoading)}
-						</button>
-					</div>
-				</form>
-				<div className="text-sm text-slate-500 mt-4">
-					Didn't receive code?{" "}
-					{time === 0 ? (
-						<button
-							disabled={resendResult.isLoading || verificationResult.isLoading}
-							onClick={handleResendOTP}
-							className="font-medium text-indigo-500 hover:text-indigo-600">
-							{getBtnWithLoader("Resend", resendResult.isLoading)}
-						</button>
-					) : (
-						<span className="font-bold text-indigo-500">
-							{Math.floor(time / 60)}:{time % 60}s
-						</span>
-					)}
 				</div>
-			</div>
-		</AuthLayout>
+			</AuthLayout>
+		</LoadingErrorBoundary>
 	);
 };
 

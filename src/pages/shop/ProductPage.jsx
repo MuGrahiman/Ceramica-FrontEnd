@@ -8,7 +8,6 @@ import FilterForm from "../../components/FilterForm";
 import heroImage from "../../assets/ceramics/Gemini_Generated_Image_yzrj9syzrj9syzrj.jpeg";
 import useInventory from "../../hooks/useInventory";
 import Pagination from "../../components/Pagination";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import {
 	FILTER_FORMS_CATEGORIES_OPTIONS,
 	FILTER_FORMS_COMPONENTS,
@@ -17,11 +16,14 @@ import {
 } from "../../constants/filter-form";
 import useSearch from "../../hooks/useSearch";
 import ListOptions from "../../components/ListOptions";
+import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 
 const ProductPage = () => {
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
 	const {
 		fetchLoading,
+		fetchError,
+		fetchIsError,
 		data,
 		totalPages,
 		currentPage,
@@ -118,12 +120,15 @@ const ProductPage = () => {
 							 transition-all duration-700 ease-in-out ${
 									isOpen("isOpen") ? "opacity-0 w-0 " : "opacity-100  w-full"
 								}  sm:opacity-100 sm:w-full  `}>
-					{fetchLoading ? (
-						<div className="flex items-center justify-center ">
-							<LoadingTemplate message="Fetching inventory, please wait..." />
-						</div>
-					) : (
-						Array.isArray(data) && (
+					<LoadingErrorBoundary
+						isLoading={fetchLoading}
+						isError={fetchIsError}
+						errorMessage={
+							fetchError?.data?.message ||
+							fetchError?.message ||
+							"Failed to fetch products data"
+						}>
+						{Array.isArray(data) && (
 							<ListOptions
 								OPTIONS={data}
 								RENDER_ITEM={(product) => (
@@ -131,8 +136,8 @@ const ProductPage = () => {
 								)}
 								EMPTY_MESSAGE="No products available."
 							/>
-						)
-					)}
+						)}
+					</LoadingErrorBoundary>
 				</div>
 			</div>
 			<div className="container mx-auto mt-6 px-4 py-6">

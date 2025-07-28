@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ImEye } from "react-icons/im";
 import Table from "../../components/Table";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import SearchBar from "../../components/SearchBar";
 import Pagination from "../../components/Pagination";
 import Badge from "../../components/Badge";
@@ -13,6 +12,7 @@ import SortIcons from "../../components/SetIcons";
 import usePagination from "../../hooks/usePagination";
 import useSearch from "../../hooks/useSearch";
 import useCoupon from "../../hooks/useCoupon";
+import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 
 // Coupon Component
 const CouponPage = () => {
@@ -27,6 +27,7 @@ const CouponPage = () => {
 	const {
 		data,
 		isLoading: fetchLoading,
+		isError: isFetchError,
 		error: fetchError,
 	} = useGetCoupons(searchTerm);
 
@@ -110,31 +111,18 @@ const CouponPage = () => {
 	];
 
 	const { updateConfig, sortedData } = useSortTable(data, headers);
-	const { currentPage,pageNumbers, totalPages, handlePage, currentItems } = usePagination(
-		sortedData,
-		5
-	);
-
-	// Handle loading state
-	if (fetchLoading) {
-		return (
-			<div className="flex items-center justify-center h-screen">
-				<LoadingTemplate message="Fetching Coupon, please wait..." />
-			</div>
-		);
-	}
-
-	// Handle error state
-	if (fetchError) {
-		return (
-			<div className="text-center text-gray-500">
-				<p>Error fetching Coupon. Please try again later.</p>
-			</div>
-		);
-	}
+	const { currentPage, pageNumbers, totalPages, handlePage, currentItems } =
+		usePagination(sortedData, 5);
 
 	return (
-		<>
+		<LoadingErrorBoundary
+			isLoading={fetchLoading}
+			isError={isFetchError}
+			errorMessage={
+				fetchError?.data?.message ||
+				fetchError?.message ||
+				"Failed to fetch coupons "
+			}>
 			{/* Header Section */}
 			<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
 				<h2 className="text-4xl font-extrabold font-serif text-gray-700">
@@ -177,7 +165,7 @@ const CouponPage = () => {
 								KEYFN={(data) => data.now}
 							/>
 							<Pagination
-							pageNumbers={pageNumbers}
+								pageNumbers={pageNumbers}
 								currentPage={currentPage}
 								totalPages={totalPages}
 								onPageChange={handlePage}
@@ -186,7 +174,7 @@ const CouponPage = () => {
 					)}
 				</div>
 			</div>
-		</>
+		</LoadingErrorBoundary>
 	);
 };
 

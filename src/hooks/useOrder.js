@@ -12,6 +12,7 @@ const useOrder = ( role = 'client' ) => {
         data,
         isLoading: isOrdersLoading,
         error: ordersFetchError,
+        isError: ordersFetchIsError,
     } = useGetOrdersByRoleQuery( role );
 
     const [ updateOrderStatus, { isLoading: isOrderStatusUpdating } ] = handleMutation(
@@ -88,7 +89,7 @@ const useOrder = ( role = 'client' ) => {
         activeOrderId,
         ordersData,
         isOrdersLength: data && data.length,
-        isOrdersLoading,
+        isOrdersLoading,ordersFetchIsError,
         ordersFetchError,
         handleOrderStatusSelection: handleOrderStatus,
         isOrderStatusUpdating,

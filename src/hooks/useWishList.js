@@ -29,6 +29,7 @@ const useWishList = ( showWishlist = false ) => {
         data: wishListData,
         isLoading: isWishListLoading,
         isError: isWishListError,
+        error: WishListError,
         isFetching: isWishListFetching,
         refetch: refetchWishList,
     } = useGetWishlistItemsQuery( null, { skip: !isAuthorized } );
@@ -92,7 +93,7 @@ const useWishList = ( showWishlist = false ) => {
         wishlistId,
         wishlistUser: currentUserName,
         wishListItems,
-        isWishListLoading,
+        isWishListLoading,WishListError,
         isWishListError,
         isWishListFetching,
         refetchWishList,

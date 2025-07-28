@@ -1,5 +1,5 @@
-import PropTypes from "prop-types";
 import React from "react";
+import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
 import MiniLoader from "./MiniLoader";
 

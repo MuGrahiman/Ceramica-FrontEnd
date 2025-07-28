@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import InfoLayout from "../../components/InfoLayout";
 import OrderList from "../order/OrderList";
 import StatsOverview from "./StatsOverview";
@@ -14,6 +13,8 @@ import ListOptions from "../../components/ListOptions";
 import { useAuth } from "../../hooks/useAuth";
 import useToast from "../../hooks/useToast";
 import getBaseUrl from "../../utils/baseUrl";
+import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import useErrorManager from "../../hooks/useErrorManager";
 
 /**
  * DashboardSection - Reusable dashboard section component
@@ -49,8 +50,9 @@ DashboardSection.propTypes = {
  */
 const Dashboard = () => {
 	const { isAuthorized } = useAuth("admin");
-
+	const DASHBOARD_ERROR = "DashboardError";
 	const [isLoading, setIsLoading] = useState(true);
+	const [isError, setIsError, resetIsError] = useErrorManager();
 
 	const showToast = useToast();
 
@@ -78,8 +80,9 @@ const Dashboard = () => {
 	 * @returns {Promise<void>}
 	 */
 	const fetchDashboardData = async () => {
+		resetIsError();
+		setIsLoading(true);
 		try {
-			setIsLoading(true);
 			const { data } = await axios.get(`${getBaseUrl()}/api/admin/`);
 			setDashboardData((prev) => ({
 				...prev,
@@ -90,8 +93,12 @@ const Dashboard = () => {
 			showToast("Dashboard data loaded", "success");
 		} catch (error) {
 			const errorMsg =
-				error.response?.data?.message || "Failed to load dashboard data";
+				error?.response?.data?.message ||
+				error?.data?.message ||
+				error?.message ||
+				"Failed to load dashboard data";
 			showToast(errorMsg, "error");
+			setIsError(DASHBOARD_ERROR, errorMsg);
 			console.error("Dashboard fetch error:", error);
 		} finally {
 			setIsLoading(false);
@@ -104,8 +111,6 @@ const Dashboard = () => {
 			fetchDashboardData();
 		}
 	}, [isAuthorized]);
-
-	if (isLoading) return <LoadingTemplate />;
 
 	const dashboardSections = [
 		{
@@ -139,32 +144,37 @@ const Dashboard = () => {
 	];
 
 	return (
-		<div className="dashboard-container space-y-6">
-			{/* Stats Overview Section */}
-			<StatsOverview {...dashboardData.stats} />
+		<LoadingErrorBoundary
+			isLoading={isLoading}
+			isError={!!isError[DASHBOARD_ERROR]}
+			errorMessage={isError[DASHBOARD_ERROR]}>
+			<div className="dashboard-container space-y-6">
+				{/* Stats Overview Section */}
+				<StatsOverview {...dashboardData.stats} />
 
-			{/* Revenue Chart - Full Width */}
-			<InfoLayout title="Revenue Analytics">
-				<RevenueChart revenueData={dashboardData.revenueData} />
-			</InfoLayout>
+				{/* Revenue Chart - Full Width */}
+				<InfoLayout title="Revenue Analytics">
+					<RevenueChart revenueData={dashboardData.revenueData} />
+				</InfoLayout>
 
-			{/* Data Visualization and Lists Section */}
-			<section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-				<ListOptions
-					OPTIONS={dashboardSections}
-					RENDER_ITEM={(section, index) => (
-						<DashboardSection
-							key={index}
-							title={section.title}
-							data={section.renderData(dashboardData.lists)}
-							linkTo={section.linkTo}
-							component={section.component}
-							propName={section.propName}
-						/>
-					)}
-				/>
-			</section>
-		</div>
+				{/* Data Visualization and Lists Section */}
+				<section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+					<ListOptions
+						OPTIONS={dashboardSections}
+						RENDER_ITEM={(section, index) => (
+							<DashboardSection
+								key={index}
+								title={section.title}
+								data={section.renderData(dashboardData.lists)}
+								linkTo={section.linkTo}
+								component={section.component}
+								propName={section.propName}
+							/>
+						)}
+					/>
+				</section>
+			</div>
+		</LoadingErrorBoundary>
 	);
 };
 

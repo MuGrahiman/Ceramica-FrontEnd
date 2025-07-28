@@ -8,7 +8,7 @@ import React, { useState } from 'react';
  * @param {object} options.defaultErrorValue - Initial error state as an object where keys are labels and values are error messages.
  * @returns {[object, function]} An array with the current error state and a function to update it.
  */
-const useErrorManager = ( { setError = null, defaultErrorValue = {} } ) => {
+const useErrorManager = ( { setError = null, defaultErrorValue = {} } = {} ) => {
     const [ isError, setIsError ] = useState( defaultErrorValue );
 
     /**
@@ -25,16 +25,18 @@ const useErrorManager = ( { setError = null, defaultErrorValue = {} } ) => {
             [ label ]: message,
         } ) );
         // Use setError from React Hook Form
-        if ( setError )
+        if ( setError ) {
             setError( label, { type: 'custom', message } );
+        }
     };
 
     const resetErrors = () => {
         setIsError( defaultErrorValue );
         // Optionally reset errors in React Hook Form
         Object.keys( defaultErrorValue ).forEach( ( label ) => {
-            if ( setError )
+            if ( setError ) {
                 setError( label, { type: 'reset' } );
+            }
         } );
     };
 

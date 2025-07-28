@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ImSpinner9 } from "react-icons/im";
 import PropTypes from "prop-types";
 import MiniLoader from "../../components/MiniLoader";
 

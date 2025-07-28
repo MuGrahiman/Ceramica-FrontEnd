@@ -1,5 +1,5 @@
 import AuthForm from "../../components/AuthForm";
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { useRegisterUserMutation } from "../../redux/store";
 import AuthLayout from "../../components/AuthLayout";
 import useToast from "../../hooks/useToast";

@@ -31,6 +31,7 @@ const useInventory = ( searchTerm = '' ) => {
         data: productData,
         isLoading: fetchLoading,
         error: fetchError,
+        isError:fetchIsError
     } = useGetInventoryItemsQuery( {
         page: currentPage,
         limit,
@@ -144,7 +145,7 @@ const useInventory = ( searchTerm = '' ) => {
     return {
         // Fetching data
         fetchLoading,
-        fetchError,
+        fetchError,fetchIsError,
         data,
         totalPages,
         currentPage,

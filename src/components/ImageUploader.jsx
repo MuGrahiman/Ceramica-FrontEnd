@@ -1,5 +1,4 @@
 import React from "react";
-import { ImSpinner9 } from "react-icons/im";
 import { IoCloseSharp } from "react-icons/io5";
 import MiniLoader from "./MiniLoader";
 

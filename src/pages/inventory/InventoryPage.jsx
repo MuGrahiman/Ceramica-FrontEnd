@@ -3,7 +3,6 @@ import { MdDelete, MdMode, MdOutlineAdd } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { ImEye, ImSpinner9 } from "react-icons/im";
 import Table from "../../components/Table";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import SearchBar from "../../components/SearchBar";
 import useInventory from "../../hooks/useInventory";
 import { KeyFn } from "../../utils/generals";
@@ -20,6 +19,7 @@ import {
 	FILTER_FORMS_SORT_OPTIONS,
 } from "../../constants/filter-form";
 import FilterFormLayout from "../../components/FilterFormLayout";
+import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 
 // Inventory Component
 const InventoryPage = () => {
@@ -31,6 +31,7 @@ const InventoryPage = () => {
 		// Fetching data
 		fetchLoading,
 		fetchError,
+		fetchIsError,
 		data,
 		totalPages,
 		currentPage,
@@ -177,82 +178,73 @@ const InventoryPage = () => {
 			},
 		},
 	];
-	// Handle loading state
-	if (fetchLoading) {
-		return (
-			<div className="flex items-center justify-center h-screen">
-				<LoadingTemplate message="Fetching inventory, please wait..." />
-			</div>
-		);
-	}
-
-	// Handle error state
-	if (fetchError) {
-		return (
-			<div className="text-center text-gray-500">
-				<p>Error fetching inventory. Please try again later.</p>
-			</div>
-		);
-	}
 
 	return (
-		<>
-			{/* Header Section */}
-			<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
-				<h2 className="text-4xl font-extrabold font-serif text-gray-700">
-					Inventory
-				</h2>
-				<Link
-					to="/dashboard/add-to-inventory"
-					className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 
+		<LoadingErrorBoundary
+			isLoading={fetchLoading}
+			isError={fetchIsError}
+			errorMessage={
+				fetchError?.data?.message ||
+				fetchError?.message ||
+				"Failed to fetch product data"
+			}>
+			<React.Fragment>
+				{/* Header Section */}
+				<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
+					<h2 className="text-4xl font-extrabold font-serif text-gray-700">
+						Inventory
+					</h2>
+					<Link
+						to="/dashboard/add-to-inventory"
+						className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 
 					px-5 py-3 text-white bg-gray-600 hover:bg-gray-700 
 					rounded-md shadow-md">
-					<MdOutlineAdd className="h-6 w-6" />
-					Add To Inventory
-				</Link>
-			</div>
+						<MdOutlineAdd className="h-6 w-6" />
+						Add To Inventory
+					</Link>
+				</div>
 
-			{/* Filter and Search Section */}
-			<div className="flex justify-between items-center mt-4 mb-4 gap-10">
-				<button
-					type="button"
-					onClick={() => setIsOpen((prev) => !prev)}
-					className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 px-5 py-2.5 text-white bg-gray-600 hover:bg-gray-700 rounded-md shadow-md">
-					Filter
-				</button>
-				<SearchBar
-					INPUT_STYLE={`focus:outline-none block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 focus:ring-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 rounded-e-lg rounded-s-lg dark:text-white border border-gray-300 focus:border-gray-500 dark:border-gray-600 dark:focus:border-gray-500`}
-					BUTTON_STYLE={`p-2.5 h-full text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 dark:border-gray-700 dark:text-white rounded-e-lg hover:bg-gray-200 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-800`}
-					ON_SUBMIT={handleSearch}
-					CLEAR_SEARCH={clearSearch}
-				/>
-			</div>
+				{/* Filter and Search Section */}
+				<div className="flex justify-between items-center mt-4 mb-4 gap-10">
+					<button
+						type="button"
+						onClick={() => setIsOpen((prev) => !prev)}
+						className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 px-5 py-2.5 text-white bg-gray-600 hover:bg-gray-700 rounded-md shadow-md">
+						Filter
+					</button>
+					<SearchBar
+						INPUT_STYLE={`focus:outline-none block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 focus:ring-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 rounded-e-lg rounded-s-lg dark:text-white border border-gray-300 focus:border-gray-500 dark:border-gray-600 dark:focus:border-gray-500`}
+						BUTTON_STYLE={`p-2.5 h-full text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 dark:border-gray-700 dark:text-white rounded-e-lg hover:bg-gray-200 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-800`}
+						ON_SUBMIT={handleSearch}
+						CLEAR_SEARCH={clearSearch}
+					/>
+				</div>
 
-			{/* Inventory Table */}
-			<FilterFormLayout
-				isOpen={isOpen}
-				onSubmit={onSubmit}
-				onClear={onClear}
-				defaultValues={FILTER_FORMS_DEFAULT_VALUES}
-				fieldContents={FieldContents}>
-				<Table
-					DATA={data}
-					CONFIG={headers}
-					KEYFN={KeyFn}
-					CURRENT_PAGE={currentPage}
-					TOTAL_PAGES={totalPages}
-					HANDLE_PAGE_CHANGE={handlePage}
-				/>
+				{/* Inventory Table */}
+				<FilterFormLayout
+					isOpen={isOpen}
+					onSubmit={onSubmit}
+					onClear={onClear}
+					defaultValues={FILTER_FORMS_DEFAULT_VALUES}
+					fieldContents={FieldContents}>
+					<Table
+						DATA={data}
+						CONFIG={headers}
+						KEYFN={KeyFn}
+						CURRENT_PAGE={currentPage}
+						TOTAL_PAGES={totalPages}
+						HANDLE_PAGE_CHANGE={handlePage}
+					/>
 
-				<Pagination
-					pageNumbers={pageNumbers}
-					currentPage={currentPage}
-					totalPages={totalPages}
-					onPageChange={handlePage}
-				/>
-			</FilterFormLayout>
-		
-		</>
+					<Pagination
+						pageNumbers={pageNumbers}
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={handlePage}
+					/>
+				</FilterFormLayout>
+			</React.Fragment>
+		</LoadingErrorBoundary>
 	);
 };
 

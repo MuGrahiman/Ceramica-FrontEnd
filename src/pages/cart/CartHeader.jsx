@@ -1,6 +1,5 @@
 import React from "react";
 import { useCart } from "../../hooks/useCart";
-import { ImSpinner9 } from "react-icons/im";
 import MiniLoader from "../../components/MiniLoader";
 
 const CartHeader = () => {

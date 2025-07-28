@@ -1,7 +1,6 @@
 import React from "react";
 import OrderList from "../order/OrderList";
 import OrderEmptySpot from "../order/OrderEmptySpot";
-import ViewAllItems from "./ViewAllItems";
 import PropTypes from "prop-types";
 
 /**

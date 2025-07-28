@@ -9,10 +9,10 @@ import {
 	useFetchUserByIdQuery,
 	useUpdateUserStatusMutation,
 } from "../../redux/store";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import useApiHandler from "../../hooks/useApiHandler";
 import RecentActivity from "./RecentActivity";
 import AuthProviderSection from "./AuthProviderSection";
+import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 
 const UserDetailPage = () => {
 	const { id } = useParams();
@@ -20,6 +20,7 @@ const UserDetailPage = () => {
 		data,
 		isLoading: fetchLoading,
 		error: fetchError,
+		isError: fetchIsError,
 	} = useFetchUserByIdQuery(id);
 	const [handleMutation] = useApiHandler();
 
@@ -47,47 +48,40 @@ const UserDetailPage = () => {
 		);
 	};
 
-	if (fetchLoading) {
-		return (
-			<div className="flex items-center justify-center h-screen">
-				<LoadingTemplate message="Fetching inquiries, please wait..." />
-			</div>
-		);
-	}
-
-	if (fetchError) {
-		return (
-			<div className="text-center text-gray-500">
-				<p>Error fetching user. Please try again later.</p>
-			</div>
-		);
-	}
-
 	return (
-		<div className="container mx-auto ">
-			<PageTitle title="User Details" />
-			<BreadCrumb
-				items={[{ label: "Users", to: "/dashboard/clients" }, { label: id }]}
-			/>
+		<LoadingErrorBoundary
+			isLoading={fetchLoading}
+			isError={fetchIsError}
+			errorMessage={
+				fetchError?.data?.message ||
+				fetchError?.message ||
+				"Failed to fetch user details"
+			}>
+			<div className="container mx-auto ">
+				<PageTitle title="User Details" />
+				<BreadCrumb
+					items={[{ label: "Users", to: "/dashboard/clients" }, { label: id }]}
+				/>
 
-			<UserProfileHeader
-				user={currentUser}
-				isUpdating={isUpdating}
-				onStatusChange={handleStatusChange}
-			/>
+				<UserProfileHeader
+					user={currentUser}
+					isUpdating={isUpdating}
+					onStatusChange={handleStatusChange}
+				/>
 
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-				<InfoCard title="User Information">
-					<UserInfoSection user={currentUser} />
-				</InfoCard>
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+					<InfoCard title="User Information">
+						<UserInfoSection user={currentUser} />
+					</InfoCard>
 
-				<InfoCard title="Authentication Methods">
-					<AuthProviderSection authProvider={currentUser.authProviders} />
-				</InfoCard>
+					<InfoCard title="Authentication Methods">
+						<AuthProviderSection authProvider={currentUser.authProviders} />
+					</InfoCard>
+				</div>
+
+				<RecentActivity activities={currentUser.activityLog} />
 			</div>
-
-			<RecentActivity activities={currentUser.activityLog } />
-		</div>
+		</LoadingErrorBoundary>
 	);
 };
 

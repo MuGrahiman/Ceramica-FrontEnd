@@ -1,6 +1,5 @@
 import { IoMdAdd } from "react-icons/io";
 import ColorDisplay from "./ColorDisplay";
-import { ImSpinner9 } from "react-icons/im";
 import { useState } from "react";
 import MiniLoader from "./MiniLoader";
 

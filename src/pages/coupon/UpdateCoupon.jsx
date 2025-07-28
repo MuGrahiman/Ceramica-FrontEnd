@@ -7,15 +7,15 @@ import {
 	COUPON_URL,
 } from "../../constants/coupon";
 import CouponForm from "./CouponForm";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import { setDateAsMonthDayYear } from "../../utils/date";
 import useCoupon from "../../hooks/useCoupon";
+import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 
 const UpdateCoupon = () => {
 	const Title = "Update Coupon";
 	const { id } = useParams();
 	const { useSingleCoupon, useUpdateCoupon } = useCoupon();
-	const { data, isLoading: fetchLoading } = useSingleCoupon(id);
+	const { data, isLoading: fetchLoading, isError, error } = useSingleCoupon(id);
 
 	const [UpdateCoupon, { isLoading: updateLoading }] = useUpdateCoupon();
 
@@ -44,24 +44,24 @@ const UpdateCoupon = () => {
 		);
 	};
 
-	// Handle loading state
-	if (fetchLoading) {
-		return (
-			<div className="flex items-center justify-center h-screen">
-				<LoadingTemplate message="Fetching inventory, please wait..." />
-			</div>
-		);
-	}
-
 	return (
-		<CouponForm
-			LOADING={fetchLoading || updateLoading}
-			ON_SUBMIT={handleSubmit}
-			BREAD_CRUMB_ITEMS={COUPON_BREAD_CRUMB_ITEMS(Title)}
-			TITLE={Title}
-			DEFAULT_VALUES={defaultValues}
-			DEFAULT_SUCCESS_VALUE={defaultSuccessValue}
-		/>
+		<LoadingErrorBoundary
+			isLoading={fetchLoading}
+			isError={isError}
+			errorMessage={
+				error?.data?.message ||
+				error?.message ||
+				"Failed to fetch coupon details "
+			}>
+			<CouponForm
+				LOADING={fetchLoading || updateLoading}
+				ON_SUBMIT={handleSubmit}
+				BREAD_CRUMB_ITEMS={COUPON_BREAD_CRUMB_ITEMS(Title)}
+				TITLE={Title}
+				DEFAULT_VALUES={defaultValues}
+				DEFAULT_SUCCESS_VALUE={defaultSuccessValue}
+			/>
+		</LoadingErrorBoundary>
 	);
 };
 

@@ -11,7 +11,6 @@ import OrderStatusBanner from "./OrderStatusBanner";
 import { ORDER_STATUS_STEPS, ORDER_STATUSES } from "../../constants/order";
 import InfoSubHeading from "../../components/InfoSubHeading";
 import { useGetOrderByIdQuery } from "../../redux/store";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import { useParams } from "react-router-dom";
 import OrderHeader from "./OrderHeader";
 import TotalPreviewList from "../../components/TotalPreviewList";
@@ -20,9 +19,10 @@ import EmptyTemplate from "../../components/EmptyTemplate";
 import Swal from "sweetalert2";
 import useOrder from "../../hooks/useOrder";
 import { USER_ROLES } from "../../constants/app";
+import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 
 // Extracted OrderSummary component
-const OrderSummary = ({ orderData,onCancel, onViewInvoice }) => (
+const OrderSummary = ({ orderData, onCancel, onViewInvoice }) => (
 	<InfoLayout title="Order Summary">
 		<div className="overflow-hidden p-4  grid  sm:grid-cols-4 gap-8 ">
 			<div className="w-full h-full col-span-full sm:col-span-2 lg:col-span-full ">
@@ -66,13 +66,13 @@ const OrderSummary = ({ orderData,onCancel, onViewInvoice }) => (
 					View Invoice
 				</button>
 				{orderData.status !== ORDER_STATUSES.DELIVERED && (
-				<button
-				onClick={onCancel}
-					className="w-full bg-red-100 border border-red-300 rounded-md py-2 px-4 flex items-center justify-center text-sm font-medium text-gray-700 hover:text-white hover:bg-red-500  transition-colors duration-200"
-					aria-label="Cancel order">
-					Cancel Order
-				</button>
-			)}
+					<button
+						onClick={onCancel}
+						className="w-full bg-red-100 border border-red-300 rounded-md py-2 px-4 flex items-center justify-center text-sm font-medium text-gray-700 hover:text-white hover:bg-red-500  transition-colors duration-200"
+						aria-label="Cancel order">
+						Cancel Order
+					</button>
+				)}
 			</div>
 		</div>
 	</InfoLayout>
@@ -85,13 +85,17 @@ OrderSummary.propTypes = {
 
 const UserOrderDetailsPage = () => {
 	const { id } = useParams();
-	const { data: orderDetails, isLoading, error } = useGetOrderByIdQuery(id);
+	const {
+		data: orderDetails,
+		isLoading,
+		error,
+		isError,
+	} = useGetOrderByIdQuery(id);
 	const [orderData, setOrderData] = useState([]);
 	const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-	const {
-		handleOrderStatusSelection,
-		isOrderStatusUpdating,
-	} = useOrder(USER_ROLES.CLIENT);
+	const { handleOrderStatusSelection, isOrderStatusUpdating } = useOrder(
+		USER_ROLES.CLIENT
+	);
 
 	// Update order data when fetched
 	useEffect(() => {
@@ -105,34 +109,18 @@ const UserOrderDetailsPage = () => {
 			text: "Once cancelled, you won't be able to revert this action.",
 			icon: "warning",
 			showCancelButton: true,
-			confirmButtonColor: "#b10202", 
-			cancelButtonColor: "#3085d6",  
+			confirmButtonColor: "#b10202",
+			cancelButtonColor: "#3085d6",
 			confirmButtonText: "Yes, cancel it!",
-			cancelButtonText: "No, keep it", 
+			cancelButtonText: "No, keep it",
 		});
-		
+
 		if (result.isConfirmed)
 			await handleOrderStatusSelection(id, ORDER_STATUSES.CANCELLED);
 
-		return
+		return;
 	};
 
-	// Handle loading state
-	if (isLoading || isOrderStatusUpdating) {
-		return <LoadingTemplate />;
-	}
-	// Handle error state
-	if (error) {
-		return (
-			<ErrorTemplate
-				errorMessage={
-					typeof error?.data === "string"
-						? error?.data
-						: error?.data?.message || error.message
-				}
-			/>
-		);
-	}
 	// Handle empty state
 	if (!orderData.items?.length) {
 		return <EmptyTemplate emptyMessage={"No order items found"} />;
@@ -143,39 +131,47 @@ const UserOrderDetailsPage = () => {
 	};
 
 	return (
-		<div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-			<OrderHeader orderData={orderData} />
+		<LoadingErrorBoundary
+			isLoading={isLoading || isOrderStatusUpdating}
+			isError={isError}
+			errorMessage={
+				error?.data?.message || error?.message || "Failed to fetch your order details"
+			}
+			CustomError={ErrorTemplate}>
+			<div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+				<OrderHeader orderData={orderData} />
 
-			<InfoLayout title="Order Status">
-				<OrderStatusBanner
-					{...ORDER_STATUS_STEPS.find((step) => step.id === orderData.status)}
-				/>
-				<OrderStatusTracker
-					status={orderData.status}
-					statusSteps={ORDER_STATUS_STEPS}
-				/>
-			</InfoLayout>
-
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-				<div className="col-span-full lg:col-span-2">
-					<TotalPreviewList title="Order Items" items={orderData.items} />
-				</div>
-				<div className="col-span-full lg:col-span-1">
-					<OrderSummary
-						orderData={orderData}
-						onViewInvoice={handleViewInvoice}
-						onCancel={handleDelete}
+				<InfoLayout title="Order Status">
+					<OrderStatusBanner
+						{...ORDER_STATUS_STEPS.find((step) => step.id === orderData.status)}
 					/>
-				</div>
-			</div>
+					<OrderStatusTracker
+						status={orderData.status}
+						statusSteps={ORDER_STATUS_STEPS}
+					/>
+				</InfoLayout>
 
-			{showInvoiceModal && (
-				<InvoiceModal
-					orderData={orderData}
-					onClose={() => setShowInvoiceModal(false)}
-				/>
-			)}
-		</div>
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+					<div className="col-span-full lg:col-span-2">
+						<TotalPreviewList title="Order Items" items={orderData.items} />
+					</div>
+					<div className="col-span-full lg:col-span-1">
+						<OrderSummary
+							orderData={orderData}
+							onViewInvoice={handleViewInvoice}
+							onCancel={handleDelete}
+						/>
+					</div>
+				</div>
+
+				{showInvoiceModal && (
+					<InvoiceModal
+						orderData={orderData}
+						onClose={() => setShowInvoiceModal(false)}
+					/>
+				)}
+			</div>
+		</LoadingErrorBoundary>
 	);
 };
 

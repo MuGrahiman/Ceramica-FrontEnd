@@ -1,5 +1,5 @@
-import PropTypes from "prop-types";
 import React from "react";
+import PropTypes from "prop-types";
 import { formatCurrency } from "../utils/generals";
 import InfoLayout from "./InfoLayout";
 import ListOptions from "./ListOptions";

@@ -5,13 +5,7 @@ import CheckComponent from "./CheckComponent";
 import RadioComponent from "./RadioComponent";
 import { AccordionComponent, AccordionWrapper } from "./Accordion";
 import useToggle from "../hooks/useToggle";
-import {
-	FILTER_FORMS_CATEGORIES_OPTIONS,
-	FILTER_FORMS_DEFAULT_VALUES,
-	FILTER_FORMS_COMPONENTS,
-	FILTER_FORMS_SIZES_OPTIONS,
-	FILTER_FORMS_SORT_OPTIONS,
-} from "../constants/filter-form";
+import { FILTER_FORMS_COMPONENTS } from "../constants/filter-form";
 import ListOptions from "./ListOptions";
 
 /**
@@ -36,7 +30,6 @@ const ControlledInput = ({ name, type, control, label, defaultValue = "" }) => (
 					className="border rounded p-1"
 					placeholder={"Enter The " + label}
 					{...field}
-					
 				/>
 			)}
 		/>

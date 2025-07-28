@@ -2,7 +2,6 @@ import React from "react";
 import ListOptions from "../../components/ListOptions";
 import PropTypes from "prop-types";
 import EmptySpot from "../../components/EmptySpot";
-import ViewAllItems from "./ViewAllItems";
 
 /**
  * Displays the wishlist items in the profile page.
