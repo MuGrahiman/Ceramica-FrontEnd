@@ -20,6 +20,7 @@ import Swal from "sweetalert2";
 import useOrder from "../../hooks/useOrder";
 import { USER_ROLES } from "../../constants/app";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 // Extracted OrderSummary component
 const OrderSummary = ({ orderData, onCancel, onViewInvoice }) => (
@@ -134,9 +135,10 @@ const UserOrderDetailsPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isLoading || isOrderStatusUpdating}
 			isError={isError}
-			errorMessage={
-				error?.data?.message || error?.message || "Failed to fetch your order details"
-			}
+			errorMessage={handleAndShowError(
+				error,
+				"Failed to fetch your order details"
+			)}
 			CustomError={ErrorTemplate}>
 			<div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
 				<OrderHeader orderData={orderData} />

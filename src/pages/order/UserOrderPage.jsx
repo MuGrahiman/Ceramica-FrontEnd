@@ -7,6 +7,7 @@ import useOrder from "../../hooks/useOrder";
 import InfoLayout from "../../components/InfoLayout";
 import TabSwitcher from "../../components/TabSwitcher";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 const UserOrderPage = () => {
 	const ROLE = "client";
@@ -39,12 +40,11 @@ const UserOrderPage = () => {
 
 			<LoadingErrorBoundary
 				isLoading={isOrdersLoading}
-				isError={ordersFetchIsError} 
-				errorMessage={
-					ordersFetchError?.data?.message ||
-					ordersFetchError?.message ||
+				isError={ordersFetchIsError}
+				errorMessage={handleAndShowError(
+					ordersFetchError,
 					"Failed to fetch your orders."
-				}>
+				)}>
 				{isOrdersLength ? (
 					<InfoLayout title="Your Orders">
 						<TabSwitcher

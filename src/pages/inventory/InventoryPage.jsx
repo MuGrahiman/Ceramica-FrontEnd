@@ -20,6 +20,7 @@ import {
 } from "../../constants/filter-form";
 import FilterFormLayout from "../../components/FilterFormLayout";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 // Inventory Component
 const InventoryPage = () => {
@@ -183,11 +184,10 @@ const InventoryPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={fetchIsError}
-			errorMessage={
-				fetchError?.data?.message ||
-				fetchError?.message ||
+			errorMessage={handleAndShowError(
+				fetchError,
 				"Failed to fetch product data"
-			}>
+			)}>
 			<React.Fragment>
 				{/* Header Section */}
 				<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">

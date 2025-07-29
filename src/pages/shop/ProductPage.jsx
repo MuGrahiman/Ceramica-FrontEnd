@@ -17,6 +17,7 @@ import {
 import useSearch from "../../hooks/useSearch";
 import ListOptions from "../../components/ListOptions";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 const ProductPage = () => {
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
@@ -123,11 +124,10 @@ const ProductPage = () => {
 					<LoadingErrorBoundary
 						isLoading={fetchLoading}
 						isError={fetchIsError}
-						errorMessage={
-							fetchError?.data?.message ||
-							fetchError?.message ||
+						errorMessage={handleAndShowError(
+							fetchError,
 							"Failed to fetch products data"
-						}>
+						)}>
 						{Array.isArray(data) && (
 							<ListOptions
 								OPTIONS={data}

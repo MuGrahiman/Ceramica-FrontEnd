@@ -2,11 +2,9 @@ import React, { useEffect } from "react";
 import SuccessPaymentCard from "./SuccessPaymentCard";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-	addPayment,
-	useGetOrderPaymentByIdQuery,
-} from "../../redux/store";
+import { addPayment, useGetOrderPaymentByIdQuery } from "../../redux/store";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 const SuccessPaymentPage = () => {
 	const dispatch = useDispatch();
@@ -26,11 +24,10 @@ const SuccessPaymentPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isLoading}
 			isError={isError}
-			errorMessage={
-				error?.data?.message ||
-				error?.message ||
+			errorMessage={handleAndShowError(
+				error,
 				"Failed to fetch Success Payment data"
-			}>
+			)}>
 			<SuccessPaymentCard
 				totalAmount={payment?.amount?.value}
 				userName={currentUser?.firstName}

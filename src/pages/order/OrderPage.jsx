@@ -18,6 +18,7 @@ import {
 	ORDER_STATUSES,
 } from "../../constants/order";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 /**
  * Order Management Page: Displays a list of orders with sorting, pagination, and search functionality.
@@ -119,11 +120,10 @@ const OrderPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isOrdersLoading}
 			isError={ordersFetchIsError}
-			errorMessage={
-				ordersFetchError?.data?.message ||
-				ordersFetchError?.message ||
+			errorMessage={handleAndShowError(
+				ordersFetchError,
 				"Failed to fetch order data"
-			}>
+			)}>
 			{/* Header Section */}
 			<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
 				<h2 className="text-4xl font-extrabold font-serif text-gray-700">

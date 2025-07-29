@@ -5,6 +5,7 @@ import CartHeader from "./CartHeader";
 import CartList from "./CartList";
 import { useSelector } from "react-redux";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 /**
  * Component to display the cart page.
@@ -25,11 +26,10 @@ const CartPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isFetching}
 			isError={isFetchError}
-			errorMessage={
-				fetchError?.data?.message ||
-				fetchError?.message ||
+			errorMessage={handleAndShowError(
+				fetchError,
 				"Failed to fetch cart items"
-			}>
+			)}>
 			<div className="container mx-auto sm:px-4 py-6 flex mt-12 mb-12 h-full flex-col overflow-hidden bg-white shadow-xl">
 				<div className="flex-1  px-4 py-6 sm:px-6">
 					<CartHeader />

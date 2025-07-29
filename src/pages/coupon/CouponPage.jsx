@@ -13,6 +13,7 @@ import usePagination from "../../hooks/usePagination";
 import useSearch from "../../hooks/useSearch";
 import useCoupon from "../../hooks/useCoupon";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 // Coupon Component
 const CouponPage = () => {
@@ -118,11 +119,7 @@ const CouponPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isFetchError}
-			errorMessage={
-				fetchError?.data?.message ||
-				fetchError?.message ||
-				"Failed to fetch coupons "
-			}>
+			errorMessage={handleAndShowError(fetchError, "Failed to fetch coupons ")}>
 			{/* Header Section */}
 			<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
 				<h2 className="text-4xl font-extrabold font-serif text-gray-700">

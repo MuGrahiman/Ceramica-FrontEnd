@@ -12,6 +12,7 @@ import {
 } from "../../constants/inventory";
 import useApiHandler from "../../hooks/useApiHandler";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 // Page Component: Handles updating a product in the inventory
 const UpdateInventory = () => {
@@ -88,11 +89,10 @@ const UpdateInventory = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isError}
-			errorMessage={
-				error?.data?.message ||
-				error?.message ||
+			errorMessage={handleAndShowError(
+				error,
 				"Failed to fetch product details"
-			}>
+			)}>
 			<InventoryForm
 				LOADING={fetchLoading || updateLoading}
 				ON_SUBMIT={onSubmit}

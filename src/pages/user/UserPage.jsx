@@ -16,6 +16,7 @@ import useApiHandler from "../../hooks/useApiHandler";
 import MiniLoader from "../../components/MiniLoader";
 import { CgBlock, CgUnblock } from "react-icons/cg";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 const UserPage = () => {
 	const [userData, setUserData] = useState([]);
@@ -196,11 +197,10 @@ const UserPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isError}
-			errorMessage={
-				fetchError?.data?.message ||
-				fetchError?.message ||
+			errorMessage={handleAndShowError(
+				fetchError,
 				"Failed to fetch users data"
-			}>
+			)}>
 			<React.Fragment>
 				<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
 					<h2 className="text-4xl font-extrabold font-serif text-gray-700">

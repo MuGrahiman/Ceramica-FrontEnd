@@ -29,7 +29,7 @@ export const useCart = () => {
         acc + item.inventory.price * item.quantity, 0 );
 
     // Fetch cart items only if the user is authorized
-    const { data, error: fetchError,isError:isFetchError, isLoading: isFetching } =
+    const { data, error: fetchError, isError: isFetchError, isLoading: isFetching } =
         useGetCartItemsQuery( null, { skip: !isAuthorized } );
 
     // Define mutation hooks for cart operations
@@ -176,6 +176,6 @@ export const useCart = () => {
         updateCartQuantity,
         removeFromCart,
         clearCart,
-        isFetching,isFetchError, isAdding, isRemoving, isUpdating, isClearing
+        isFetching,fetchError, isFetchError, isAdding, isRemoving, isUpdating, isClearing
     };
 };

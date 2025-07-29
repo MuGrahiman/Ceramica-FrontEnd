@@ -7,6 +7,7 @@ import CouponUsersList from "./CouponUsersList";
 import useCoupon from "../../hooks/useCoupon";
 import PageTitle from "../../components/PageTitle";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 const CouponDetailsPage = () => {
 	const { id } = useParams();
@@ -33,11 +34,10 @@ const CouponDetailsPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isError}
-			errorMessage={
-				error?.data?.message ||
-				error?.message ||
+			errorMessage={handleAndShowError(
+				error,
 				"Failed to fetch coupon details "
-			}>
+			)}>
 			<main className="max-w-5xl  mx-auto font-secondary ">
 				<PageTitle title="Coupon Details" />
 				<BreadCrumb items={COUPON_BREAD_CRUMB_ITEMS(data?._id)} />

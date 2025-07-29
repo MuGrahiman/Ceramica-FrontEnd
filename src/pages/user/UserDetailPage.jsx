@@ -13,6 +13,7 @@ import useApiHandler from "../../hooks/useApiHandler";
 import RecentActivity from "./RecentActivity";
 import AuthProviderSection from "./AuthProviderSection";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 const UserDetailPage = () => {
 	const { id } = useParams();
@@ -52,11 +53,10 @@ const UserDetailPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={fetchIsError}
-			errorMessage={
-				fetchError?.data?.message ||
-				fetchError?.message ||
+			errorMessage={handleAndShowError(
+				fetchError,
 				"Failed to fetch user details"
-			}>
+			)}>
 			<div className="container mx-auto ">
 				<PageTitle title="User Details" />
 				<BreadCrumb

@@ -10,6 +10,7 @@ import CouponForm from "./CouponForm";
 import { setDateAsMonthDayYear } from "../../utils/date";
 import useCoupon from "../../hooks/useCoupon";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 const UpdateCoupon = () => {
 	const Title = "Update Coupon";
@@ -48,11 +49,10 @@ const UpdateCoupon = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isError}
-			errorMessage={
-				error?.data?.message ||
-				error?.message ||
+			errorMessage={handleAndShowError(
+				error,
 				"Failed to fetch coupon details "
-			}>
+			)}>
 			<CouponForm
 				LOADING={fetchLoading || updateLoading}
 				ON_SUBMIT={handleSubmit}

@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import BreadCrumb from "../../components/BreadCrumb";
 import ProductReviews from "./ProductReviews";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 /**
  * Displays detailed product information including:
@@ -27,9 +28,10 @@ const ProductDetailsPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isError}
-			errorMessage={
-				error?.data?.message || error?.message || "Failed to fetch product details"
-			}>
+			errorMessage={handleAndShowError(
+				error,
+				"Failed to fetch product details"
+			)}>
 			<main className="max-w-5xl mx-auto p-3 sm:p-5">
 				<BreadCrumb
 					items={[

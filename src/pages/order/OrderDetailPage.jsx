@@ -13,6 +13,7 @@ import OrderUserDetails from "./OrderUserDetails";
 import PageTitle from "../../components/PageTitle";
 import InfoLayout from "../../components/InfoLayout";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 /**
  * Order Detail Page: Displays detailed information about a specific order.
  */
@@ -37,9 +38,7 @@ const OrderDetailPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isLoading}
 			isError={isError}
-			errorMessage={
-				error?.data?.message || error?.message || "Failed to fetch order details"
-			}>
+			errorMessage={handleAndShowError(error, "Failed to fetch order details")}>
 			{/* Header Section */}
 			<PageTitle title="Order Details" />
 			<BreadCrumb items={ORDER_BREAD_CRUMB_ITEMS(orderData._id)} />

@@ -11,6 +11,7 @@ import useApiHandler from "../../hooks/useApiHandler";
 import MiniLoader from "../../components/MiniLoader";
 import AuthHeader from "./AuthHeader";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 // Constants
 const OTP_LENGTH = 4;
@@ -140,9 +141,7 @@ const OtpPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isLoading}
 			isError={isError}
-			errorMessage={
-				error?.data?.message || error?.message || "Failed to check otp "
-			}>
+			errorMessage={handleAndShowError(error, "Failed to check otp ")}>
 			<AuthLayout>
 				<div className=" text-center">
 					<AuthHeader

@@ -5,6 +5,7 @@ import ShowcaseWishlist from "./ShowcaseWishlist";
 import useWishList from "../../hooks/useWishList";
 import UserNameHeader from "../../components/UserNameHeader";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 const WishlistPage = () => {
 	const {
@@ -24,11 +25,10 @@ const WishlistPage = () => {
 			isLoading={isWishListLoading}
 			isError={isWishListError}
 			CustomErrorTemplate={WishListErrorTemplate}
-			errorMessage={
-				WishListError?.data?.message ||
-				WishListError?.message ||
+			errorMessage={handleAndShowError(
+				WishListError,
 				"Failed to fetch wishlist data"
-			}
+			)}
 			onRetry={refetchWishList}>
 			<div className="container mx-auto px-4 py-8">
 				<UserNameHeader userName={wishlistUser} />

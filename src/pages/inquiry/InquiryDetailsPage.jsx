@@ -10,6 +10,7 @@ import useApiHandler from "../../hooks/useApiHandler";
 import BreadCrumb from "../../components/BreadCrumb";
 import PageTitle from "../../components/PageTitle";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
+import { handleAndShowError } from "../../utils/errorHandlers";
 
 /**
  * InquiryDetailPage - Displays customer inquiry details and reply form
@@ -52,11 +53,10 @@ const InquiryDetailsPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isError}
-			errorMessage={
-				fetchError?.data?.message ||
-				fetchError?.message ||
+			errorMessage={handleAndShowError(
+				fetchError,
 				"Failed to fetch inquiry details "
-			}>
+			)}>
 			<div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
 				<div className="max-w-7xl mx-auto">
 					<PageTitle title="Inquiry Details" />
