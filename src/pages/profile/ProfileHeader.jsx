@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import useHandleFiles from "../../hooks/useHandleFiles";
 import Avatar from "./Avatar";
@@ -7,6 +7,7 @@ import { MdEdit } from "react-icons/md";
 import useToast from "../../hooks/useToast";
 import Swal from "sweetalert2";
 import PropTypes from "prop-types";
+import MiniLoader from "../../components/MiniLoader";
 
 const dummyImage =
 	"https://img.freepik.com/free-vector/user-blue-gradient_78370-4692.jpg?t=st=1741285501~exp=1741289101~hmac=d629ec566545ef3b552d0a991e687ad2ed1aab9f352ae82b2df97cd3ad059148&w=740";
@@ -27,6 +28,16 @@ const ProfileHeader = ({
 		public_id: user?.profilePhoto?.public_id,
 		type: user?.profilePhoto?.type,
 	}));
+	useEffect(() => {
+		if (user && user.profilePhoto) {
+			setFile({
+				url: user?.profilePhoto?.url,
+				public_id: user?.profilePhoto?.public_id,
+				type: user?.profilePhoto?.type,
+			});
+		}
+	}, [user]);
+
 	const { handleFileChange, handleFileRemove, fileLoading } = useHandleFiles();
 	const showToast = useToast();
 	const onFileRemove = useCallback(async () => {
@@ -106,10 +117,14 @@ const ProfileHeader = ({
 							className={`absolute bottom-0 right-0 rounded-full p-2 border-2  
                 						${isEditing ? "bg-blue-500" : "bg-emerald-500"}
                						 	border-white animate-pulse cursor-pointer`}
-							aria-label={isEditing ? "Save avatar" : "Edit avatar"}
-							onClick={handleImageSubmission}>
-							{isEditing ? (
-								<MdEdit className="text-white text-center" />
+							aria-label={isEditing ? "Save avatar" : "Edit avatar"}>
+							{isUpdating ? (
+								<MiniLoader />
+							) : isEditing ? (
+								<MdEdit
+									onClick={handleImageSubmission}
+									className="text-white text-center"
+								/>
 							) : (
 								<FaCheck className="text-white text-center" />
 							)}

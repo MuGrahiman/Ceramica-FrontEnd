@@ -56,7 +56,7 @@ const UserOrderPage = () => {
 							activeTab={selectedTab}
 							onSelectTab={handleTabSelection}
 						/>
-						<OrderList orders={ordersData} />
+						<OrderList baseUrl="/order" orders={ordersData} />
 					</InfoLayout>
 				) : (
 					<div className="flex flex-col items-center justify-center min-h-[50vh] p-6 text-center">

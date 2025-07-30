@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
  */
 const OrderDetails = ({ orders }) => {
 	return orders?.length > 0 ? (
-		<OrderList orders={orders.slice(0, 2)} />
+		<OrderList baseUrl="/order" orders={orders.slice(0, 2)} />
 	) : (
 		<OrderEmptySpot />
 	);

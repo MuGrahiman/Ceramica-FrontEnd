@@ -9,17 +9,13 @@ import ListContainer from "../../components/ListContainer";
  * If there are no orders, it shows the OrderEmptySpot component.
  * @param {Array} orders - The list of orders to display.
  */
-const OrderList = ({ orders }) => {
+const OrderList = ({ orders = [], baseUrl = "/dashboard/order-detail" }) => {
 	return (
 		<ListContainer divideItems scrollable containerClassName="p-2">
 			<ListOptions
 				OPTIONS={orders}
 				RENDER_ITEM={(order, index) => (
-					<OrderCard
-						key={index}
-						order={order}
-						baseLink="/dashboard/order-detail"
-					/>
+					<OrderCard key={index} order={order} baseLink={baseUrl} />
 				)}
 				EMPTY_MESSAGE={"No orders available"}
 			/>
@@ -29,6 +25,7 @@ const OrderList = ({ orders }) => {
 
 OrderList.propTypes = {
 	orders: PropTypes.array.isRequired,
+	baseUrl: PropTypes.string.isRequired,
 };
 
 export default OrderList;
