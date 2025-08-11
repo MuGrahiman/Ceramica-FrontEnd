@@ -6,10 +6,11 @@ import { useCallback, useEffect, useState } from "react";
 import { createDefaultState } from "../utils/generals";
 import { ADDRESS_FIELDS } from "../constants/address";
 import useApiHandler from "./useApiHandler";
+import { USER_ROLES } from "../constants/app";
 
 const useAddress = () => {
     const showToast = useToast();
-    const { isAuthorized, currentUser } = useAuth( "client" );
+    const { isAuthorized, currentUser } = useAuth( USER_ROLES.CLIENT );
     if ( !isAuthorized ) showToast( 'Please Login', 'error' )
     // State for managing selected address ID and address list
     const [ addressId, setAddressId ] = useState( null );
@@ -45,7 +46,7 @@ const useAddress = () => {
      * Pre-fills email field if user is authorized
      */
     useEffect( () => {
-        if ( isAuthorized && currentUser?.role === "client" ) {
+        if ( isAuthorized && currentUser?.role === USER_ROLES.CLIENT ) {
             setValue( "email", currentUser?.email );
         }
 

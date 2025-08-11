@@ -12,6 +12,7 @@ import useApiHandler from './useApiHandler';
 const useUser = ( { searchTerm = '', sort = '', status = [], userId = null } = {} ) => {
     const [ handleMutation ] = useApiHandler();
     const [ usersData, setUsersData ] = useState( [] );
+    const [ userData, setUserData ] = useState( {} );
 
     // --- Fetch all users ---
     const {
@@ -41,6 +42,12 @@ const useUser = ( { searchTerm = '', sort = '', status = [], userId = null } = {
         skip: !userId // Only run if userId is provided
     } );
 
+    useEffect( () => {
+        if ( userDetails && userDetails?.success ) {
+            setUserData( userDetails.data );
+        }
+    }, [ userDetails ] );
+
     // --- Update user status ---
     const [ updateUserStatus, { isLoading: isStatusUpdating } ] = handleMutation(
         useUpdateUserStatusMutation
@@ -67,7 +74,7 @@ const useUser = ( { searchTerm = '', sort = '', status = [], userId = null } = {
         refetchUsers,
 
         // Single user
-        userDetails,
+        userDetails, userData,
         isUserLoading,
         isUserFetching,
         userError,

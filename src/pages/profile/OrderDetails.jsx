@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
  * If there are no orders, it shows the OrderEmptySpot component.
  * @param {Array} orders - The list of orders to display.
  */
-const OrderDetails = ({ orders }) => {
+const OrderDetails = ({ orders = [] }) => {
 	return orders?.length > 0 ? (
 		<OrderList baseUrl="/order" orders={orders.slice(0, 2)} />
 	) : (
