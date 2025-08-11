@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import ListOptions from "../../components/ListOptions";
+import { Link } from "react-router-dom";
 
 /**
  * CategorySection - Infinite horizontal scrolling category display with smooth animations.
@@ -65,7 +66,7 @@ const CategorySection = ({ categories = [] }) => {
 
 // Extracted card component for better readability
 const CategoryCard = ({ index = 0, name = "", count = 0, image = "" }) => (
-	<div
+	<Link to='/shop'
 		className="w-48 h-64 group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-500"
 		role="group"
 		aria-label={`${name} category with ${count} items`}>
@@ -82,7 +83,7 @@ const CategoryCard = ({ index = 0, name = "", count = 0, image = "" }) => (
 			<h3 className="text-white font-bold text-lg">{name}</h3>
 			<p className="text-white/90 text-sm">{count} items</p>
 		</div>
-	</div>
+	</Link>
 );
 // PropTypes for the category card
 CategoryCard.propTypes = {
