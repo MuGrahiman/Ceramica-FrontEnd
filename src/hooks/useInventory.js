@@ -11,27 +11,28 @@ import generatePageNumbers from '../utils/pagination';
 
 // Custom hook to manage inventory
 const useInventory = ( searchTerm = '' ) => {
+    const limit = 9; // Items per page
     // State variables
     const [ currentPage, setCurrentPage ] = useState( 1 );
     const [ totalPages, setTotalPages ] = useState( 1 );
     const [ minPrice, setMinPrice ] = useState();
     const [ maxPrice, setMaxPrice ] = useState();
-    const [ sort, setSort ] = useState();
+    const [ sort, setSort ] = useState( '' );
     const [ category, setCategory ] = useState( [] );
     const [ size, setSize ] = useState( [] );
     const [ id, setId ] = useState( null );
     const [ data, setData ] = useState();
     const [ patchId, setPatchId ] = useState( null );
 
-    const limit = 6; // Items per page
     const [ handleMutation ] = useApiHandler();
 
     // Fetch inventory items
     const {
         data: productData,
         isLoading: fetchLoading,
+        isFetching,
         error: fetchError,
-        isError:fetchIsError
+        isError: fetchIsError
     } = useGetInventoryItemsQuery( {
         page: currentPage,
         limit,
@@ -46,16 +47,19 @@ const useInventory = ( searchTerm = '' ) => {
     // Mutation for deleting inventory item
     const [
         deleteInventory,
-        { isLoading: deleteLoading,
+        {
+            isLoading: deleteLoading,
             isError: deleteError,
-            isSuccess: deleteSuccess }
+            isSuccess: deleteSuccess
+        }
     ] = handleMutation( useDeleteInventoryMutation );
     const [
         patchInventory,
-        { isLoading: patchLoading,
-            error,
+        {
+            isLoading: patchLoading,
             isError: patchError,
-            isSuccess: patchSuccess }
+            isSuccess: patchSuccess
+        }
     ] = handleMutation( usePatchInventoryMutation );
 
     // Update inventory data when productData changes
@@ -108,11 +112,11 @@ const useInventory = ( searchTerm = '' ) => {
     // Handle page filtration
     const handleFilter = ( data ) => {
         const { categories, sizes, maxPrice, minPrice, sort } = data
-        setCategory( [ ...categories ] )
-        setSize( [ ...sizes ] )
+        if ( categories ) setCategory( [ ...categories ] )
+        if ( sizes ) setSize( [ ...sizes ] )
         setMinPrice( minPrice )
-        setMaxPrice( maxPrice )
-        setSort( sort )
+        if ( maxPrice ) setMaxPrice( maxPrice )
+        if ( sort ) setSort( sort )
     }
 
     const clearFilter = () => {
@@ -144,8 +148,8 @@ const useInventory = ( searchTerm = '' ) => {
     // Return values and functions for use in components
     return {
         // Fetching data
-        fetchLoading,
-        fetchError,fetchIsError,
+        fetchLoading, isFetching,
+        fetchError, fetchIsError,
         data,
         totalPages,
         currentPage,

@@ -23,6 +23,7 @@ const ProductPage = () => {
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
 	const {
 		fetchLoading,
+		isFetching,
 		fetchError,
 		fetchIsError,
 		data,
@@ -122,7 +123,7 @@ const ProductPage = () => {
 									isOpen("isOpen") ? "opacity-0 w-0 " : "opacity-100  w-full"
 								}  sm:opacity-100 sm:w-full  `}>
 					<LoadingErrorBoundary
-						isLoading={fetchLoading}
+						isLoading={fetchLoading || isFetching}
 						isError={fetchIsError}
 						errorMessage={handleAndShowError(
 							fetchError,
