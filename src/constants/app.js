@@ -22,6 +22,8 @@ export const FALL_BACK_IMAGE = fallBackImage
 
 export const APP = "STORE-APP-USER"
 
+export const APP_SIDEBAR_TOGGLE_KEY = 'app.sidebar.toggle';
+
 export const USER_ROLES = {
     ADMIN: "admin",
     CLIENT: "client",

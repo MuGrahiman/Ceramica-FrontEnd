@@ -59,3 +59,4 @@ export const FILTER_FORMS_COMPONENTS = {
     RADIO: "radio",
     CHECKBOX: "checkbox",
 };
+

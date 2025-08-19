@@ -7,48 +7,48 @@ import { Controller } from "react-hook-form";
  *
  * @param {Object} props
  * @param {string} props.NAME - Field name for form registration (required)
- * @param {string} props.OPTION - Checkbox value (required)
+ * @param {string} props.VALUE - Checkbox value (required)
  * @param {Object} props.CONTROL - React Hook Form control object (required)
  * @param {string} [props.LABEL] - Custom label text (defaults to uppercase option)
  */
 const CheckBox = ({
-	NAME,
-	OPTION,
-	CONTROL,
-	LABEL = OPTION.toUpperCase(),
+	NAME = "",
+	VALUE = "", 
+	CONTROL = {},
+	LABEL = VALUE.toUpperCase(),
 }) => {
 	return (
-		<div className={`flex items-center mb-4 `} key={OPTION}>
+		<div className={`flex items-center mb-4 `} key={VALUE}>
 			<Controller
 				name={NAME}
 				control={CONTROL}
 				defaultValue={[]}
 				render={({ field: { onChange, value } }) => {
 					const arrayValue = Array.isArray(value) ? value : [];
-					const isChecked = arrayValue.includes(OPTION);
+					const isChecked = arrayValue.includes(VALUE);
 
 					return (
-						<>
+						<React.Fragment>
 							<input
-								id={`${NAME}-${OPTION}`}
+								id={`${NAME}-${VALUE}`}
 								type="checkbox"
-								value={OPTION}
+								value={VALUE}
 								className="w-4 h-4 cursor-pointer text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
 								onChange={(e) => {
 									const newValue = e.target.checked
-										? [...new Set([...arrayValue, OPTION])]
-										: arrayValue.filter((val) => val !== OPTION);
+										? [...new Set([...arrayValue, VALUE])]
+										: arrayValue.filter((val) => val !== VALUE);
 									onChange(newValue);
 								}}
 								checked={isChecked}
 								aria-checked={isChecked}
 							/>
 							<label
-								htmlFor={`${NAME}-${OPTION}`}
-								className="ms-2 text-sm font-medium text-gray-900 cursor-pointer">
+								htmlFor={`${NAME}-${VALUE}`}
+								className="ms-2 text-sm font-medium cursor-pointer">
 								{LABEL}
 							</label>
-						</>
+						</React.Fragment>
 					);
 				}}
 			/>
@@ -58,7 +58,7 @@ const CheckBox = ({
 
 CheckBox.propTypes = {
 	NAME: PropTypes.string.isRequired,
-	OPTION: PropTypes.string.isRequired,
+	VALUE: PropTypes.string.isRequired,
 	CONTROL: PropTypes.object.isRequired,
 	LABEL: PropTypes.string,
 };

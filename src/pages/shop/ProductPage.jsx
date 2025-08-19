@@ -8,16 +8,12 @@ import FilterForm from "../../components/FilterForm";
 import heroImage from "../../assets/ceramics/Gemini_Generated_Image_yzrj9syzrj9syzrj.jpeg";
 import useInventory from "../../hooks/useInventory";
 import Pagination from "../../components/Pagination";
-import {
-	FILTER_FORMS_CATEGORIES_OPTIONS,
-	FILTER_FORMS_COMPONENTS,
-	FILTER_FORMS_SIZES_OPTIONS,
-	FILTER_FORMS_SORT_OPTIONS,
-} from "../../constants/filter-form";
 import useSearch from "../../hooks/useSearch";
 import ListOptions from "../../components/ListOptions";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
+import { APP_SIDEBAR_TOGGLE_KEY } from "../../constants/app";
+import { INVENTORY_FILTER_CONTENTS } from "../../constants/inventory";
 
 const ProductPage = () => {
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
@@ -38,41 +34,12 @@ const ProductPage = () => {
 	const [setIsOpen, isOpen] = useToggle();
 	const onSubmit = (data) => {
 		handleFilter(data);
-		setIsOpen("isOpen");
+		setIsOpen(APP_SIDEBAR_TOGGLE_KEY);
 	};
 	const onClear = () => {
 		clearFilter();
-		setIsOpen("isOpen");
+		setIsOpen(APP_SIDEBAR_TOGGLE_KEY);
 	};
-	const FieldContents = [
-		{
-			title: "Filter by Category",
-			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
-			props: { name: "categories", options: FILTER_FORMS_CATEGORIES_OPTIONS },
-		},
-		{
-			title: "Filter by Size",
-			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
-			props: { name: "sizes", options: FILTER_FORMS_SIZES_OPTIONS },
-		},
-		{
-			title: "Sort By",
-			type: FILTER_FORMS_COMPONENTS.RADIO,
-			props: { name: "sort", options: FILTER_FORMS_SORT_OPTIONS },
-		},
-		{
-			title: "Filter by Price",
-			type: FILTER_FORMS_COMPONENTS.INPUT,
-			props: {
-				name: "price",
-				options: [
-					{ name: "minPrice", label: "Minimum Price", type: "numbers" },
-					{ name: "maxPrice", label: "Maximum Price", type: "numbers" },
-				],
-			},
-		},
-	];
-	// const productList =
 
 	return (
 		<section>
@@ -87,7 +54,7 @@ const ProductPage = () => {
 				<BreadCrumb items={[{ label: "Home", to: "/" }, { label: "Shop" }]} />
 				<span className="w-full  flex items-center justify-between gap-10 mt-4 sm:mt-0">
 					<button
-						onClick={() => setIsOpen("isOpen")}
+						onClick={() => setIsOpen(APP_SIDEBAR_TOGGLE_KEY)}
 						type="button"
 						className="sm:hidden sm:w-1/2 lg:w-1/4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
 						Filter
@@ -104,13 +71,13 @@ const ProductPage = () => {
 			<div className="container mx-auto mt-6 px-4 sm:px-0 md:px-4 py-6 flex  justify-between md:gap-4  ">
 				<aside
 					className={`min-h-full  sm:w-1/2 lg:w-1/3 bg-white rounded-lg shadow  transition-all duration-700 ease-in-out ${
-						isOpen("isOpen")
+						isOpen(APP_SIDEBAR_TOGGLE_KEY)
 							? "translate-x-0 opacity-100 w-full p-4"
 							: "-translate-x-full opacity-0 w-0"
 					} sm:translate-x-0 sm:opacity-100  sm:px-4`}
-					aria-hidden={!isOpen("isOpen")}>
+					aria-hidden={!isOpen(APP_SIDEBAR_TOGGLE_KEY)}>
 					<FilterForm
-						FIELD_CONTENT={FieldContents}
+						FIELD_CONTENT={INVENTORY_FILTER_CONTENTS}
 						ON_SUBMIT={onSubmit}
 						ON_CLEAR={onClear}
 					/>
@@ -120,7 +87,9 @@ const ProductPage = () => {
 					id="shop"
 					className={`flex flex-wrap items-center justify-center gap-6
 							 transition-all duration-700 ease-in-out ${
-									isOpen("isOpen") ? "opacity-0 w-0 " : "opacity-100  w-full"
+									isOpen(APP_SIDEBAR_TOGGLE_KEY)
+										? "opacity-0 w-0 "
+										: "opacity-100  w-full"
 								}  sm:opacity-100 sm:w-full  `}>
 					<LoadingErrorBoundary
 						isLoading={fetchLoading || isFetching}

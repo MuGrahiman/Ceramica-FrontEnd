@@ -17,7 +17,13 @@ import ListOptions from "./ListOptions";
  * @param {string} props.label - The label for the input field.
  * @param {string} props.type - The type of the input field.
  */
-const ControlledInput = ({ name, type, control, label, defaultValue = "" }) => (
+const ControlledInput = ({
+	name = "",
+	type = "",
+	control = {},
+	label = "",
+	defaultValue = "",
+}) => (
 	<div className="flex flex-col mb-2">
 		<label className="text-sm font-medium mb-1">{label.toUpperCase()}</label>
 		<Controller
@@ -42,8 +48,15 @@ ControlledInput.propTypes = {
 	control: PropTypes.object.isRequired,
 	label: PropTypes.string.isRequired,
 };
-// Group check box component
-const InputGroup = ({ options, control }) => (
+
+/**
+ * Input Group Component for rendering multiple controlled inputs.
+ *
+ * @param {Object} props - Component properties
+ * @param {Array} props.options - Array of input configuration objects
+ * @param {Object} props.control - React Hook Form control object
+ */
+const InputGroup = ({ options = [], control = {} }) => (
 	<ListOptions
 		OPTIONS={options}
 		RENDER_ITEM={(option, index) => (
@@ -53,20 +66,19 @@ const InputGroup = ({ options, control }) => (
 );
 
 InputGroup.propTypes = {
-	name: PropTypes.string.isRequired,
 	options: PropTypes.arrayOf(PropTypes.string).isRequired,
 	control: PropTypes.object.isRequired,
 };
 
 /**
- * Checkbox Group Component: A  component for rendering a group of checkboxes.
+ * Checkbox Group Component for multiple selection options.
  *
- * @param {Object} props - Component props.
- * @param {string} props.name - The name of the checkbox group.
- * @param {Array} props.options - The options for the checkbox group.
- * @param {Object} props.control - The control object from react-hook-form.
+ * @param {Object} props - Component properties
+ * @param {string} props.name - Form field name for checkbox group
+ * @param {Array<string>} props.options - Array of checkbox option values
+ * @param {Object} props.control - React Hook Form control object
  */
-const CheckboxGroup = ({ name, options, control }) => (
+const CheckboxGroup = ({ name = "", options = [], control = {} }) => (
 	<ListOptions
 		OPTIONS={options}
 		RENDER_ITEM={(option, index) => (
@@ -74,7 +86,7 @@ const CheckboxGroup = ({ name, options, control }) => (
 				key={index}
 				NAME={name}
 				CONTROL={control}
-				OPTION={option}
+				VALUE={option}
 			/>
 		)}
 	/>
@@ -87,14 +99,25 @@ CheckboxGroup.propTypes = {
 };
 
 /**
- * Radio Group Component: A  component for rendering a group of radio buttons.
+ * Radio Group Component for single selection options.
  *
- * @param {Object} props - Component props.
- * @param {string} props.name - The name of the radio group.
- * @param {Array} props.options - The options for the radio group.
- * @param {Object} props.control - The control object from react-hook-form.
+ * @param {Object} props - Component properties
+ * @param {string} props.name - Form field name for radio group
+ * @param {Array<Object>} props.options - Array of radio option objects
+ * @param {string} options[].value - Option value
+ * @param {string} options[].label - Option display label
+ * @param {Object} props.control - React Hook Form control object
  */
-const RadioGroup = ({ name, options, control }) => (
+const RadioGroup = ({
+	name = "",
+	options = [
+		{
+			value: "",
+			label: "",
+		},
+	],
+	control = {},
+}) => (
 	<ListOptions
 		OPTIONS={options}
 		RENDER_ITEM={(option, index) => (
@@ -102,7 +125,8 @@ const RadioGroup = ({ name, options, control }) => (
 				key={index}
 				NAME={name}
 				CONTROL={control}
-				OPTION={option}
+				LABEL={option.label}
+				VALUE={option.value}
 			/>
 		)}
 	/>
@@ -118,6 +142,7 @@ RadioGroup.propTypes = {
 	).isRequired,
 	control: PropTypes.object.isRequired,
 };
+
 /**
  * Filter Form Component: A reusable component for filtering products.
  *
@@ -128,30 +153,28 @@ RadioGroup.propTypes = {
  * @param {Object} props.DEFAULT_VALUES - Default values for the form fields.
  */
 const FilterForm = ({
-	ON_SUBMIT,
-	ON_CLEAR,
+	ON_SUBMIT = () => {},
+	ON_CLEAR = () => {},
 	FIELD_CONTENT = [],
 	DEFAULT_VALUES = {},
 }) => {
-	const [toggleAccordion, isToggled] = useToggle({ multiple: true });
+	const [toggleAccordion, isToggled] = useToggle();
 	const { control, handleSubmit, reset } = useForm({
 		defaultValues: DEFAULT_VALUES,
 	});
 
-	// Accordion content configuration
-
-	// Form submission handler
+	// Handles form submission
 	const onSubmit = (data) => {
 		ON_SUBMIT(data);
 	};
 
-	// Reset form fields
+	//Resets form to default values and calls onClear callback
 	const clearAll = () => {
 		reset();
 		ON_CLEAR();
 	};
 
-	// Get component by type
+	// Returns the appropriate component based on field type
 	const getComponentByType = (type) => {
 		switch (type) {
 			case FILTER_FORMS_COMPONENTS.CHECKBOX:
@@ -165,7 +188,7 @@ const FilterForm = ({
 		}
 	};
 
-	// Render accordion items
+	// Renders individual accordion items with form fields
 	const renderItems = ({ type, props, title }, index) => {
 		const keyId = `${title}-accordion-${index}`;
 		const Component = getComponentByType(type);
@@ -185,25 +208,6 @@ const FilterForm = ({
 		<form className="p-4 space-y-6" onSubmit={handleSubmit(onSubmit)}>
 			<AccordionWrapper type={"open"}>
 				<ListOptions OPTIONS={FIELD_CONTENT} RENDER_ITEM={renderItems} />
-				{/* <AccordionComponent
-					key={" price-accordion"}
-					LABEL={"Price"}
-					ID={"price-accordion"}
-					IS_OPEN={isToggled("price-accordion")}
-					TOGGLE_ACCORDION={() => toggleAccordion("price-accordion")}>
-					<div className=" gap-4">
-						<ControlledInput
-							name="minPrice"
-							control={control}
-							label="Min Price"
-						/>
-						<ControlledInput
-							name="maxPrice"
-							control={control}
-							label="Max Price"
-						/>
-					</div>
-				</AccordionComponent> */}
 			</AccordionWrapper>
 
 			<div className="flex gap-4">
@@ -222,6 +226,7 @@ const FilterForm = ({
 		</form>
 	);
 };
+
 FilterForm.propTypes = {
 	ON_SUBMIT: PropTypes.func.isRequired,
 	ON_CLEAR: PropTypes.func.isRequired,

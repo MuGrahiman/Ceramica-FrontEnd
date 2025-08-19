@@ -11,16 +11,11 @@ import Pagination from "../../components/Pagination";
 import Badge from "../../components/Badge";
 import MiniLoader from "../../components/MiniLoader";
 import useSearch from "../../hooks/useSearch";
-import {
-	FILTER_FORMS_CATEGORIES_OPTIONS,
-	FILTER_FORMS_COMPONENTS,
-	FILTER_FORMS_DEFAULT_VALUES,
-	FILTER_FORMS_SIZES_OPTIONS,
-	FILTER_FORMS_SORT_OPTIONS,
-} from "../../constants/filter-form";
+import { FILTER_FORMS_DEFAULT_VALUES } from "../../constants/filter-form";
 import FilterFormLayout from "../../components/FilterFormLayout";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
+import { INVENTORY_FILTER_CONTENTS } from "../../constants/inventory";
 
 // Inventory Component
 const InventoryPage = () => {
@@ -31,6 +26,7 @@ const InventoryPage = () => {
 	const {
 		// Fetching data
 		fetchLoading,
+		isFetching,
 		fetchError,
 		fetchIsError,
 		data,
@@ -151,38 +147,10 @@ const InventoryPage = () => {
 		clearFilter();
 		setIsOpen((prev) => !prev);
 	};
-	const FieldContents = [
-		{
-			title: "Filter by Category",
-			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
-			props: { name: "categories", options: FILTER_FORMS_CATEGORIES_OPTIONS },
-		},
-		{
-			title: "Filter by Size",
-			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
-			props: { name: "sizes", options: FILTER_FORMS_SIZES_OPTIONS },
-		},
-		{
-			title: "Sort By",
-			type: FILTER_FORMS_COMPONENTS.RADIO,
-			props: { name: "sort", options: FILTER_FORMS_SORT_OPTIONS },
-		},
-		{
-			title: "Filter by Price",
-			type: FILTER_FORMS_COMPONENTS.INPUT,
-			props: {
-				name: "price",
-				options: [
-					{ name: "minPrice", label: "Minimum Price", type: "numbers" },
-					{ name: "maxPrice", label: "Maximum Price", type: "numbers" },
-				],
-			},
-		},
-	];
 
 	return (
 		<LoadingErrorBoundary
-			isLoading={fetchLoading}
+			isLoading={fetchLoading || isFetching}
 			isError={fetchIsError}
 			errorMessage={handleAndShowError(
 				fetchError,
@@ -226,7 +194,7 @@ const InventoryPage = () => {
 					onSubmit={onSubmit}
 					onClear={onClear}
 					defaultValues={FILTER_FORMS_DEFAULT_VALUES}
-					fieldContents={FieldContents}>
+					fieldContents={INVENTORY_FILTER_CONTENTS}>
 					<Table
 						DATA={data}
 						CONFIG={headers}
