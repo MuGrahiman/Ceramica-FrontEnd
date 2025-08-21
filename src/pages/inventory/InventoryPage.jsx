@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { MdDelete, MdMode, MdOutlineAdd } from "react-icons/md";
+import { MdDelete, MdMode } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { ImEye, ImSpinner9 } from "react-icons/im";
 import Table from "../../components/Table";
-import SearchBar from "../../components/SearchBar";
 import useInventory from "../../hooks/useInventory";
 import { KeyFn } from "../../utils/generals";
 import img from "../../assets/avatar.png";
@@ -16,6 +15,8 @@ import FilterFormLayout from "../../components/FilterFormLayout";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
 import { INVENTORY_FILTER_CONTENTS } from "../../constants/inventory";
+import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
+import PageHeader from "../../components/PageHeader";
 
 // Inventory Component
 const InventoryPage = () => {
@@ -150,7 +151,7 @@ const InventoryPage = () => {
 
 	return (
 		<LoadingErrorBoundary
-			isLoading={fetchLoading || isFetching}
+			isLoading={fetchLoading}
 			isError={fetchIsError}
 			errorMessage={handleAndShowError(
 				fetchError,
@@ -158,35 +159,21 @@ const InventoryPage = () => {
 			)}>
 			<React.Fragment>
 				{/* Header Section */}
-				<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
-					<h2 className="text-4xl font-extrabold font-serif text-gray-700">
-						Inventory
-					</h2>
-					<Link
-						to="/dashboard/add-to-inventory"
-						className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 
-					px-5 py-3 text-white bg-gray-600 hover:bg-gray-700 
-					rounded-md shadow-md">
-						<MdOutlineAdd className="h-6 w-6" />
-						Add To Inventory
-					</Link>
-				</div>
+				<PageHeader
+					showActionLink
+					title="Inventory"
+					actionText="Add To Inventory"
+					actionLink="/dashboard/add-to-inventory"
+				/>
 
 				{/* Filter and Search Section */}
-				<div className="flex justify-between items-center mt-4 mb-4 gap-10">
-					<button
-						type="button"
-						onClick={() => setIsOpen((prev) => !prev)}
-						className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 px-5 py-2.5 text-white bg-gray-600 hover:bg-gray-700 rounded-md shadow-md">
-						Filter
-					</button>
-					<SearchBar
-						INPUT_STYLE={`focus:outline-none block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 focus:ring-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 rounded-e-lg rounded-s-lg dark:text-white border border-gray-300 focus:border-gray-500 dark:border-gray-600 dark:focus:border-gray-500`}
-						BUTTON_STYLE={`p-2.5 h-full text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 dark:border-gray-700 dark:text-white rounded-e-lg hover:bg-gray-200 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-800`}
-						ON_SUBMIT={handleSearch}
-						CLEAR_SEARCH={clearSearch}
-					/>
-				</div>
+				<FilterControlsWithSearch
+					isOpen={isOpen}
+					onToggle={() => setIsOpen((prev) => !prev)}
+					onClearSearch={clearSearch}
+					onSearch={handleSearch}
+					isSearching={isFetching}
+				/>
 
 				{/* Inventory Table */}
 				<FilterFormLayout

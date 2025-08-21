@@ -60,3 +60,5 @@ export const FILTER_FORMS_COMPONENTS = {
     CHECKBOX: "checkbox",
 };
 
+
+export const TOGGLE_FILTER = 'Toggle-filter'

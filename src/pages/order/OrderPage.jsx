@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ImEye } from "react-icons/im";
 import Table from "../../components/Table";
-import SearchBar from "../../components/SearchBar";
 import Pagination from "../../components/Pagination";
 import useSortTable from "../../hooks/useSortTable";
 import SortIcons from "../../components/SetIcons";
@@ -19,6 +18,8 @@ import {
 } from "../../constants/order";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
+import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
+import PageHeader from "../../components/PageHeader";
 
 /**
  * Order Management Page: Displays a list of orders with sorting, pagination, and search functionality.
@@ -30,6 +31,7 @@ const OrderPage = () => {
 		activeOrderId,
 		ordersData,
 		isOrdersLoading,
+		isOrdersFetching,
 		ordersFetchIsError,
 		ordersFetchError,
 		handleOrderStatusSelection,
@@ -124,27 +126,19 @@ const OrderPage = () => {
 				ordersFetchError,
 				"Failed to fetch order data"
 			)}>
+
 			{/* Header Section */}
-			<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
-				<h2 className="text-4xl font-extrabold font-serif text-gray-700">
-					Orders
-				</h2>
-			</div>
+			<PageHeader title="Orders" />
+			
 			{/* Filter and Search Section */}
-			<div className="flex flex-col sm:flex-row justify-between items-center mt-4 mb-4 gap-10">
-				<button
-					type="button"
-					onClick={() => setIsOpen((prev) => !prev)}
-					className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 px-5 py-2.5 text-white bg-gray-600 hover:bg-gray-700 rounded-md shadow-md">
-					Filter
-				</button>
-				<SearchBar
-					INPUT_STYLE="focus:outline-none block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 focus:ring-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 rounded-e-lg rounded-s-lg dark:text-white border border-gray-300 focus:border-gray-500 dark:border-gray-600 dark:focus:border-gray-500"
-					BUTTON_STYLE="p-2.5 h-full text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 dark:border-gray-700 dark:text-white rounded-e-lg hover:bg-gray-200 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-800"
-					ON_SUBMIT={onOrderSearch}
-					CLEAR_SEARCH={onClearOrderSearch}
-				/>
-			</div>
+			<FilterControlsWithSearch
+				isOpen={isOpen}
+				onToggle={() => setIsOpen((prev) => !prev)}
+				onClearSearch={onClearOrderSearch}
+				onSearch={onOrderSearch}
+				isSearching={isOrdersFetching}
+			/>
+
 			{/* Orders Table */}
 			<FilterFormLayout
 				isOpen={isOpen}

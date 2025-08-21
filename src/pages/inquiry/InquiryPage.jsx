@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import SearchBar from "../../components/SearchBar";
 import {
 	useDeleteInquiryMutation,
 	useGetInquiriesQuery,
@@ -14,12 +13,13 @@ import Badge from "../../components/Badge";
 import { FILTER_FORMS_COMPONENTS } from "../../constants/filter-form";
 import Pagination from "../../components/Pagination";
 import usePagination from "../../hooks/usePagination";
-import LoadingTemplate from "../../components/LoadingTemplate";
 import useApiHandler from "../../hooks/useApiHandler";
 import Swal from "sweetalert2";
 import MiniLoader from "../../components/MiniLoader";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
+import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
+import PageHeader from "../../components/PageHeader";
 
 const InquiryPage = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -178,52 +178,34 @@ const InquiryPage = () => {
 				"Failed to fetch inquiries"
 			)}>
 			<React.Fragment>
-				<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
-					<h2 className="text-4xl font-extrabold font-serif text-gray-700">
-						Inquiry
-					</h2>
-				</div>
+				{/* Header Section */}
+				<PageHeader title="Inquiry" />
 
-				<div className="flex flex-col sm:flex-row justify-between items-center mt-4 mb-4 gap-10">
-					<button
-						type="button"
-						onClick={() => setIsOpen((prev) => !prev)}
-						className="inline-flex items-center mt-4 sm:mt-0 sm:gap-2 px-5 py-2.5 text-white bg-gray-600 hover:bg-gray-700 rounded-md shadow-md">
-						Filter
-					</button>
-					<SearchBar
-						INPUT_STYLE="focus:outline-none block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 focus:ring-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 rounded-e-lg rounded-s-lg dark:text-white border border-gray-300 focus:border-gray-500 dark:border-gray-600 dark:focus:border-gray-500"
-						BUTTON_STYLE="p-2.5 h-full text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 dark:border-gray-700 dark:text-white rounded-e-lg hover:bg-gray-200 focus:outline-none dark:bg-gray-700 dark:hover:bg-gray-800"
-						ON_SUBMIT={handleSearch}
-						CLEAR_SEARCH={clearSearch}
-					/>
-				</div>
-
+				{/* Filter and Search Section */}
+				<FilterControlsWithSearch
+					isOpen={isOpen}
+					onToggle={() => setIsOpen((prev) => !prev)}
+					onClearSearch={clearSearch}
+					onSearch={handleSearch}
+					isSearching={isFetching}
+				/>
 				<FilterFormLayout
 					isOpen={isOpen}
 					onSubmit={onSubmit}
 					onClear={onClear}
 					defaultValues={FILTER_FORMS_DEFAULT_VALUES}
 					fieldContents={FieldContents}>
-					{isFetching ? (
-						<div className="flex items-center justify-center h-screen">
-							<LoadingTemplate message="Fetching inquiries, please wait..." />
-						</div>
-					) : (
-						<>
-							<Table
-								CONFIG={headers}
-								DATA={currentItems}
-								KEYFN={(order) => order._id}
-							/>
-							<Pagination
-								pageNumbers={pageNumbers}
-								currentPage={currentPage}
-								totalPages={totalPages}
-								onPageChange={handlePage}
-							/>
-						</>
-					)}
+					<Table
+						CONFIG={headers}
+						DATA={currentItems}
+						KEYFN={(order) => order._id}
+					/>
+					<Pagination
+						pageNumbers={pageNumbers}
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={handlePage}
+					/>
 				</FilterFormLayout>
 			</React.Fragment>
 		</LoadingErrorBoundary>

@@ -11,6 +11,7 @@ const useOrder = ( role = 'client' ) => {
     const {
         data,
         isLoading: isOrdersLoading,
+        isFetching: isOrdersFetching,
         error: ordersFetchError,
         isError: ordersFetchIsError,
     } = useGetOrdersByRoleQuery( role );
@@ -89,7 +90,9 @@ const useOrder = ( role = 'client' ) => {
         activeOrderId,
         ordersData,
         isOrdersLength: data && data.length,
-        isOrdersLoading,ordersFetchIsError,
+        isOrdersLoading, 
+        isOrdersFetching,
+         ordersFetchIsError,
         ordersFetchError,
         handleOrderStatusSelection: handleOrderStatus,
         isOrderStatusUpdating,
