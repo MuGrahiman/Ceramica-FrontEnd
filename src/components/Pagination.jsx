@@ -13,7 +13,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 const Pagination = ({
 	currentPage,
 	totalPages,
-	onPageChange,
+	onPageChange = () => {},
 	pageNumbers = [],
 }) => {
 	return (

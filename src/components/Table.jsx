@@ -8,19 +8,9 @@ import ListOptions from "./ListOptions";
  * @param {Object} props - Component props.
  * @param {Array} props.DATA - Data to be displayed in the table.
  * @param {Array} props.CONFIG - Configuration for table columns.
- * @param {number} props.CURRENT_PAGE - Current active page number.
- * @param {number} props.TOTAL_PAGES - Total number of pages for pagination.
- * @param {function} props.HANDLE_PAGE_CHANGE - Function to handle page changes.
  * @param {function} props.KEYFN - Function to generate keys for table rows.
  */
-function Table({
-	DATA = [],
-	CONFIG,
-	CURRENT_PAGE,
-	TOTAL_PAGES,
-	HANDLE_PAGE_CHANGE,
-	KEYFN,
-}) {
+function Table({ DATA = [], CONFIG = [{}], KEYFN = () => {} }) {
 	// Returns the class name for a table column based on visibility settings
 	const getClassName = (column) =>
 		`px-6 py-4  ${column.hide ? `hidden ${column.showValue()}` : ""}`;

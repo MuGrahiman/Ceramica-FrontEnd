@@ -86,7 +86,8 @@ const CheckboxGroup = ({ name = "", options = [], control = {} }) => (
 				key={index}
 				NAME={name}
 				CONTROL={control}
-				VALUE={option}
+				VALUE={option.value} 
+				LABEL={option.label} 
 			/>
 		)}
 	/>
@@ -94,7 +95,12 @@ const CheckboxGroup = ({ name = "", options = [], control = {} }) => (
 
 CheckboxGroup.propTypes = {
 	name: PropTypes.string.isRequired,
-	options: PropTypes.arrayOf(PropTypes.string).isRequired,
+	options: PropTypes.arrayOf(
+		PropTypes.shape({
+			value: PropTypes.string.isRequired,
+			label: PropTypes.string.isRequired,
+		})
+	).isRequired,
 	control: PropTypes.object.isRequired,
 };
 

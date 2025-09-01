@@ -1,57 +1,52 @@
-import React, { useEffect, useState } from "react";
-import {
-	useFetchAllUsersQuery,
-	useUpdateUserStatusMutation,
-} from "../../redux/store";
+import React, { useState } from "react";
 import useSearch from "../../hooks/useSearch";
 import FilterFormLayout from "../../components/FilterFormLayout";
 import Table from "../../components/Table";
 import { Link } from "react-router-dom";
 import { ImEye } from "react-icons/im";
-import { FILTER_FORMS_COMPONENTS } from "../../constants/filter-form";
 import Pagination from "../../components/Pagination";
 import usePagination from "../../hooks/usePagination";
-import useApiHandler from "../../hooks/useApiHandler";
 import MiniLoader from "../../components/MiniLoader";
-import { CgBlock, CgUnblock } from "react-icons/cg";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
 import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
 import PageHeader from "../../components/PageHeader";
+import {
+	USER_FILTER_FIELD_CONTENTS,
+	USER_FILTER_FORMS_DEFAULT_VALUES,
+	USER_STATUS_COLOR_MAP,
+} from "../../constants/user";
+import useUser from "../../hooks/useUser";
+import { USER_ROLES } from "../../constants/app";
+import Badge from "../../components/Badge";
 
+/**
+ * User page for listing and managing user accounts on the admin side.
+ */
 const UserPage = () => {
-	const [userData, setUserData] = useState([]);
 	const [isOpen, setIsOpen] = useState(false);
 	const [id, setId] = useState(null);
 	const [sort, setSort] = useState("");
 	const [status, setStatus] = useState([]);
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
-	const [handleMutation] = useApiHandler();
 
-	// RTK Query hook with all filter parameters
 	const {
-		data,
-		isLoading: fetchLoading,
-		error: fetchError,
-		isError,
-		isFetching,
-		refetch,
-	} = useFetchAllUsersQuery(
-		{ searchTerm, sort, status },
-		{ refetchOnMountOrArgChange: true }
-	);
+		usersData,
+		isUsersLoading,
+		usersError,
+		isUsersError,
+		isUsersFetching,
+		isStatusUpdating,
+		handleUpdateUserStatus,
+	} = useUser({
+		searchTerm,
+		sort,
+		status,
+		userRole: USER_ROLES.ADMIN,
+	});
 
-	useEffect(() => {
-		if (data && data.success) setUserData(data.data);
-	}, [data]);
-
-	const [updateStatus, { isLoading: isUpdating }] = handleMutation(
-		useUpdateUserStatusMutation
-	);
-
-	// Pagination hook now works directly with API data
 	const { pageNumbers, currentPage, totalPages, handlePage, currentItems } =
-		usePagination(userData || [], 5);
+		usePagination(usersData || [], 5);
 
 	const onSubmit = (data) => {
 		if (data.sort) {
@@ -60,7 +55,6 @@ const UserPage = () => {
 		if (data.status) {
 			setStatus(data.status);
 		}
-		refetch();
 		setIsOpen((prev) => !prev);
 	};
 
@@ -72,48 +66,8 @@ const UserPage = () => {
 
 	const handleUpdate = async (id, status) => {
 		setId(id);
-		await updateStatus(
-			{ id, status },
-			{
-				onSuccess: () => "Updated successfully",
-				onError: (err) =>
-					err?.data?.message ||
-					err?.message ||
-					"Failed to update user status. Please try again",
-			}
-		);
+		await handleUpdateUserStatus(id, status);
 		setId(null);
-	};
-
-	const FILTER_FORMS_DEFAULT_VALUES = {
-		status: [],
-		sort: "",
-	};
-
-	const FieldContents = [
-		{
-			title: "Filter by status",
-			type: FILTER_FORMS_COMPONENTS.CHECKBOX,
-			props: {
-				name: "status",
-				options: ["pending", "registered", "verified", "blocked"],
-			},
-		},
-		{
-			title: "Sort",
-			type: FILTER_FORMS_COMPONENTS.RADIO,
-			props: {
-				name: "sort",
-				options: [
-					{ value: "newest", label: "Newest query" },
-					{ value: "oldest", label: "Oldest query" },
-				],
-			},
-		},
-	];
-
-	const getColor = (color) => {
-		return `border border-${color}-500 dark:border-${color}-500 hover:ring-${color}-800 text-${color}-900 dark:text-${color}-800 hover:text-${color}-300 placeholder-${color}-700 dark:placeholder-${color}-500 bg-${color}-50 dark:bg-gray-100 hover:bg-${color}-900 `;
 	};
 
 	const headers = [
@@ -123,59 +77,48 @@ const UserPage = () => {
 			render: (user) => (
 				<img
 					className="w-10 h-10 rounded-full"
-					src={user.profilePhoto}
-					alt={user._id || "user Image"}
+					src={user?.profilePhoto?.url}
+					alt={user?._id || "user Image"}
 				/>
 			),
 			showValue: () => "lg:table-cell",
 		},
 		{
 			label: "Name",
-			render: (user) => user.firstName + " " + user.lastName,
+			render: (user) => `${user?.firstName} ${user?.lastName}`,
 		},
 		{
 			hide: true,
 			label: "Mail",
-			render: (user) => `${user.email}`,
+			render: (user) => `${user?.email}`,
 			showValue: () => "md:table-cell",
 		},
 		{
 			label: "Status",
 			render: (user) => (
-				<span
-					className={`inline-flex items-center px-2 py-1 me-2 text-sm font-medium cursor-pointer rounded ${getColor(
-						user?.status === "registered"
-							? "yellow"
-							: user?.status === "verified"
-							? "green"
-							: user?.status === "pending"
-							? "orange"
-							: user?.status === "blocked"
-							? "red"
-							: "gray"
-					)}`}>
-					{user?.status?.toUpperCase()}
-				</span>
+				<Badge
+					label={user?.status}
+					color={USER_STATUS_COLOR_MAP[user?.status] || "gray"}
+				/>
 			),
 		},
 		{
 			label: "Action",
 			render: (user) =>
-				isUpdating && user._id === id ? (
-					<MiniLoader />
-				) : user.status === "blocked" ? (
-					<CgUnblock
-						id={user._id}
-						onClick={() => handleUpdate(user._id, "unBlock")}
-						className="h-7 w-7 text-gray-500 cursor-pointer hover:text-red-700"
-						aria-label={`Update ${user._id}`}
-					/>
+				isStatusUpdating && user?._id === id ? (
+					<span className="flex items-center justify-center">
+						<MiniLoader />
+					</span>
 				) : (
-					<CgBlock
-						id={user._id}
-						onClick={() => handleUpdate(user._id, "block")}
-						className="h-7 w-7 text-gray-500 cursor-pointer hover:text-red-700"
-						aria-label={`Update ${user.name}`}
+					<Badge
+						label={user?.status === "blocked" ? "UnBlock" : "Block"}
+						color={"gray"}
+						onClick={() =>
+							handleUpdate(
+								user?._id,
+								user?.status === "blocked" ? "unBlock" : "block"
+							)
+						}
 					/>
 				),
 		},
@@ -183,8 +126,8 @@ const UserPage = () => {
 			label: "Details",
 			render: (user) => (
 				<Link
-					to={`/dashboard/client/${user._id}`}
-					aria-label={`Item ${user._id}`}>
+					to={`/dashboard/client/${user?._id}`}
+					aria-label={`Item ${user?._id}`}>
 					<ImEye
 						className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700"
 						aria-label="Details"
@@ -196,10 +139,10 @@ const UserPage = () => {
 
 	return (
 		<LoadingErrorBoundary
-			isLoading={fetchLoading}
-			isError={isError}
+			isLoading={isUsersLoading}
+			isError={isUsersError}
 			errorMessage={handleAndShowError(
-				fetchError,
+				usersError,
 				"Failed to fetch users data"
 			)}>
 			<React.Fragment>
@@ -211,18 +154,18 @@ const UserPage = () => {
 					onToggle={() => setIsOpen((prev) => !prev)}
 					onClearSearch={clearSearch}
 					onSearch={handleSearch}
-					isSearching={isFetching}
+					isSearching={isUsersFetching && searchTerm}
 				/>
 				<FilterFormLayout
 					isOpen={isOpen}
 					onSubmit={onSubmit}
 					onClear={onClear}
-					defaultValues={FILTER_FORMS_DEFAULT_VALUES}
-					fieldContents={FieldContents}>
+					defaultValues={USER_FILTER_FORMS_DEFAULT_VALUES}
+					fieldContents={USER_FILTER_FIELD_CONTENTS}>
 					<Table
 						CONFIG={headers}
 						DATA={currentItems}
-						KEYFN={(order) => order._id}
+						KEYFN={(user) => user._id}
 					/>
 					<Pagination
 						pageNumbers={pageNumbers}

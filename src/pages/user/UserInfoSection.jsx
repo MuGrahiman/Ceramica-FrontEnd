@@ -7,8 +7,6 @@ import ListOptions from "../../components/ListOptions";
  * UserInfoSection - Displays user details in a structured format
  * @param {Object} props - Component props
  * @param {Object} props.user - User data object
- * @param {Function} [props.formatDate] - Custom date formatting function
- * @param {Array} [props.customFields] - Additional fields to display
  */
 const UserInfoSection = ({ user = {} }) => {
 	// Base fields to display

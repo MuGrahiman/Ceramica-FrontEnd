@@ -47,7 +47,10 @@ export const useAuth = ( role = USER_ROLES.CLIENT ) => {
    * @param {string} [location="/login"] - Redirect path
    * @returns {boolean} - Current authorization status
    */
-  const validateAuthentication = ( message = "Please login", location = "/login" ) => {
+  const validateAuthentication = (
+    message = "Please login",
+    location = role === USER_ROLES.ADMIN ? '/admin' : "/login"
+  ) => {
     if ( !isAuthorized ) {
       navigate( location );
       showToast( message, 'error' );

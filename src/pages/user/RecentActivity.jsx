@@ -3,9 +3,13 @@ import PropTypes from "prop-types";
 import { formatToLocaleDateString } from "../../utils/date";
 import InfoCard from "./InfoCard";
 import ListOptions from "../../components/ListOptions";
+import { INITIAL_ACTIVITY_LOG_LENGTH } from "../../constants/user";
 
-const INITIAL_LOG_LENGTH = 3;
-
+/**
+ * Renders individual activity log item with timeline styling
+ * @param {Object} activity - Activity log object
+ * @param {number} index - Array index for key generation
+ */
 const ActivityLogItem = (activity = {}, index) => (
 	<li key={index} className="mb-8">
 		<div className="relative pb-8">
@@ -47,7 +51,13 @@ const ActivityLogItem = (activity = {}, index) => (
 	</li>
 );
 
-const ActivityLogToggler = ({ onToggle, showLess = false }) => (
+/**
+ * Toggle button for showing more/less activities
+ * @param {Object} props
+ * @param {Function} props.onToggle - Toggle handler function
+ * @param {boolean} props.showLess - Current toggle state
+ */
+const ActivityLogToggler = ({ onToggle = () => {}, showLess = false }) => (
 	<div className="mt-4 text-center">
 		<button
 			onClick={onToggle}
@@ -61,12 +71,20 @@ ActivityLogToggler.propTypes = {
 	onToggle: PropTypes.func.isRequired,
 	showLess: PropTypes.bool.isRequired,
 };
+
+/**
+ * Displays recent user activities with expandable/collapsible timeline
+ * @param {Object} props
+ * @param {Array} props.activities - Array of activity objects
+ */
 const RecentActivity = ({ activities = [] }) => {
-	const [logLength, setLogLength] = useState(INITIAL_LOG_LENGTH);
+	const [logLength, setLogLength] = useState(INITIAL_ACTIVITY_LOG_LENGTH);
 
 	const toggleLogLength = () => {
 		setLogLength(
-			logLength > INITIAL_LOG_LENGTH ? INITIAL_LOG_LENGTH : activities.length
+			logLength > INITIAL_ACTIVITY_LOG_LENGTH
+				? INITIAL_ACTIVITY_LOG_LENGTH
+				: activities.length
 		);
 	};
 
@@ -85,10 +103,10 @@ const RecentActivity = ({ activities = [] }) => {
 							/>
 						</ul>
 					</div>
-					{activities.length > INITIAL_LOG_LENGTH && (
+					{activities.length > INITIAL_ACTIVITY_LOG_LENGTH && (
 						<ActivityLogToggler
 							onToggle={toggleLogLength}
-							showLess={logLength > INITIAL_LOG_LENGTH}
+							showLess={logLength > INITIAL_ACTIVITY_LOG_LENGTH}
 						/>
 					)}
 				</div>

@@ -22,7 +22,8 @@ const RadioComponent = ({
 			<Controller
 				name={NAME}
 				control={CONTROL}
-				render={({ field: { onChange, value } }) => (
+				render={({ field: { onChange, value } }) => {
+					return(
 					<input
 						type="radio"
 						value={VALUE}
@@ -30,7 +31,7 @@ const RadioComponent = ({
 						onChange={() => onChange(VALUE)}
 						checked={value === VALUE}
 					/>
-				)}
+				)}}
 			/>
 			<label className="ms-2 text-sm font-medium">{LABEL.toUpperCase()}</label>
 		</div>

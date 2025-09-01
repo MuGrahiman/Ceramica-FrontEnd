@@ -17,20 +17,26 @@ import useOrder from "../../hooks/useOrder";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { FaRegAddressCard, FaRegHeart, FaRegUser } from "react-icons/fa";
 import CustomLink from "../../components/CustomLink";
-import { createDefaultState } from "../../utils/generals";
+import { createDefaultState, submitHandler } from "../../utils/generals";
 import { PROFILE_EDIT_FIELDS, PROFILE_TAB } from "../../constants/profile";
 import { USER_ROLES } from "../../constants/app";
-import { handleAndShowError } from "../../utils/errorHandlers";
 import EditToggler from "./EditToggler";
 import { TbShoppingBagCheck } from "react-icons/tb";
 
+/**
+ * Profile Page for managing user profile, password, address,
+ * order history, and wishlist.
+ */
 const ProfilePage = () => {
+	
+	// Sets the default value for the edit fields.
 	const setDefaultState = (value) =>
 		createDefaultState(Object.values(PROFILE_EDIT_FIELDS), value);
 
 	const [selectedTab, setSelectedTab] = useState(PROFILE_TAB.PROFILE);
 	const [editState, setEditState] = useState(setDefaultState(false));
 
+	// Toggles edit state specific field
 	const toggleEditMode = useCallback((field, value = false) => {
 		setEditState((prevState) => ({
 			...prevState,
@@ -41,6 +47,7 @@ const ProfilePage = () => {
 	const { currentUser } = useAuth(USER_ROLES.CLIENT);
 	const userId = currentUser ? currentUser._id : null;
 
+	// User data and operations
 	const {
 		userData,
 		isUserLoading,
@@ -52,8 +59,10 @@ const ProfilePage = () => {
 		forgotPasswordResult,
 	} = useUser({
 		userId,
+		userRole: USER_ROLES.CLIENT,
 	});
 
+	// Address management
 	const {
 		handleSubmit,
 		editAddress,
@@ -68,8 +77,10 @@ const ProfilePage = () => {
 		onSelection,
 	} = useAddress();
 
+	// Wishlist data
 	const { wishListItems, isWishListLoading } = useWishList();
 
+	// Order history
 	const { ordersData, isOrdersLoading } = useOrder(USER_ROLES.CLIENT);
 
 	useEffect(() => {
@@ -84,27 +95,21 @@ const ProfilePage = () => {
 		}
 	}, [editState.isEditAddress, addressList]);
 
+	// Handles toggling on edit address
 	const handleIsEditAddress = () => {
 		toggleEditMode(PROFILE_EDIT_FIELDS.ADDRESS, !editState.isEditAddress);
 		toggleEditMode(PROFILE_EDIT_FIELDS.PROFILE, !editState.isEditAddress);
 	};
 
+	//Handles tab selection with side effects
 	const handleSelectTab = (key) => {
 		if (key === PROFILE_TAB.ADDRESS) {
 			toggleEditMode(PROFILE_EDIT_FIELDS.ADDRESS, true);
-			// toggleEditMode(PROFILE_EDIT_FIELDS.PROFILE, true);
-			// setSelectedTab(PROFILE_TAB.ADDRESS);
 		}
 		setSelectedTab(key);
 	};
 
-	const submitHandler = async (mutateFn, data, successMsg, errorMsg) => {
-		await mutateFn(data, {
-			onSuccess: () => successMsg,
-			onError: (err) => handleAndShowError(err, errorMsg),
-		});
-	};
-
+	//Handles user profile update
 	const handleUpdateUser = async (data) =>
 		submitHandler(
 			updateUser,
@@ -113,6 +118,7 @@ const ProfilePage = () => {
 			"Failed to update your Account. Please try again."
 		);
 
+	// Handles password update
 	const handleUpdatePassword = async (data) =>
 		submitHandler(
 			updatePassword,
@@ -121,6 +127,7 @@ const ProfilePage = () => {
 			"Failed to update your Password. Please try again."
 		);
 
+	// Handles forgot password
 	const handleForgotPassword = async () =>
 		submitHandler(
 			forgotPassword,
@@ -128,7 +135,7 @@ const ProfilePage = () => {
 			"Sent password reset link successfully ",
 			"Failed to Sent password reset link. Please try again."
 		);
-
+	// Composite loading state
 	const isLoading = useMemo(
 		() =>
 			isUserLoading ||
@@ -137,7 +144,7 @@ const ProfilePage = () => {
 			isOrdersLoading,
 		[isUserLoading, isAddressFetching, isWishListLoading, isOrdersLoading]
 	);
-
+	// Global edit state check
 	const isEditing = useMemo(
 		() => Object.values(editState).some((value) => value === true),
 		[editState]

@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { handleAndShowError } from './errorHandlers';
 
 /**
  * Creates a default state object for the specified fields with different default values.
@@ -169,3 +170,10 @@ export const parseNumber = ( value ) => {
   return { numeric: value, suffix: "" };
 };
 
+
+export const submitHandler = async (mutateFn, data, successMsg, errorMsg) => {
+  await mutateFn(data, {
+    onSuccess: () => successMsg,
+    onError: (err) => handleAndShowError(err, errorMsg),
+  });
+};
