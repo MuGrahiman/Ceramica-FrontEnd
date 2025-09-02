@@ -2,7 +2,7 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useToast from "./useToast";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { USER_ROLES } from "../constants/app";
 
 /**
@@ -16,26 +16,36 @@ import { USER_ROLES } from "../constants/app";
  * @property {function} validateAuthentication - Validates and enforces auth
  */
 export const useAuth = ( role = USER_ROLES.CLIENT ) => {
-  const currentUser = useSelector( ( state ) => state.auth.currentUser );
-  const currentUserName = currentUser
-    ? `${ currentUser.firstName } ${ currentUser.lastName }`
-    : 'Guest';
-
   const navigate = useNavigate();
   const showToast = useToast();
+  const currentUser = useSelector( ( state ) => state.auth.currentUser );
+  const currentUserName = useMemo( () =>
+    currentUser ? `${ currentUser.firstName } ${ currentUser.lastName }` : 'Guest',
+    [ currentUser ]
+  );
+
+  /**
+   * Checks if user has specific role
+   * @param {string} requiredRole - Role to check
+   * @returns {boolean} True if user has the required role
+   */
+  const hasRole = useCallback( ( requiredRole ) =>
+    currentUser?.roles === requiredRole
+    , [ currentUser?.roles ] );
+
 
   // State to hold authorization status
   const [ isAuthorized, setIsAuthorized ] = useState( !!(
     currentUser &&
     currentUser.token &&
-    currentUser.roles === role
+    currentUser?.roles === role
   ) );
 
   useEffect( () => {
     setIsAuthorized( !!(
       currentUser &&
       currentUser.token &&
-      currentUser.roles === role
+      currentUser?.roles === role
     ) );
   }, [ currentUser, role ] );
 
@@ -59,16 +69,14 @@ export const useAuth = ( role = USER_ROLES.CLIENT ) => {
     return isAuthorized;
   };
 
-  // Suggested: Add role checking utility
-  const hasRole = ( requiredRole ) => {
-    return currentUser?.roles === requiredRole;
-  };
 
   return {
     isAuthorized,
     currentUser,
     currentUserName,
     validateAuthentication,
-    hasRole
+    hasRole,
+    userId: currentUser?._id,
+    userEmail: currentUser?.email
   };
 };
