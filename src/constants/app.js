@@ -165,3 +165,17 @@ export const GUIDES = [
         desc: "Learn how to maintain your ceramics to preserve their beauty for years.",
     },
 ];
+
+export const CLIENT_SIDEBAR_TOGGLE_KEY = 'client.sidebar.toggle';
+
+export const CLIENT_NAVIGATION_PATHS = [
+    { name: "Home", path: "/" },
+    { name: "Shop", path: "/shop" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
+    { name: "Cart", path: "/cart" },
+    { name: "Profile", path: "/profile" },
+];
+
+export const CLIENT_LOGIN_PATH =     { name: "Login", path: "/login" }
+
