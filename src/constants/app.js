@@ -17,6 +17,7 @@ import bowlsCategories from "../assets/ceramics/bowls_categories.avif";
 import saucerCategories from "../assets/ceramics/Gemini_saucer_Ceramic.png";
 import kettleCategories from "../assets/ceramics/kettle_ceramic.png";
 import { toPascalCase } from "../utils/generals";
+import { FaAddressBook, FaBoxOpen, FaCommentAlt, FaHeart, FaHome, FaUserCircle, FaShoppingCart, FaSignInAlt, FaSignOutAlt, FaStore } from "react-icons/fa";
 
 export const FALL_BACK_IMAGE = fallBackImage
 
@@ -168,14 +169,21 @@ export const GUIDES = [
 
 export const CLIENT_SIDEBAR_TOGGLE_KEY = 'client.sidebar.toggle';
 
+
 export const CLIENT_NAVIGATION_PATHS = [
-    { name: "Home", path: "/" },
-    { name: "Shop", path: "/shop" },
-    { name: "About", path: "/about" },
-    { name: "Contact", path: "/contact" },
-    { name: "Cart", path: "/cart" },
-    { name: "Profile", path: "/profile" },
+    { icon: FaHome, name: "Home", path: "/" },
+    { icon: FaStore, name: "Shop", path: "/shop" }, // Using Bag Icon
+    { icon: FaAddressBook, name: "About", path: "/about" },
+    { icon: FaCommentAlt, name: "Contact", path: "/contact" },
+    { icon: FaShoppingCart, name: "Cart", path: "/cart" },
+    { icon: FaUserCircle, name: "Profile", path: "/profile" },
+    { icon: FaHeart, name: "Wishlist", path: "/wishlist" },
+    { icon: FaBoxOpen, name: "Orders", path: "/orders" },
+    { icon: FaSignInAlt, name: "Login", path: "/login" },
+    { icon: FaSignOutAlt, name: "Logout", path: "#" },
 ];
 
-export const CLIENT_LOGIN_PATH =     { name: "Login", path: "/login" }
+
+
+export const CLIENT_LOGIN_PATH = { name: "Login", path: "/login" }
 

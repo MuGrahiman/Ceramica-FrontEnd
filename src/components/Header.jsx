@@ -1,12 +1,11 @@
-import React, { useMemo } from "react";
+import React, {  useMemo, useState } from "react";
 import BrandLogo from "./BrandLogo";
 import { FaBars, FaShoppingCart, FaTimes, FaUser } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useScroll } from "../hooks/useScroll";
 import useToggle from "../hooks/useToggle";
 import ListOptions from "./ListOptions";
 import {
-	CLIENT_LOGIN_PATH,
 	CLIENT_NAVIGATION_PATHS,
 	CLIENT_SIDEBAR_TOGGLE_KEY,
 	USER_ROLES,
@@ -14,41 +13,105 @@ import {
 import { useActiveNav } from "../hooks/useActivePath";
 import { useAuth } from "../hooks/useAuth";
 import PropTypes from "prop-types";
+import DropdownMenu from "./DropdownMenu";
+import { useUserSlice } from "../redux/store";
 
 // Shared PropTypes definition for navigation items
-const NAV_ITEM_SHAPE = {
+const PATH_ITEMS_SHAPE = {
 	path: PropTypes.string.isRequired,
 	name: PropTypes.string.isRequired,
 };
-
+const CART = "Cart";
+const PROFILE = "Profile";
+const ORDER = "Orders";
+const WHISHLIST = "Wishlist";
+const LOGIN = "Login";
+const LOGOUT = "Logout";
 /**
  * Desktop navigation component
  */
-const DesktopView = ({ navItems = [], getActiveNav = () => {} }) => {
+const DesktopView = ({
+	navItems = [],
+	authItems = [],
+	dropItems = [],
+	getActiveNav = () => {},
+}) => {
+	const { removeUser } = useUserSlice();
+	const navigate = useNavigate();
+	const [isOpen, setIsOpen] = useState(false);
+
 	return (
-		<ul className="hidden md:flex space-x-6">
-			<ListOptions
-				OPTIONS={navItems}
-				RENDER_ITEM={(item) => (
-					<li key={item.path}>
-						<Link
-							className={`relative cursor-pointer lg:px-4 py-2 transition-all duration-300 ease-in-out ${
-								getActiveNav(item.name)
-									? "dark:text-blue-950 font-semibold after:content-[''] after:block after:h-1 after:bg-blue-950 after:absolute after:w-full after:bottom-0"
-									: "text-gray-600 after:content-[''] after:block after:h-1 after:bg-transparent after:absolute after:w-full after:bottom-0"
-							} hover:after:bg-gray-300`}
-							to={item.path}>
-							{item.name}
-						</Link>
-					</li>
-				)}
-			/>
-		</ul>
+		<React.Fragment>
+			<ul className="hidden md:flex space-x-6">
+				<ListOptions
+					OPTIONS={navItems}
+					RENDER_ITEM={(item) => (
+						<li key={item.path}>
+							<Link
+								className={`relative cursor-pointer lg:px-4 py-2 transition-all duration-300 ease-in-out ${
+									getActiveNav(item.name)
+										? "dark:text-blue-950 font-semibold after:content-[''] after:block after:h-1 after:bg-blue-950 after:absolute after:w-full after:bottom-0"
+										: "text-gray-600 after:content-[''] after:block after:h-1 after:bg-transparent after:absolute after:w-full after:bottom-0"
+								} hover:after:bg-gray-300`}
+								to={item.path}>
+								{item.name}
+							</Link>
+						</li>
+					)}
+				/>
+			</ul>
+			<div className="relative hidden md:flex items-center justify-between space-x-4">
+				<ListOptions
+					OPTIONS={authItems}
+					RENDER_ITEM={({ icon: Icon, name, path }) => (
+						<>
+							<span
+								onClick={() =>
+									name === PROFILE ? setIsOpen(!isOpen) : navigate(path)
+								}
+								className={`cursor-pointer px-6 py-2 rounded-lg border-2 border-blue-950 hover:border-gray-600 hover:bg-gray-600 hover:text-gray-200 transition-all duration-300 ${
+									getActiveNav(name)
+										? "bg-blue-950 text-white"
+										: "bg-transparent text-blue-950"
+								}`}>
+								{name === LOGIN && name}
+								{name === CART || name === PROFILE ? (
+									<Icon className={"w-5 h-5"} />
+								) : null}
+							</span>
+							<DropdownMenu
+								options={dropItems}
+								selectedValue={getActiveNav(name)}
+								onSelect={(option) =>
+									option.name === LOGOUT ? removeUser() : navigate(option.path)
+								}
+								setIsOpen={setIsOpen}
+								isOpen={isOpen}
+								renderKey={(option) => option.name}
+								renderValue={({ icon: RenderIcon, name: renderName }) => (
+									<div className="flex items-center  relative">
+										<RenderIcon className={"w-4 h-4 me-2"} />
+										<span className="truncate">{renderName}</span>
+									</div>
+								)}
+								isOptionSelected={(option) => getActiveNav(option.name)}
+								position={{
+									left: "auto",
+									right: "0",
+								}}
+							/>
+						</>
+					)}
+				/>
+			</div>
+		</React.Fragment>
 	);
 };
 
 DesktopView.propTypes = {
-	navItems: PropTypes.arrayOf(PropTypes.shape(NAV_ITEM_SHAPE)).isRequired,
+	navItems: PropTypes.arrayOf(PropTypes.shape(PATH_ITEMS_SHAPE)).isRequired,
+	authItems: PropTypes.arrayOf(PropTypes.shape(PATH_ITEMS_SHAPE)).isRequired,
+	dropItems: PropTypes.arrayOf(PropTypes.shape(PATH_ITEMS_SHAPE)).isRequired,
 	getActiveNav: PropTypes.func.isRequired,
 };
 
@@ -106,9 +169,9 @@ const DesktopAuthActions = ({
 DesktopAuthActions.propTypes = {
 	isAuthorized: PropTypes.bool.isRequired,
 	currentNavPath: PropTypes.string.isRequired,
-	loginItem: PropTypes.shape(NAV_ITEM_SHAPE).isRequired,
-	cartItem: PropTypes.shape(NAV_ITEM_SHAPE).isRequired,
-	profileItem: PropTypes.shape(NAV_ITEM_SHAPE).isRequired,
+	loginItem: PropTypes.shape(PATH_ITEMS_SHAPE).isRequired,
+	cartItem: PropTypes.shape(PATH_ITEMS_SHAPE).isRequired,
+	profileItem: PropTypes.shape(PATH_ITEMS_SHAPE).isRequired,
 	getActiveNav: PropTypes.func.isRequired,
 };
 
@@ -118,7 +181,7 @@ DesktopAuthActions.propTypes = {
 const MobileView = ({
 	isSidebarOpen = false,
 	setIsSidebarOpen = () => {},
-	mobileNavItems = [],
+	filteredNavItems = [],
 	currentActivePath = "",
 }) => {
 	return (
@@ -143,18 +206,19 @@ const MobileView = ({
 				</div>
 
 				<ListOptions
-					OPTIONS={mobileNavItems}
-					RENDER_ITEM={(item) => (
+					OPTIONS={filteredNavItems}
+					RENDER_ITEM={({ icon: Icon, name, path }) => (
 						<Link
-							to={item.path}
-							key={item.path}
-							className={`relative cursor-pointer text-lg w-full px-4 py-2 transition-all duration-300 ease-in-out ${
-								currentActivePath === item.path
+							to={path}
+							key={path}
+							className={`relative flex items-center cursor-pointer text-lg w-full px-4 py-2 transition-all duration-300 ease-in-out ${
+								currentActivePath === path
 									? "text-blue-950 font-semibold after:content-[''] after:block after:h-1 after:bg-blue-950 after:absolute after:w-full after:bottom-0"
 									: "text-gray-600 after:content-[''] after:block after:h-1 after:bg-transparent after:absolute after:w-full after:bottom-0"
 							} hover:after:bg-gray-300`}
 							onClick={setIsSidebarOpen}>
-							{item.name}
+							<Icon className={"w-5 h-5 me-3"} />
+							{name}
 						</Link>
 					)}
 				/>
@@ -166,7 +230,8 @@ const MobileView = ({
 MobileView.propTypes = {
 	isSidebarOpen: PropTypes.bool.isRequired,
 	setIsSidebarOpen: PropTypes.func.isRequired,
-	mobileNavItems: PropTypes.arrayOf(PropTypes.shape(NAV_ITEM_SHAPE)).isRequired,
+	filteredNavItems: PropTypes.arrayOf(PropTypes.shape(PATH_ITEMS_SHAPE))
+		.isRequired,
 	currentActivePath: PropTypes.string.isRequired,
 };
 
@@ -179,39 +244,31 @@ const Header = () => {
 	const isScrolled = useScroll();
 	const { isActiveNav, currentNavPath } = useActiveNav(CLIENT_NAVIGATION_PATHS);
 
-	// Display only first 4 navigation items on desktop for cleaner UI
-	const itemsToDisplay = useMemo(() => CLIENT_NAVIGATION_PATHS.slice(0, 4), []);
-
-	// Find navigation items with fallbacks to prevent errors if items are not found
-	const CART_ITEM = CLIENT_NAVIGATION_PATHS.find(
-		(item) => item.name === "Cart"
-	) || { name: "Cart", path: "/cart" };
-
-	const PROFILE_ITEM = CLIENT_NAVIGATION_PATHS.find(
-		(item) => item.name === "Profile"
-	) || { name: "Profile", path: "/profile" };
-
-	const LOGIN_ITEM = CLIENT_LOGIN_PATH || { name: "Login", path: "/login" };
-
 	/**
 	 * Mobile navigation items with authentication-based filtering:
 	 * - Unauthorized users: Hide Cart/Profile, show Login
 	 * - Authorized users: Show Cart/Profile, hide Login
 	 */
-	const mobileNavItems = useMemo(() => {
-		return [...CLIENT_NAVIGATION_PATHS, CLIENT_LOGIN_PATH].filter((item) => {
+	const filteredNavItems = useMemo(() => {
+		return CLIENT_NAVIGATION_PATHS.filter((item) => {
 			if (!isAuthorized) {
-				return item.name !== CART_ITEM.name && item.name !== PROFILE_ITEM.name;
+				return (
+					item.name !== CART &&
+					item.name !== PROFILE &&
+					item.name !== ORDER &&
+					item.name !== LOGOUT &&
+					item.name !== WHISHLIST
+				);
 			} else {
-				return item.name !== LOGIN_ITEM.name;
+				return item.name !== LOGIN;
 			}
 		});
-	}, [CART_ITEM.name, LOGIN_ITEM.name, PROFILE_ITEM.name, isAuthorized]);
-	
+	}, [isAuthorized]);
+
 	// Helper functions for cleaner code
 	const setSideBarAct = () => setIsSidebarOpen(CLIENT_SIDEBAR_TOGGLE_KEY);
 	const getActiveNav = (navName) => isActiveNav(navName);
-	
+
 	return (
 		<header
 			className={`max-w-screen-2xl mx-auto ${
@@ -227,16 +284,11 @@ const Header = () => {
 					/>
 
 					{/* Desktop Navigation - Showing only first 4 items */}
-					<DesktopView getActiveNav={getActiveNav} navItems={itemsToDisplay} />
-
-					{/* Desktop Auth Actions */}
-					<DesktopAuthActions
+					<DesktopView
 						getActiveNav={getActiveNav}
-						cartItem={CART_ITEM}
-						currentNavPath={currentNavPath}
-						isAuthorized={isAuthorized}
-						loginItem={LOGIN_ITEM}
-						profileItem={PROFILE_ITEM}
+						navItems={filteredNavItems.slice(0, 4) || []}
+						authItems={filteredNavItems.slice(4, 6) || []}
+						dropItems={filteredNavItems.slice(5) || []}
 					/>
 
 					{/* Mobile Menu Button */}
@@ -255,7 +307,7 @@ const Header = () => {
 				currentActivePath={currentNavPath}
 				isSidebarOpen={isSidebarOpen(CLIENT_SIDEBAR_TOGGLE_KEY)}
 				setIsSidebarOpen={setSideBarAct}
-				mobileNavItems={mobileNavItems}
+				filteredNavItems={filteredNavItems}
 			/>
 		</header>
 	);
