@@ -2,7 +2,7 @@ import React from "react";
 import ListOptions from "../../components/ListOptions";
 import CartCard from "./CartCard";
 
-const CartList = ({ CART_ITEMS }) => {
+const CartList = ({ CART_ITEMS,showButtons }) => {
 	return (
 		<div className="mt-8 pt-6">
 			<div className="flow-root">
@@ -16,6 +16,7 @@ const CartList = ({ CART_ITEMS }) => {
 								productId={inventory._id}
 								{...inventory}
 								{...rest}
+								showButtons={showButtons}
 							/>
 						)}
 					/>

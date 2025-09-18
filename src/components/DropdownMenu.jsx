@@ -8,7 +8,7 @@ import ListOptions from "./ListOptions";
  * @param {Array} props.options - Array of options to display in the dropdown
  * @param {Function} props.onSelect - Callback function when an option is selected
  * @param {boolean} props.isOpen - Controls the visibility of the dropdown
- * @param {Function} props.setIsOpen - Function to control dropdown visibility state
+ * @param {Function} props.onClose - Function to control dropdown visibility state
  * @param {Function} [props.renderKey] - Function to render option label
  * @param {Function} [props.renderValue] - Function to extract option value
  * @param {Function} [props.isOptionSelected] - Function to determine if option is selected
@@ -25,7 +25,7 @@ const DropdownMenu = ({
 	options = [],
 	onSelect = () => {},
 	isOpen = false,
-	setIsOpen = () => {},
+	onClose = () => {},
 	renderKey = (option) => option.label,
 	renderValue = (option) => option.value,
 	isOptionSelected = (option) => false,
@@ -37,9 +37,9 @@ const DropdownMenu = ({
 	 * Handles option selection
 	 * @param {Object} option - The selected option object
 	 */
-	const handleSelect = (option) => {
-		onSelect(option);
-		setIsOpen(false);
+	const handleSelect = (e,option) => {
+		onSelect(option,e);
+		onClose();
 	};
 
 	/**
@@ -48,7 +48,7 @@ const DropdownMenu = ({
 	 * @returns {string|number} Unique identifier for the option
 	 */
 	const getOptionKey = (option) => {
-		const value = renderKey(option);
+		const value = option ? renderKey(option) : "key";
 		return value !== undefined && value !== null
 			? value
 			: JSON.stringify(option);
@@ -63,6 +63,8 @@ const DropdownMenu = ({
 		marginTop: position.marginTop || "0.5rem",
 		...position,
 	};
+
+	if (!isOpen) return null; // Don’t render if dropdown is closed
 
 	return (
 		<div
@@ -96,7 +98,7 @@ const DropdownMenu = ({
 								key={optionKey}
 								role="menuitem"
 								tabIndex={isOpen ? 0 : -1}
-								onClick={() => handleSelect(option)}
+								onClick={(e) => handleSelect(e,option)}
 								className={`
 					px-4 py-3 cursor-pointer transition-all duration-200
 					transform origin-center outline-none
@@ -117,8 +119,8 @@ const DropdownMenu = ({
 									opacity: isOpen ? 1 : 0,
 								}}
 								aria-selected={isSelected}>
-									{renderValue(option)}
-					
+								{renderValue(option)}
+
 								{/* Subtle background texture */}
 								<div
 									className="absolute inset-0 opacity-10 bg-gradient-to-r from-gray-300 to-gray-400 pointer-events-none rounded-lg"
@@ -143,7 +145,7 @@ DropdownMenu.propTypes = {
 	options: PropTypes.arrayOf(PropTypes.any).isRequired,
 	onSelect: PropTypes.func.isRequired,
 	isOpen: PropTypes.bool.isRequired,
-	setIsOpen: PropTypes.func.isRequired,
+	onClose: PropTypes.func.isRequired,
 	renderKey: PropTypes.func,
 	renderValue: PropTypes.func,
 	isOptionSelected: PropTypes.func,

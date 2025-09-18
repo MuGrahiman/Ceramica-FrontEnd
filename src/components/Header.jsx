@@ -1,6 +1,6 @@
-import React, {  useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import BrandLogo from "./BrandLogo";
-import { FaBars, FaShoppingCart, FaTimes, FaUser } from "react-icons/fa";
+import { FaBars, FaLongArrowAltRight, FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useScroll } from "../hooks/useScroll";
 import useToggle from "../hooks/useToggle";
@@ -9,170 +9,238 @@ import {
 	CLIENT_NAVIGATION_PATHS,
 	CLIENT_SIDEBAR_TOGGLE_KEY,
 	USER_ROLES,
+	NAV_ITEM_CATEGORIES,
+	CLIENT_HEADER_DROP_DOWN_TOGGLE_KEY,
+	CLIENT_HEADER_CART_DOWN_TOGGLE_KEY,
 } from "../constants/app";
 import { useActiveNav } from "../hooks/useActivePath";
 import { useAuth } from "../hooks/useAuth";
 import PropTypes from "prop-types";
 import DropdownMenu from "./DropdownMenu";
 import { useUserSlice } from "../redux/store";
+import { useSelector } from "react-redux";
+import { useCart } from "../hooks/useCart";
+import CartList from "../pages/cart/CartList";
+import CartSummary from "../pages/cart/CartSummary";
 
-// Shared PropTypes definition for navigation items
-const PATH_ITEMS_SHAPE = {
+//  PropTypes definition for navigation items
+const PATH_PROP_SHAPE = {
 	path: PropTypes.string.isRequired,
 	name: PropTypes.string.isRequired,
+	icon: PropTypes.elementType,
+	category: PropTypes.oneOf([
+		NAV_ITEM_CATEGORIES.HEADER,
+		NAV_ITEM_CATEGORIES.AUTH,
+		NAV_ITEM_CATEGORIES.DROPDOWN,
+	]).isRequired,
 };
+//  PropTypes definition for cart items
+const CART_PROP_SHAPE = {
+	isOpen: PropTypes.bool,
+	cartItems: PropTypes.arrayOf(
+		PropTypes.shape({
+			_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+			id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+			name: PropTypes.string,
+			price: PropTypes.number,
+			quantity: PropTypes.number,
+			image: PropTypes.string,
+		})
+	),
+	subTotal: PropTypes.number,
+	isRemoving: PropTypes.bool,
+	isUpdating: PropTypes.bool,
+	isFetching: PropTypes.bool,
+	onClose: PropTypes.func,
+};
+
 const CART = "Cart";
 const PROFILE = "Profile";
 const ORDER = "Orders";
-const WHISHLIST = "Wishlist";
+const WISHLIST = "Wishlist";
 const LOGIN = "Login";
 const LOGOUT = "Logout";
+
+/**
+ * CartModal Component
+ *
+ * Renders a modal showing shopping cart items and summary.
+ *
+ * Props:
+ * - isOpen (boolean): Controls visibility of the modal.
+ * - cartItems (array): List of items in the cart.
+ * - subTotal (number): Subtotal value for the cart.
+ * - isLoading (boolean): Loading state for cart updates.
+ * - onClose (function): Callback to handle closing the modal.
+ */
+const CartModal = ({
+	isOpen = false,
+	cartItems = [],
+	subTotal = 0,
+	isRemoving = false,
+	isUpdating = false,
+	isFetching = false,
+	onClose = () => {},
+}) => {
+	if (!isOpen) return null; // Don’t render if modal is closed
+
+	return (
+		<div
+			role="dialog"
+			aria-label="Shopping cart"
+			className={`
+				absolute z-50 bg-blue-950 border border-gray-300 max-h-lvh overflow-hidden 
+				rounded-lg shadow-2xl shadow-blue-900/50
+				transform origin-top
+				transition-all duration-300 ease-out py-6
+					${
+						isOpen
+							? "opacity-100 scale-100 translate-y-0"
+							: "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+					}
+			`}
+			style={{ top: "100%", right: "-50px", marginTop: "0.5rem" }}>
+			<div className="container bg-white shadow-xl">
+				{/* Header */}
+				<div className="flex-1 px-4 py-6 sm:px-6">
+					<Link
+						to="/cart"
+						className="flex items-start justify-between"
+						onClick={onClose}>
+						<h2 className="text-2xl font-bold text-gray-900">Shopping Cart</h2>
+						<FaLongArrowAltRight />
+					</Link>
+
+					{/* Cart Items */}
+					<div className="max-h-56 overflow-y-auto mt-4">
+						<CartList CART_ITEMS={cartItems} />
+					</div>
+				</div>
+
+				{/* Summary */}
+				<CartSummary
+					subtotal={subTotal}
+					isLoading={isRemoving || isUpdating || isFetching}
+				/>
+			</div>
+		</div>
+	);
+};
+
+CartModal.propTypes = CART_PROP_SHAPE;
+
 /**
  * Desktop navigation component
  */
+
 const DesktopView = ({
 	navItems = [],
 	authItems = [],
-	dropItems = [],
+	dropdownItems = [],
+	isDropDownOpen = false,
 	getActiveNav = () => {},
+	handleDropdownItemSelect = () => {},
+	onToggleModal = () => {},
+	cartData = {},
 }) => {
-	const { removeUser } = useUserSlice();
-	const navigate = useNavigate();
-	const [isOpen, setIsOpen] = useState(false);
-
 	return (
 		<React.Fragment>
+			{/* Main Navigation */}
 			<ul className="hidden md:flex space-x-6">
 				<ListOptions
 					OPTIONS={navItems}
-					RENDER_ITEM={(item) => (
-						<li key={item.path}>
+					RENDER_ITEM={(item, index) => (
+						<li key={item.path + index}>
 							<Link
+								to={item.path}
 								className={`relative cursor-pointer lg:px-4 py-2 transition-all duration-300 ease-in-out ${
 									getActiveNav(item.name)
 										? "dark:text-blue-950 font-semibold after:content-[''] after:block after:h-1 after:bg-blue-950 after:absolute after:w-full after:bottom-0"
 										: "text-gray-600 after:content-[''] after:block after:h-1 after:bg-transparent after:absolute after:w-full after:bottom-0"
-								} hover:after:bg-gray-300`}
-								to={item.path}>
+								} hover:after:bg-gray-300`}>
 								{item.name}
 							</Link>
 						</li>
 					)}
 				/>
 			</ul>
-			<div className="relative hidden md:flex items-center justify-between space-x-4">
+
+			{/* Auth Actions (Cart, Profile, Dropdown) */}
+			<ul className="relative hidden md:flex items-center justify-between space-x-4">
 				<ListOptions
 					OPTIONS={authItems}
-					RENDER_ITEM={({ icon: Icon, name, path }) => (
-						<>
-							<span
-								onClick={() =>
-									name === PROFILE ? setIsOpen(!isOpen) : navigate(path)
-								}
-								className={`cursor-pointer px-6 py-2 rounded-lg border-2 border-blue-950 hover:border-gray-600 hover:bg-gray-600 hover:text-gray-200 transition-all duration-300 ${
-									getActiveNav(name)
-										? "bg-blue-950 text-white"
-										: "bg-transparent text-blue-950"
-								}`}>
-								{name === LOGIN && name}
-								{name === CART || name === PROFILE ? (
-									<Icon className={"w-5 h-5"} />
-								) : null}
-							</span>
-							<DropdownMenu
-								options={dropItems}
-								selectedValue={getActiveNav(name)}
-								onSelect={(option) =>
-									option.name === LOGOUT ? removeUser() : navigate(option.path)
-								}
-								setIsOpen={setIsOpen}
-								isOpen={isOpen}
-								renderKey={(option) => option.name}
-								renderValue={({ icon: RenderIcon, name: renderName }) => (
-									<div className="flex items-center  relative">
-										<RenderIcon className={"w-4 h-4 me-2"} />
-										<span className="truncate">{renderName}</span>
-									</div>
-								)}
-								isOptionSelected={(option) => getActiveNav(option.name)}
-								position={{
-									left: "auto",
-									right: "0",
-								}}
-							/>
-						</>
-					)}
+					RENDER_ITEM={(item = { icon: null, name: "", path: "" }) => {
+						const { icon: Icon, name, path } = item;
+						return name === LOGIN ? (
+							<li key={path}>
+								<Link
+									to={path}
+									className={`px-6 py-2 rounded-lg border-2 border-blue-950 hover:border-gray-600 transition-all duration-300 ${
+										getActiveNav(name)
+											? "bg-blue-950 text-white"
+											: "bg-transparent text-blue-950 hover:bg-gray-600 hover:text-gray-200"
+									}`}
+									aria-label="User Profile"
+									aria-expanded={isDropDownOpen}>
+									{name}
+								</Link>
+							</li>
+						) : (
+							<li key={path}>
+								<button
+									onClick={() => onToggleModal(name)}
+									className={`px-6 py-2 rounded-lg border-2 border-blue-950 hover:border-gray-600 transition-all duration-300 ${
+										getActiveNav(name)
+											? "bg-blue-950 text-white"
+											: "bg-transparent text-blue-950 hover:bg-gray-600 hover:text-gray-200"
+									}`}
+									aria-label={name}
+									aria-expanded={isDropDownOpen}>
+									{Icon && <Icon className="w-5 h-5" />}
+								</button>
+							</li>
+						);
+					}}
 				/>
-			</div>
+
+				{/*  Cart Modal */}
+				<CartModal {...cartData} onClose={() => onToggleModal("CART")} />
+
+				{/* Dropdown */}
+				<DropdownMenu
+					onClose={() => onToggleModal(PROFILE)}
+					options={dropdownItems}
+					isOpen={isDropDownOpen}
+					onSelect={handleDropdownItemSelect}
+					renderKey={(option) => option?.name}
+					renderValue={(
+						{ icon: RenderIcon, name: renderName } = { icon: null, name: "" }
+					) => (
+						<div className="flex items-center relative">
+							{RenderIcon && <RenderIcon className="w-4 h-4 me-2" />}
+							<span className="truncate">{renderName}</span>
+						</div>
+					)}
+					isOptionSelected={(option) => getActiveNav(option?.name)}
+					position={{
+						left: "auto",
+						right: "0",
+					}}
+				/>
+			</ul>
 		</React.Fragment>
 	);
 };
 
 DesktopView.propTypes = {
-	navItems: PropTypes.arrayOf(PropTypes.shape(PATH_ITEMS_SHAPE)).isRequired,
-	authItems: PropTypes.arrayOf(PropTypes.shape(PATH_ITEMS_SHAPE)).isRequired,
-	dropItems: PropTypes.arrayOf(PropTypes.shape(PATH_ITEMS_SHAPE)).isRequired,
+	navItems: PropTypes.arrayOf(PropTypes.shape(PATH_PROP_SHAPE)).isRequired,
+	authItems: PropTypes.arrayOf(PropTypes.shape(PATH_PROP_SHAPE)).isRequired,
+	dropdownItems: PropTypes.arrayOf(PropTypes.shape(PATH_PROP_SHAPE)).isRequired,
+	isDropDownOpen: PropTypes.bool.isRequired,
 	getActiveNav: PropTypes.func.isRequired,
-};
-
-/**
- * Desktop authentication actions (cart, profile, login)
- */
-const DesktopAuthActions = ({
-	isAuthorized = false,
-	currentNavPath = "",
-	loginItem = {},
-	cartItem = {},
-	profileItem = {},
-	getActiveNav = () => {},
-}) => {
-	return (
-		<div className="hidden md:flex items-center justify-between space-x-4">
-			{isAuthorized ? (
-				<React.Fragment>
-					<Link
-						to={cartItem.path}
-						className={`px-6 py-2 rounded-lg border-2 border-blue-950 hover:border-gray-600 transition-all duration-300 ${
-							getActiveNav(cartItem.name)
-								? "bg-blue-950 text-white"
-								: "bg-transparent text-blue-950 hover:bg-gray-600 hover:text-gray-200"
-						}`}
-						aria-label="Shopping Cart">
-						<FaShoppingCart />
-					</Link>
-					<Link
-						to={profileItem.path}
-						className={`px-6 py-2 rounded-lg border-2 border-blue-950 hover:border-gray-600 transition-all duration-300 ${
-							getActiveNav(profileItem.name)
-								? "bg-blue-950 text-white"
-								: "bg-transparent text-blue-950 hover:bg-gray-600 hover:text-gray-200"
-						}`}
-						aria-label="User Profile">
-						<FaUser />
-					</Link>
-				</React.Fragment>
-			) : (
-				<Link
-					to={loginItem.path}
-					className={`px-6 py-2 rounded-lg border-2 border-blue-950 hover:border-gray-600  hover:bg-gray-600 hover:text-gray-200 transition-all duration-300 ${
-						currentNavPath === loginItem.path
-							? "bg-blue-950 text-white"
-							: "bg-transparent text-blue-950"
-					}`}>
-					{loginItem.name}
-				</Link>
-			)}
-		</div>
-	);
-};
-
-DesktopAuthActions.propTypes = {
-	isAuthorized: PropTypes.bool.isRequired,
-	currentNavPath: PropTypes.string.isRequired,
-	loginItem: PropTypes.shape(PATH_ITEMS_SHAPE).isRequired,
-	cartItem: PropTypes.shape(PATH_ITEMS_SHAPE).isRequired,
-	profileItem: PropTypes.shape(PATH_ITEMS_SHAPE).isRequired,
-	getActiveNav: PropTypes.func.isRequired,
+	handleDropdownItemSelect: PropTypes.func.isRequired,
+	onToggleModal: PropTypes.func.isRequired,
+	cartData: CART_PROP_SHAPE,
 };
 
 /**
@@ -183,6 +251,7 @@ const MobileView = ({
 	setIsSidebarOpen = () => {},
 	filteredNavItems = [],
 	currentActivePath = "",
+	onLogout = () => {},
 }) => {
 	return (
 		<aside
@@ -207,20 +276,24 @@ const MobileView = ({
 
 				<ListOptions
 					OPTIONS={filteredNavItems}
-					RENDER_ITEM={({ icon: Icon, name, path }) => (
-						<Link
-							to={path}
-							key={path}
-							className={`relative flex items-center cursor-pointer text-lg w-full px-4 py-2 transition-all duration-300 ease-in-out ${
-								currentActivePath === path
-									? "text-blue-950 font-semibold after:content-[''] after:block after:h-1 after:bg-blue-950 after:absolute after:w-full after:bottom-0"
-									: "text-gray-600 after:content-[''] after:block after:h-1 after:bg-transparent after:absolute after:w-full after:bottom-0"
-							} hover:after:bg-gray-300`}
-							onClick={setIsSidebarOpen}>
-							<Icon className={"w-5 h-5 me-3"} />
-							{name}
-						</Link>
-					)}
+					RENDER_ITEM={(item = { icon: null, name: "", path: "" }) => {
+						const { icon: Icon, name, path } = item;
+						return (
+							<Link
+								to={path === "#" ? "/" : path}
+								key={name}
+								className={`relative flex items-center cursor-pointer text-lg w-full px-4 py-2 transition-all duration-300 ease-in-out ${
+									currentActivePath === path
+										? "text-blue-950 font-semibold after:content-[''] after:block after:h-1 after:bg-blue-950 after:absolute after:w-full after:bottom-0"
+										: "text-gray-600 after:content-[''] after:block after:h-1 after:bg-transparent after:absolute after:w-full after:bottom-0"
+								} hover:after:bg-gray-300`}
+								onClick={(e) =>
+									name === LOGOUT ? onLogout(e) : setIsSidebarOpen()
+								}>
+								{Icon && <Icon className="w-5 h-5 me-3" />} {name}
+							</Link>
+						);
+					}}
 				/>
 			</div>
 		</aside>
@@ -230,9 +303,10 @@ const MobileView = ({
 MobileView.propTypes = {
 	isSidebarOpen: PropTypes.bool.isRequired,
 	setIsSidebarOpen: PropTypes.func.isRequired,
-	filteredNavItems: PropTypes.arrayOf(PropTypes.shape(PATH_ITEMS_SHAPE))
+	filteredNavItems: PropTypes.arrayOf(PropTypes.shape(PATH_PROP_SHAPE))
 		.isRequired,
 	currentActivePath: PropTypes.string.isRequired,
+	onLogout: PropTypes.func.isRequired,
 };
 
 /**
@@ -240,34 +314,105 @@ MobileView.propTypes = {
  */
 const Header = () => {
 	const { isAuthorized } = useAuth(USER_ROLES.CLIENT);
-	const [setIsSidebarOpen, isSidebarOpen] = useToggle();
+	const [setToggleState, isToggled] = useToggle();
 	const isScrolled = useScroll();
 	const { isActiveNav, currentNavPath } = useActiveNav(CLIENT_NAVIGATION_PATHS);
+	const { removeUser } = useUserSlice();
+	const navigate = useNavigate();
+	const { cartItems, isFetching, isRemoving, isUpdating } = useCart();
+	const subTotal = useSelector((state) => state.order.subTotal);
+
+	const toggleModal = useCallback(
+		(name) => {
+			const DROP_DOWN_KEY =
+				name === PROFILE
+					? CLIENT_HEADER_DROP_DOWN_TOGGLE_KEY
+					: CLIENT_HEADER_CART_DOWN_TOGGLE_KEY;
+
+			const isCartOpen = isToggled(CLIENT_HEADER_CART_DOWN_TOGGLE_KEY);
+			const isProfileOpen = isToggled(CLIENT_HEADER_DROP_DOWN_TOGGLE_KEY);
+
+			if (name === LOGOUT) {
+				setToggleState(CLIENT_HEADER_CART_DOWN_TOGGLE_KEY, false); // Close cart dropdown
+				setToggleState(CLIENT_HEADER_DROP_DOWN_TOGGLE_KEY, false); // Close profile dropdown
+			} else {
+				// If the clicked dropdown is already open, close it
+				if (
+					(name === PROFILE && isProfileOpen) ||
+					(name === CART && isCartOpen)
+				) {
+					setToggleState(DROP_DOWN_KEY); // Close the currently open dropdown
+				} else {
+					// Close the other dropdown if it's open
+					if (isCartOpen) {
+						setToggleState(CLIENT_HEADER_CART_DOWN_TOGGLE_KEY); // Close cart dropdown
+					}
+					if (isProfileOpen) {
+						setToggleState(CLIENT_HEADER_DROP_DOWN_TOGGLE_KEY); // Close profile dropdown
+					}
+					// Open the clicked dropdown
+					setToggleState(DROP_DOWN_KEY);
+				}
+			}
+		},
+		[isToggled, setToggleState]
+	);
+
+	const setSideBarAct = useCallback(
+		() => setToggleState(CLIENT_SIDEBAR_TOGGLE_KEY),
+		[setToggleState]
+	);
+
+	const getActiveNav = (navName) => isActiveNav(navName);
+
+	const onLogout = async (event) => {
+		event?.preventDefault();
+		await removeUser();
+		navigate("/");
+		toggleModal(LOGOUT); // Close dropdowns on logout
+		setSideBarAct();
+		return;
+	};
+
+	const handleDropdownItemSelect = async (item, e) => {
+		if (item.name === LOGOUT) {
+			await onLogout(e);
+		}
+		if (item.path && item.path !== "#") {
+			navigate(item.path);
+		}
+	};
 
 	/**
-	 * Mobile navigation items with authentication-based filtering:
-	 * - Unauthorized users: Hide Cart/Profile, show Login
-	 * - Authorized users: Show Cart/Profile, hide Login
+	 * Categorize navigation items based on their category and auth status.
 	 */
-	const filteredNavItems = useMemo(() => {
-		return CLIENT_NAVIGATION_PATHS.filter((item) => {
-			if (!isAuthorized) {
-				return (
-					item.name !== CART &&
-					item.name !== PROFILE &&
-					item.name !== ORDER &&
-					item.name !== LOGOUT &&
-					item.name !== WHISHLIST
-				);
-			} else {
-				return item.name !== LOGIN;
-			}
-		});
-	}, [isAuthorized]);
+	const { headerNavItems, authNavItems, mobileNavItems, dropdownItems } =
+		useMemo(() => {
+			const itemsBasedOnAuth = CLIENT_NAVIGATION_PATHS.filter((item) =>
+				!isAuthorized
+					? item.name !== CART &&
+					  item.name !== PROFILE &&
+					  item.name !== ORDER &&
+					  item.name !== LOGOUT &&
+					  item.name !== WISHLIST
+					: item.name !== LOGIN
+			);
 
-	// Helper functions for cleaner code
-	const setSideBarAct = () => setIsSidebarOpen(CLIENT_SIDEBAR_TOGGLE_KEY);
-	const getActiveNav = (navName) => isActiveNav(navName);
+			return {
+				headerNavItems: itemsBasedOnAuth.filter(
+					(item) => item.category === NAV_ITEM_CATEGORIES.HEADER
+				),
+				authNavItems: itemsBasedOnAuth.filter(
+					(item) => item.category === NAV_ITEM_CATEGORIES.AUTH
+				),
+				dropdownItems: itemsBasedOnAuth.filter(
+					(item) =>
+						item.category === NAV_ITEM_CATEGORIES.DROPDOWN ||
+						item.name === PROFILE
+				),
+				mobileNavItems: itemsBasedOnAuth,
+			};
+		}, [isAuthorized]);
 
 	return (
 		<header
@@ -283,12 +428,25 @@ const Header = () => {
 						subtitleColor="text-gray-900"
 					/>
 
-					{/* Desktop Navigation - Showing only first 4 items */}
+					{/* Desktop Navigation */}
 					<DesktopView
 						getActiveNav={getActiveNav}
-						navItems={filteredNavItems.slice(0, 4) || []}
-						authItems={filteredNavItems.slice(4, 6) || []}
-						dropItems={filteredNavItems.slice(5) || []}
+						navItems={headerNavItems}
+						dropdownItems={dropdownItems}
+						isDropDownOpen={isToggled(CLIENT_HEADER_DROP_DOWN_TOGGLE_KEY)}
+						isCartOpen={isToggled(CLIENT_HEADER_CART_DOWN_TOGGLE_KEY)}
+						authItems={authNavItems}
+						onToggleModal={toggleModal}
+						onLogout={onLogout}
+						handleDropdownItemSelect={handleDropdownItemSelect}
+						cartData={{
+							isOpen: isToggled(CLIENT_HEADER_CART_DOWN_TOGGLE_KEY), 
+							cartItems,
+							isFetching,
+							isRemoving,
+							isUpdating,
+							subTotal,
+						}}
 					/>
 
 					{/* Mobile Menu Button */}
@@ -299,16 +457,17 @@ const Header = () => {
 						type="button">
 						<FaBars size={24} />
 					</button>
+
+					{/* Mobile Sidebar */}
+					<MobileView
+						currentActivePath={currentNavPath}
+						isSidebarOpen={isToggled(CLIENT_SIDEBAR_TOGGLE_KEY)}
+						setIsSidebarOpen={setSideBarAct}
+						filteredNavItems={mobileNavItems}
+						onLogout={onLogout}
+					/>
 				</nav>
 			</div>
-
-			{/* Mobile Sidebar */}
-			<MobileView
-				currentActivePath={currentNavPath}
-				isSidebarOpen={isSidebarOpen(CLIENT_SIDEBAR_TOGGLE_KEY)}
-				setIsSidebarOpen={setSideBarAct}
-				filteredNavItems={filteredNavItems}
-			/>
 		</header>
 	);
 };
