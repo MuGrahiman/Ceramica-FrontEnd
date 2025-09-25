@@ -20,8 +20,9 @@ import DropdownMenu from "./DropdownMenu";
 import { useUserSlice } from "../redux/store";
 import { useSelector } from "react-redux";
 import { useCart } from "../hooks/useCart";
-import CartList from "../pages/cart/CartList";
 import CartSummary from "../pages/cart/CartSummary";
+import ItemInfoIndicator from "./ItemInfoIndicator";
+import ListContainer from "./ListContainer";
 
 //  PropTypes definition for navigation items
 const PATH_PROP_SHAPE = {
@@ -105,16 +106,32 @@ const CartModal = ({
 				<div className="flex-1 px-4 py-6 sm:px-6">
 					<Link
 						to="/cart"
-						className="flex items-start justify-between"
+						className="flex items-center cursor-pointer group"
 						onClick={onClose}>
-						<h2 className="text-2xl font-bold text-gray-900">Shopping Cart</h2>
-						<FaLongArrowAltRight />
+						<h2 className="text-2xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-blue-800">
+							Shopping Cart
+						</h2>
+						<FaLongArrowAltRight className="transition-transform duration-700 transform opacity-0  group-hover:opacity-100 group-hover:translate-x-10 group-hover:text-blue-800" />
 					</Link>
-
 					{/* Cart Items */}
-					<div className="max-h-56 overflow-y-auto mt-4">
-						<CartList CART_ITEMS={cartItems} />
-					</div>
+					<ListContainer divideItems scrollable>
+						<ListOptions
+							OPTIONS={cartItems}
+							EMPTY_MESSAGE="No products found in your cart!"
+							RENDER_ITEM={({ inventory, _id, ...rest }) => (
+								<ItemInfoIndicator
+									variant="cart"
+									cartId={_id}
+									productId={inventory._id}
+									{...inventory}
+									{...rest}
+									showButtons={true}
+									formatPrice
+									size={"sm"}
+								/>
+							)}
+						/>
+					</ListContainer>
 				</div>
 
 				{/* Summary */}
@@ -433,14 +450,17 @@ const Header = () => {
 						getActiveNav={getActiveNav}
 						navItems={headerNavItems}
 						dropdownItems={dropdownItems}
-						isDropDownOpen={isToggled(CLIENT_HEADER_DROP_DOWN_TOGGLE_KEY)}
+						isDropDownOpen={
+							isToggled(CLIENT_HEADER_DROP_DOWN_TOGGLE_KEY) && isAuthorized
+						}
 						isCartOpen={isToggled(CLIENT_HEADER_CART_DOWN_TOGGLE_KEY)}
 						authItems={authNavItems}
 						onToggleModal={toggleModal}
 						onLogout={onLogout}
 						handleDropdownItemSelect={handleDropdownItemSelect}
 						cartData={{
-							isOpen: isToggled(CLIENT_HEADER_CART_DOWN_TOGGLE_KEY), 
+							isOpen:
+								isToggled(CLIENT_HEADER_CART_DOWN_TOGGLE_KEY) && isAuthorized,
 							cartItems,
 							isFetching,
 							isRemoving,

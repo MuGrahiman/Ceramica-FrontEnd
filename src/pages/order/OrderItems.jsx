@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import ListOptions from "../../components/ListOptions";
-import TotalPreviewCard from "../../components/TotalPreviewCard";
+import ItemInfoIndicator from "../../components/ItemInfoIndicator";
 
 /**
  * Order Items Component: Displays the list of items in an order.
@@ -20,21 +20,13 @@ const OrderItems = ({ items }) => {
 						EMPTY_MESSAGE="No items found in the order!"
 						OPTIONS={items}
 						RENDER_ITEM={(item) => (
-							<TotalPreviewCard
+							<ItemInfoIndicator
 								showButtons={false}
 								title={item.productId.title}
 								coverImage={item?.productId?.coverImage}
 								quantity={item.quantity}
 								price={item.productId.price}
 							/>
-
-							// <CartCard
-							// 	showButtons={false}
-							// 	title={item.productId.title}
-							// 	coverImage={item?.productId?.coverImage}
-							// 	quantity={item.quantity}
-							// 	price={item.productId.price}
-							// />
 						)}
 					/>
 				</ul>

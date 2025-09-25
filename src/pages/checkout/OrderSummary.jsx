@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import CartCard from "../cart/CartCard";
 import ListOptions from "../../components/ListOptions";
 import Skeleton from "../../components/Skeleton";
+import ItemInfoIndicator from "../../components/ItemInfoIndicator";
 
 const OrderSummary = ({ CART_SUMMARY, IS_LOADING }) => (
 	// <div className="w-full max-h-[80%] lg:w-2/3 bg-white p-6">
@@ -21,7 +21,7 @@ const OrderSummary = ({ CART_SUMMARY, IS_LOADING }) => (
 						EMPTY_MESSAGE="No products found in your cart!"
 						OPTIONS={CART_SUMMARY}
 						RENDER_ITEM={(item) => {
-							return <CartCard {...item} showButtons={false} />;
+							return <ItemInfoIndicator {...item} showButtons={false} />;
 						}}
 					/>
 				)}
