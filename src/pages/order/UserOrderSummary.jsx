@@ -51,14 +51,15 @@ const UserOrderSummary = ({ orderData, onCancel, onViewInvoice }) => (
 					aria-label="View order invoice">
 					View Invoice
 				</button>
-				{orderData.status !== ORDER_STATUSES.DELIVERED && (
-					<button
-						onClick={onCancel}
-						className="w-full bg-red-100 border border-red-300 rounded-md py-2 px-4 flex items-center justify-center text-sm font-medium text-gray-700 hover:text-white hover:bg-red-500  transition-colors duration-200"
-						aria-label="Cancel order">
-						Cancel Order
-					</button>
-				)}
+				{orderData.status !== ORDER_STATUSES.DELIVERED &&
+					orderData.status !== ORDER_STATUSES.CANCELLED && (
+						<button
+							onClick={onCancel}
+							className="w-full bg-red-100 border border-red-300 rounded-md py-2 px-4 flex items-center justify-center text-sm font-medium text-gray-700 hover:text-white hover:bg-red-500  transition-colors duration-200"
+							aria-label="Cancel order">
+							Cancel Order
+						</button>
+					)}
 			</div>
 		</div>
 	</InfoLayout>
