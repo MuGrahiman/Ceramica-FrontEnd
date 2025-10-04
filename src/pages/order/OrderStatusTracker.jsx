@@ -11,13 +11,19 @@ import { CONTACT_SUBJECTS } from "../../constants/contacts";
 /**
  * Icon component for progress tracker
  * @param {Object} props
- * @param {React.Component} props.Icon - Icon component to display
+ * @param {React.Component} props.icon - Icon component to display
  * @param {boolean} props.completed - Whether step is completed
  * @param {boolean} props.current - Whether step is current
  * @param {boolean} props.next - Whether step is next in sequence
  * @param {string} props.color - Color for the icon
  */
-const ProgressIcon = ({ Icon, completed, current, next, color }) => {
+const ProgressIcon = ({
+	icon: Icon,
+	completed = false,
+	current = false,
+	next = false,
+	color = ORDER_STATUS_COLOR_VARIANTS.gray,
+}) => {
 	const baseClasses =
 		"mt-0 md:mt-7 ml-[5rem] md:ml-0 rounded-full text-center px-2 border-4 w-10 h-10";
 
@@ -36,7 +42,7 @@ const ProgressIcon = ({ Icon, completed, current, next, color }) => {
 };
 
 ProgressIcon.propTypes = {
-	Icon: PropTypes.elementType.isRequired,
+	icon: PropTypes.elementType.isRequired,
 	completed: PropTypes.bool,
 	current: PropTypes.bool,
 	next: PropTypes.bool,
@@ -48,7 +54,7 @@ ProgressIcon.propTypes = {
  * @param {Object} props
  * @param {boolean} props.isConnected - Whether connector should be active
  */
-const ProgressConnector = ({ isConnected }) => {
+const ProgressConnector = ({ isConnected = false }) => {
 	const connectorRef = useRef(null);
 
 	useEffect(() => {
@@ -157,7 +163,7 @@ const OrderStatusTracker = ({
 									<div className="flex-1 w-full">
 										<div className="flex md:flex-col flex-row items-center justify-between md:justify-center text-xs content-center gap-3">
 											<ProgressIcon
-												Icon={step.icon}
+												icon={step.icon}
 												completed={isCompleted}
 												current={isCurrent}
 												next={isNext}

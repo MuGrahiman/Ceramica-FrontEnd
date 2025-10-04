@@ -44,13 +44,21 @@ export const getDate = ( value = null ) => {
  * @param {string} dateString - ISO date string
  * @returns {string} Formatted date string
  */
-export const formatToLocaleDateString = (dateString) => {
-    const options = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+export const formatToLocaleDateString = ( dateString ) => {
+    try {
+
+        const date = getDate( dateString );
+
+        const options = {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        };
+        return date.toLocaleDateString( undefined, options );
+
+    } catch ( error ) {
+        console.error( error )
+    }
+};

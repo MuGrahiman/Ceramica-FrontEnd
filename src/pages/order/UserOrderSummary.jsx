@@ -8,7 +8,26 @@ import OrderAddress from "./OrderAddress";
 import OrderPayment from "./OrderPayment";
 import AppliedCoupon from "./AppliedCoupon";
 
-const UserOrderSummary = ({ orderData, onCancel, onViewInvoice }) => (
+/**
+ * UserOrderSummary - Displays comprehensive order summary with address, payment, 
+ * coupon details, and action buttons
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.orderData - Order information
+ * @param {Object} props.orderData.addressId - Shipping address details
+ * @param {Object} props.orderData.paymentId - Payment information
+ * @param {Object} props.orderData.couponId - Applied coupon details
+ * @param {number} props.orderData.totalAmount - Total order amount
+ * @param {string} props.orderData.status - Current order status
+ * @param {Function} props.onCancel - Callback for cancel order action
+ * @param {Function} props.onViewInvoice - Callback for view invoice action
+ */
+const UserOrderSummary = ({
+	orderData = {},
+	onCancel = () => {},
+	onViewInvoice = () => {},
+}) => (
 	<InfoLayout title="Order Summary">
 		<div className="overflow-hidden p-4  grid  sm:grid-cols-4 gap-8 ">
 			<div className="w-full h-full col-span-full sm:col-span-2 lg:col-span-full ">
@@ -71,4 +90,4 @@ UserOrderSummary.propTypes = {
 	onCancel: PropTypes.func.isRequired,
 };
 
-export default UserOrderSummary;
+export default React.memo(UserOrderSummary);

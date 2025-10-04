@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import { formatCurrency } from "../../utils/generals";
 
-
 /**
  * Displays payment details for an order
  * @param {Object} props - Component props
@@ -11,7 +10,7 @@ import { formatCurrency } from "../../utils/generals";
  * @param {string} props.paymentDetails.transactionId - Transaction identifier
  * @param {Object} props.paymentDetails.amount - Payment amount details
  */
-const OrderPayment = ({ paymentDetails }) => {
+const OrderPayment = ({ paymentDetails = {} }) => {
 	if (!paymentDetails) {
 		return (
 			<p className="text-gray-600 text-center py-4">
@@ -21,7 +20,6 @@ const OrderPayment = ({ paymentDetails }) => {
 	}
 
 	const { status, transactionId, amount } = paymentDetails;
-
 	return (
 		<div className="space-y-3 text-sm text-gray-600">
 			<h3 className="font-medium text-gray-800">PayPal Transaction</h3>
@@ -34,7 +32,8 @@ const OrderPayment = ({ paymentDetails }) => {
 
 				<dt className="col-span-1 font-medium">Amount:</dt>
 				<dd className="col-span-1">
-					{formatCurrency(Number(amount.value), amount.currencyCode)}
+					{amount &&
+						formatCurrency(Number(amount?.value), amount?.currencyCode)}
 				</dd>
 
 				<dt className="col-span-1 font-medium">Status:</dt>

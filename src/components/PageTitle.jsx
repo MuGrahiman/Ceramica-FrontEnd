@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import AnimatedH1 from "./AnimatedH1";
 
 /**
  * PageTitle - Displays page title
@@ -7,7 +8,7 @@ import PropTypes from "prop-types";
 const PageTitle = ({ title = "" }) => {
 	return (
 		<div className="mb-8 text-center animate-fade-in">
-			<h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+			<AnimatedH1 title={title} />
 		</div>
 	);
 };

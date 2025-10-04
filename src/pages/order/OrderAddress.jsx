@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
  * @param {string} props.address.country - Country
  * @param {string} props.address.phoneNumber - Contact phone number
  */
-const OrderAddress = ({ address }) => {
+const OrderAddress = ({ address = {} }) => {
 	if (!address) {
 		return (
 			<p className="text-gray-600 text-center py-4">
@@ -33,18 +33,22 @@ const OrderAddress = ({ address }) => {
 		country,
 		phoneNumber,
 	} = address;
+	const fullName = [firstName, lastName].filter(Boolean).join(" ");
+	const locationLine = [city, state, zipCode].filter(Boolean).join(", ");
 
 	return (
-		<address className="not-italic ">
+		<address
+			className="not-italic "
+			aria-label={`Shipping address for ${fullName || "customer"}`}>
 			<div className="space-y-1 text-gray-600 text-sm ">
-				<p className="font-medium text-gray-800">
-					{firstName} {lastName}
+				<p
+					className="font-medium text-gray-800"
+					aria-label={`Recipient: ${fullName}`}>
+					{fullName}
 				</p>
-				<p>{street}</p>
-				<p>
-					{city}, {state} {zipCode}
-				</p>
-				<p>{country}</p>
+				<p aria-label={`Street address: ${street}`}>{street}</p>
+				<p aria-label={`Location: ${locationLine}`}>{locationLine}</p>
+				<p aria-label={`Country: ${country}`}>{country}</p>
 				{phoneNumber && (
 					<p className="mt-2">
 						<a

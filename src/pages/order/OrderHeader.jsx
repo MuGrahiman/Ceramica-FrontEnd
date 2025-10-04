@@ -12,7 +12,7 @@ import useToast from "../../hooks/useToast";
  * @param {string} props.orderData._id - Order ID
  * @param {string} props.orderData.createdAt - Order creation timestamp
  */
-const OrderHeader = ({ orderData }) => {
+const OrderHeader = ({ orderData = {} }) => {
 	const showToast = useToast();
 
 	const handleCopy = async () => {

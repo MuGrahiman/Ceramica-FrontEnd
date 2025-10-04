@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useGetOrdersByRoleQuery, useUpdateOrderStatusMutation } from '../redux/store';
 import useApiHandler from './useApiHandler';
+import { handleAndShowError } from '../utils/errorHandlers';
 
 const useOrder = ( role = 'client' ) => {
     const [ ordersData, setOrdersData ] = useState( [] );
@@ -34,8 +35,11 @@ const useOrder = ( role = 'client' ) => {
             { orderId: id, orderStatus: value },
             {
                 onSuccess: () => "updated order status successfully",
-                onError: ( err ) =>
-                    err.data.message || err.message || "Order not found",
+                onError: ( err ) => handleAndShowError(
+                    err,
+                    "Order not found"
+                ),
+                // err.data.message || err.message || "Order not found",
                 onFinally: () => setActiveOrderId( null ),
             }
         );
@@ -55,12 +59,12 @@ const useOrder = ( role = 'client' ) => {
     };
 
     /**
-     * Clear the search and reset the order data.
+     * Clear the filters and reset the order data.
      */
-    const onClearOrderSearch = () => setOrdersData( data );
+    const clearOrderFilters = () => setOrdersData( data );
 
     const filterOrders = ( criteria ) => {
-        return data.filter( ( order ) => {
+        return data?.filter( ( order ) => {
             const paymentStatusMatch = criteria?.paymentStatus
                 ?.map( ( status ) => status.toLowerCase() )
                 .includes( order?.paymentId?.status?.toLowerCase() );
@@ -90,16 +94,16 @@ const useOrder = ( role = 'client' ) => {
         activeOrderId,
         ordersData,
         isOrdersLength: data && data.length,
-        isOrdersLoading, 
+        isOrdersLoading,
         isOrdersFetching,
-         ordersFetchIsError,
+        ordersFetchIsError,
         ordersFetchError,
         handleOrderStatusSelection: handleOrderStatus,
         isOrderStatusUpdating,
-        onOrderSearch,
-        onClearOrderSearch,
         filterOrders: ( options ) => setOrdersData( filterOrders( options ) ),
-        clearOrderFilters: () => setOrdersData( data ),
+        clearOrderFilters,
+        onOrderSearch,
+        onClearOrderSearch: clearOrderFilters,
     }
 }
 

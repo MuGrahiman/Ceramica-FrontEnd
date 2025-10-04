@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { ImEye } from "react-icons/im";
 import Table from "../../components/Table";
@@ -20,6 +20,8 @@ import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
 import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
 import PageHeader from "../../components/PageHeader";
+import { USER_ROLES } from "../../constants/app";
+const PAGINATION_LIMIT = 5;
 
 /**
  * Order Management Page: Displays a list of orders with sorting, pagination, and search functionality.
@@ -40,10 +42,10 @@ const OrderPage = () => {
 		onClearOrderSearch,
 		filterOrders,
 		clearOrderFilters,
-	} = useOrder("admin");
+	} = useOrder(USER_ROLES.ADMIN);
 
 	const selectDropDownOptions = Object.values(ORDER_STATUSES);
-
+	
 	// Table headers configuration
 	const headers = [
 		{
@@ -106,17 +108,49 @@ const OrderPage = () => {
 		useSortTable(ordersData, headers);
 
 	const { pageNumbers, currentPage, totalPages, handlePage, currentItems } =
-		usePagination(sortedOrders, 5);
+		usePagination(sortedOrders, PAGINATION_LIMIT);
 
-	const onSubmit = (data) => {
-		filterOrders(data);
+	/**
+	 * Toggles the filter form visibility
+	 */
+	const toggleFilter = useCallback(() => {
 		setIsOpen((prev) => !prev);
-	};
+	}, []);
 
-	const onClear = () => {
+	/**
+	 * Handles filter form submission
+	 * @param {Object} data - Form data containing orderStatus
+	 */
+	const handleFilterSubmit = useCallback(
+		(data) => {
+			filterOrders(data);
+			toggleFilter();
+		},
+		[filterOrders, toggleFilter]
+	);
+
+	/**
+	 * Clears filters and resets to default state
+	 */
+	const handleFilterClear = useCallback(() => {
 		clearOrderFilters();
-		setIsOpen((prev) => !prev);
-	};
+		toggleFilter();
+	}, [clearOrderFilters, toggleFilter]);
+
+	/**
+	 * Renders table header with sort functionality
+	 */
+	const renderTableHeader = useCallback(
+		({ sortColumn, label, order, sort }) => (
+			<div
+				className="flex items-center gap-2"
+				onClick={() => sortColumn(label)}>
+				{label}
+				<SortIcons label={label} order={order} sort={sort} />
+			</div>
+		),
+		[]
+	);
 
 	return (
 		<LoadingErrorBoundary
@@ -126,14 +160,13 @@ const OrderPage = () => {
 				ordersFetchError,
 				"Failed to fetch order data"
 			)}>
-
 			{/* Header Section */}
 			<PageHeader title="Orders" />
-			
+
 			{/* Filter and Search Section */}
 			<FilterControlsWithSearch
 				isOpen={isOpen}
-				onToggle={() => setIsOpen((prev) => !prev)}
+				onToggle={toggleFilter}
 				onClearSearch={onClearOrderSearch}
 				onSearch={onOrderSearch}
 				isSearching={isOrdersFetching}
@@ -142,19 +175,12 @@ const OrderPage = () => {
 			{/* Orders Table */}
 			<FilterFormLayout
 				isOpen={isOpen}
-				onSubmit={onSubmit}
-				onClear={onClear}
+				onSubmit={handleFilterSubmit}
+				onClear={handleFilterClear}
 				defaultValues={ORDER_FILTER_FORMS_DEFAULT_VALUES}
 				fieldContents={ORDER_FIELD_CONTENTS}>
 				<Table
-					CONFIG={getTableConfig(({ sortColumn, label, order, sort }) => (
-						<div
-							className="flex items-center gap-2"
-							onClick={() => sortColumn(label)}>
-							{label}
-							<SortIcons label={label} order={order} sort={sort} />
-						</div>
-					))}
+					CONFIG={getTableConfig(renderTableHeader)}
 					DATA={currentItems}
 					KEYFN={(order) => order._id}
 				/>

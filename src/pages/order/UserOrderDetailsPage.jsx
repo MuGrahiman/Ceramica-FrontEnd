@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, {  useCallback } from "react";
 import InfoLayout from "../../components/InfoLayout";
 import InvoiceModal from "./InvoiceModal";
 import OrderStatusTracker from "./OrderStatusTracker";
 import OrderStatusBanner from "./OrderStatusBanner";
-import { ORDER_STATUS_STEPS, ORDER_STATUSES } from "../../constants/order";
+import {
+	ORDER_CANCEL_SWAL,
+	ORDER_INVOICE_MODAL_ID,
+	ORDER_STATUS_STEPS,
+	ORDER_STATUSES,
+} from "../../constants/order";
 import { useGetOrderByIdQuery } from "../../redux/store";
 import { useParams } from "react-router-dom";
 import OrderHeader from "./OrderHeader";
@@ -16,60 +21,51 @@ import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
 import UserOrderSummary from "./UserOrderSummary";
 import UserOrderItemsList from "./UserOrderItemsList";
+import useToggle from "../../hooks/useToggle";
 
-// Extracted OrderSummary component
-
-
+/**
+ * UserOrderDetailsPage - Displays detailed information about a user's order
+ */
 const UserOrderDetailsPage = () => {
 	const { id } = useParams();
 	const {
-		data: orderDetails,
+		data: orderData,
 		isLoading,
 		error,
 		isError,
 	} = useGetOrderByIdQuery(id);
-	const [orderData, setOrderData] = useState([]);
-	const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 	const { handleOrderStatusSelection, isOrderStatusUpdating } = useOrder(
 		USER_ROLES.CLIENT
 	);
+	const isUserOrderDetailsLoading = isLoading || isOrderStatusUpdating;
+	const [setToggleState, isToggled] = useToggle();
 
-	// Update order data when fetched
-	useEffect(() => {
-		if (orderDetails && Object.keys(orderDetails).length) {
-			setOrderData(orderDetails);
-		}
-	}, [orderDetails]);
-	const handleDelete = async () => {
-		const result = await Swal.fire({
-			title: "Are you sure you want to cancel?",
-			text: "Once cancelled, you won't be able to revert this action.",
-			icon: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#b10202",
-			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Yes, cancel it!",
-			cancelButtonText: "No, keep it",
-		});
+	/**
+	 * Handles order cancellation with confirmation dialog
+	 */
+	const handleCancellation = useCallback(async () => {
+		const result = await Swal.fire(ORDER_CANCEL_SWAL);
 
 		if (result.isConfirmed)
 			await handleOrderStatusSelection(id, ORDER_STATUSES.CANCELLED);
 
 		return;
-	};
+	}, [id, handleOrderStatusSelection]);
 
-	// Handle empty state
-	if (!orderData.items?.length) {
+	const handleViewInvoice = (status = false) =>
+		setToggleState(ORDER_INVOICE_MODAL_ID, status);
+
+	const currentStatusStep = ORDER_STATUS_STEPS.find(
+		(step) => step.id === orderData?.status
+	);
+
+	if (!orderData?.items?.length && !isUserOrderDetailsLoading) {
 		return <EmptyTemplate emptyMessage={"No order items found"} />;
 	}
 
-	const handleViewInvoice = () => {
-		setShowInvoiceModal(true);
-	};
-
 	return (
 		<LoadingErrorBoundary
-			isLoading={isLoading || isOrderStatusUpdating}
+			isLoading={isUserOrderDetailsLoading}
 			isError={isError}
 			errorMessage={handleAndShowError(
 				error,
@@ -80,32 +76,30 @@ const UserOrderDetailsPage = () => {
 				<OrderHeader orderData={orderData} />
 
 				<InfoLayout title="Order Status">
-					<OrderStatusBanner
-						{...ORDER_STATUS_STEPS.find((step) => step.id === orderData.status)}
-					/>
+					<OrderStatusBanner {...currentStatusStep} />
 					<OrderStatusTracker
-						status={orderData.status}
+						status={orderData?.status}
 						statusSteps={ORDER_STATUS_STEPS}
 					/>
 				</InfoLayout>
 
 				<div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
 					<div className="col-span-full lg:col-span-2">
-						<UserOrderItemsList orderItems={orderData.items} />
+						<UserOrderItemsList orderItems={orderData?.items} />
 					</div>
 					<div className="col-span-full lg:col-span-1">
 						<UserOrderSummary
 							orderData={orderData}
-							onViewInvoice={handleViewInvoice}
-							onCancel={handleDelete}
+							onViewInvoice={() => handleViewInvoice(true)}
+							onCancel={handleCancellation}
 						/>
 					</div>
 				</div>
 
-				{showInvoiceModal && (
+				{isToggled(ORDER_INVOICE_MODAL_ID) && (
 					<InvoiceModal
 						orderData={orderData}
-						onClose={() => setShowInvoiceModal(false)}
+						onClose={() => handleViewInvoice(false)}
 					/>
 				)}
 			</div>

@@ -17,7 +17,7 @@ import bowlsCategories from "../assets/ceramics/bowls_categories.avif";
 import saucerCategories from "../assets/ceramics/Gemini_saucer_Ceramic.png";
 import kettleCategories from "../assets/ceramics/kettle_ceramic.png";
 import { toPascalCase } from "../utils/generals";
-import { FaAddressBook, FaBoxOpen, FaCommentAlt, FaHeart, FaHome, FaUserCircle, FaShoppingCart, FaSignInAlt, FaSignOutAlt, FaStore, FaInfo, FaEnvelope, FaUser, FaClipboardList } from "react-icons/fa";
+import { FaHeart, FaHome, FaShoppingCart, FaSignInAlt, FaSignOutAlt, FaStore, FaInfo, FaEnvelope, FaUser, FaClipboardList } from "react-icons/fa";
 
 export const FALL_BACK_IMAGE = fallBackImage
 
@@ -174,23 +174,23 @@ export const CLIENT_HEADER_CART_DOWN_TOGGLE_KEY = 'client.header.cart.down.toggl
 // In your ../constants/app.js file
 
 export const NAV_ITEM_CATEGORIES = {
-  HEADER: 'header',
-  AUTH: 'auth',
-  DROPDOWN: 'dropdown',
+    HEADER: 'header',
+    AUTH: 'auth',
+    DROPDOWN: 'dropdown',
 };
 
 // Example of how CLIENT_NAVIGATION_PATHS should be structured:
 export const CLIENT_NAVIGATION_PATHS = [
-  { path: "/", name: "Home", icon: FaHome, category: NAV_ITEM_CATEGORIES.HEADER },
-  { path: "/shop", name: "Shop", icon: FaStore, category: NAV_ITEM_CATEGORIES.HEADER },
-  { path: "/about", name: "About", icon: FaInfo, category: NAV_ITEM_CATEGORIES.HEADER },
-  { path: "/contact", name: "Contact", icon: FaEnvelope, category: NAV_ITEM_CATEGORIES.HEADER },
-  { path: "/cart", name: "Cart", icon: FaShoppingCart, category: NAV_ITEM_CATEGORIES.AUTH },
-  { path: "/profile", name: "Profile", icon: FaUser, category: NAV_ITEM_CATEGORIES.AUTH },
-  { path: "/orders", name: "Orders", icon: FaClipboardList, category: NAV_ITEM_CATEGORIES.DROPDOWN },
-  { path: "/wishlist", name: "Wishlist", icon: FaHeart, category: NAV_ITEM_CATEGORIES.DROPDOWN },
-  { path: "/login", name: "Login", icon: FaSignInAlt, category: NAV_ITEM_CATEGORIES.AUTH },
-  { path: "#", name: "Logout", icon: FaSignOutAlt, category: NAV_ITEM_CATEGORIES.DROPDOWN }, 
+    { path: "/", name: "Home", icon: FaHome, category: NAV_ITEM_CATEGORIES.HEADER },
+    { path: "/shop", name: "Shop", icon: FaStore, category: NAV_ITEM_CATEGORIES.HEADER },
+    { path: "/about", name: "About", icon: FaInfo, category: NAV_ITEM_CATEGORIES.HEADER },
+    { path: "/contact", name: "Contact", icon: FaEnvelope, category: NAV_ITEM_CATEGORIES.HEADER },
+    { path: "/cart", name: "Cart", icon: FaShoppingCart, category: NAV_ITEM_CATEGORIES.AUTH },
+    { path: "/profile", name: "Profile", icon: FaUser, category: NAV_ITEM_CATEGORIES.AUTH },
+    { path: "/orders", name: "Orders", icon: FaClipboardList, category: NAV_ITEM_CATEGORIES.DROPDOWN },
+    { path: "/wishlist", name: "Wishlist", icon: FaHeart, category: NAV_ITEM_CATEGORIES.DROPDOWN },
+    { path: "/login", name: "Login", icon: FaSignInAlt, category: NAV_ITEM_CATEGORIES.AUTH },
+    { path: "#", name: "Logout", icon: FaSignOutAlt, category: NAV_ITEM_CATEGORIES.DROPDOWN },
 ];
 
 

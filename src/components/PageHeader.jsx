@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { MdOutlineAdd } from "react-icons/md";
 import PropTypes from "prop-types";
+import AnimatedH1 from "./AnimatedH1";
 
 /**
  * Reusable page header component with optional action button
@@ -23,9 +24,7 @@ const PageHeader = ({
 	iconProps = { className: "h-6 w-6" },
 }) => (
 	<div className="flex flex-col sm:flex-row gap-3 items-center justify-between mb-2 sm:mb-6">
-		<h1 className="text-4xl font-extrabold font-serif text-gray-700">
-			{title}
-		</h1>
+		<AnimatedH1 title={title}/>
 		{showActionLink && (
 			<Link
 				to={actionLink}

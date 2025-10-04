@@ -13,7 +13,7 @@ import { formatCurrency } from '../../utils/generals';
  * @param {Array} props.orderItems - Array of order items to display
  */
 const UserOrderItemsList = ({ orderItems = [] }) => {
-    // Memoized calculations for performance
+
     const subtotal = useMemo(() => 
         orderItems.reduce(
             (acc, item) => acc + (item.productId?.price || 0) * (item.quantity || 0),

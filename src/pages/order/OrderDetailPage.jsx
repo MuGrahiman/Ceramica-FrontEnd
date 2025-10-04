@@ -14,8 +14,9 @@ import PageTitle from "../../components/PageTitle";
 import InfoLayout from "../../components/InfoLayout";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
+
 /**
- * Order Detail Page: Displays detailed information about a specific order.
+ * OrderDetailPage - Displays detailed information about a specific order 
  */
 const OrderDetailPage = () => {
 	const { id } = useParams();

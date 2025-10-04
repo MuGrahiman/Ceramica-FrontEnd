@@ -12,7 +12,7 @@ const AnimatedH1 = ({ title = "Heading" }) => {
 	return (
 		<h1
 			aria-live="polite"
-			className="text-3xl md:text-5xl  font-bold  mb-6 animate-slide-down">
+			className="text-3xl md:text-5xl text-blue-950 font-bold  mb-6 animate-slide-down">
 			{title}
 		</h1>
 	);

@@ -13,7 +13,7 @@ import AppliedCoupon from "./AppliedCoupon";
  * @param {Function} props.onClose - Callback to close the modal
  * @param {Object} props.orderData - Order details
  */
-const InvoiceModal = ({ onClose, orderData }) => {
+const InvoiceModal = ({ onClose = () => {}, orderData = {} }) => {
 	const contentRef = useRef(null);
 	const reactToPrintFn = useReactToPrint({ contentRef });
 	/**
