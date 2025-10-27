@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ImEye } from "react-icons/im";
 import Table from "../../components/Table";
@@ -21,13 +21,14 @@ import { handleAndShowError } from "../../utils/errorHandlers";
 import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
 import PageHeader from "../../components/PageHeader";
 import { USER_ROLES } from "../../constants/app";
+import { useMiniToggler } from "../../hooks/useToggle";
 const PAGINATION_LIMIT = 5;
 
 /**
  * Order Management Page: Displays a list of orders with sorting, pagination, and search functionality.
  */
 const OrderPage = () => {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isFilterToggled, toggleFilter, , closeFilter] = useMiniToggler();
 
 	const {
 		activeOrderId,
@@ -45,12 +46,12 @@ const OrderPage = () => {
 	} = useOrder(USER_ROLES.ADMIN);
 
 	const selectDropDownOptions = Object.values(ORDER_STATUSES);
-	
+
 	// Table headers configuration
 	const headers = [
 		{
 			label: "Mail",
-			render: (order) => order?.userId?.email,
+			render: (order) => order?.userId?.email || "N/A",
 		},
 		{
 			label: "Quantity",
@@ -60,7 +61,7 @@ const OrderPage = () => {
 		{
 			hide: true,
 			label: "Total Amount",
-			render: (order) => order.totalAmount,
+			render: (order) => `$${order.totalAmount?.toFixed(2) || "0.00"}`,
 			sortValue: (value) => value.totalAmount,
 			showValue: () => "lg:table-cell",
 		},
@@ -111,22 +112,15 @@ const OrderPage = () => {
 		usePagination(sortedOrders, PAGINATION_LIMIT);
 
 	/**
-	 * Toggles the filter form visibility
-	 */
-	const toggleFilter = useCallback(() => {
-		setIsOpen((prev) => !prev);
-	}, []);
-
-	/**
 	 * Handles filter form submission
 	 * @param {Object} data - Form data containing orderStatus
 	 */
 	const handleFilterSubmit = useCallback(
 		(data) => {
 			filterOrders(data);
-			toggleFilter();
+			closeFilter();
 		},
-		[filterOrders, toggleFilter]
+		[filterOrders, closeFilter]
 	);
 
 	/**
@@ -134,20 +128,22 @@ const OrderPage = () => {
 	 */
 	const handleFilterClear = useCallback(() => {
 		clearOrderFilters();
-		toggleFilter();
-	}, [clearOrderFilters, toggleFilter]);
+		closeFilter();
+	}, [clearOrderFilters, closeFilter]);
 
 	/**
 	 * Renders table header with sort functionality
 	 */
 	const renderTableHeader = useCallback(
 		({ sortColumn, label, order, sort }) => (
-			<div
-				className="flex items-center gap-2"
-				onClick={() => sortColumn(label)}>
+			<button
+				type="button"
+				className="flex items-center gap-2 "
+				onClick={() => sortColumn(label)}
+				aria-label={`Sort by ${label}`}>
 				{label}
 				<SortIcons label={label} order={order} sort={sort} />
-			</div>
+			</button>
 		),
 		[]
 	);
@@ -165,7 +161,7 @@ const OrderPage = () => {
 
 			{/* Filter and Search Section */}
 			<FilterControlsWithSearch
-				isOpen={isOpen}
+				isOpen={isFilterToggled}
 				onToggle={toggleFilter}
 				onClearSearch={onClearOrderSearch}
 				onSearch={onOrderSearch}
@@ -174,7 +170,7 @@ const OrderPage = () => {
 
 			{/* Orders Table */}
 			<FilterFormLayout
-				isOpen={isOpen}
+				isOpen={isFilterToggled}
 				onSubmit={handleFilterSubmit}
 				onClear={handleFilterClear}
 				defaultValues={ORDER_FILTER_FORMS_DEFAULT_VALUES}

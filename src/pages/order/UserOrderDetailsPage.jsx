@@ -1,11 +1,10 @@
-import React, {  useCallback } from "react";
+import React, { useCallback } from "react";
 import InfoLayout from "../../components/InfoLayout";
 import InvoiceModal from "./InvoiceModal";
 import OrderStatusTracker from "./OrderStatusTracker";
 import OrderStatusBanner from "./OrderStatusBanner";
 import {
 	ORDER_CANCEL_SWAL,
-	ORDER_INVOICE_MODAL_ID,
 	ORDER_STATUS_STEPS,
 	ORDER_STATUSES,
 } from "../../constants/order";
@@ -21,7 +20,7 @@ import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
 import UserOrderSummary from "./UserOrderSummary";
 import UserOrderItemsList from "./UserOrderItemsList";
-import useToggle from "../../hooks/useToggle";
+import { useMiniToggler } from "../../hooks/useToggle";
 
 /**
  * UserOrderDetailsPage - Displays detailed information about a user's order
@@ -37,8 +36,9 @@ const UserOrderDetailsPage = () => {
 	const { handleOrderStatusSelection, isOrderStatusUpdating } = useOrder(
 		USER_ROLES.CLIENT
 	);
+	const [isInvoiceOpen, , openInvoice, closeInvoice] = useMiniToggler();
+
 	const isUserOrderDetailsLoading = isLoading || isOrderStatusUpdating;
-	const [setToggleState, isToggled] = useToggle();
 
 	/**
 	 * Handles order cancellation with confirmation dialog
@@ -51,9 +51,6 @@ const UserOrderDetailsPage = () => {
 
 		return;
 	}, [id, handleOrderStatusSelection]);
-
-	const handleViewInvoice = (status = false) =>
-		setToggleState(ORDER_INVOICE_MODAL_ID, status);
 
 	const currentStatusStep = ORDER_STATUS_STEPS.find(
 		(step) => step.id === orderData?.status
@@ -90,17 +87,14 @@ const UserOrderDetailsPage = () => {
 					<div className="col-span-full lg:col-span-1">
 						<UserOrderSummary
 							orderData={orderData}
-							onViewInvoice={() => handleViewInvoice(true)}
+							onViewInvoice={openInvoice}
 							onCancel={handleCancellation}
 						/>
 					</div>
 				</div>
 
-				{isToggled(ORDER_INVOICE_MODAL_ID) && (
-					<InvoiceModal
-						orderData={orderData}
-						onClose={() => handleViewInvoice(false)}
-					/>
+				{isInvoiceOpen && (
+					<InvoiceModal orderData={orderData} onClose={closeInvoice} />
 				)}
 			</div>
 		</LoadingErrorBoundary>

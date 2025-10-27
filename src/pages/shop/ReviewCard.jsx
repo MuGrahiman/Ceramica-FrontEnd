@@ -2,11 +2,12 @@ import React from "react";
 import PropTypes from "prop-types"; // Suggested addition
 import StarRating from "../../components/StarRating";
 import Toggler from "../../components/Toggler";
-import useToggle from "../../hooks/useToggle";
+import useToggle, { useMiniToggler } from "../../hooks/useToggle";
 import { setDateAsDayMonthYear } from "../../utils/date";
 import { MdDeleteOutline, MdModeEditOutline } from "react-icons/md";
 import { DUMMY_IMAGE } from "../../constants/app";
 import { handleFileError } from "../../utils/fileHandler";
+// import { SHOP_REVIEW_DETAIL_CARD_TOGGLE_KEY } from "../../constants/toggle";
 
 /**
  * Displays an individual product review details .
@@ -23,46 +24,65 @@ const ReviewCard = ({
 	onEdit = () => {},
 	onDelete = () => {},
 }) => {
-	const [toggleFunction, isToggledState] = useToggle();
+	const [isReviewToggle, toggleReview] = useMiniToggler();
+	const {
+		userId = {},
+		rating = 0,
+		review: reviewText = "",
+		updatedAt = "",
+	} = review;
+
+	const { firstName = "", lastName = "", profilePhoto = {} } = userId;
+	const userFullName = `${firstName} ${lastName}`.trim();
+	const avatarUrl = profilePhoto?.url || DUMMY_IMAGE;
+	const avatarAlt = profilePhoto?.public_id
+		? `Profile photo of ${userFullName}`
+		: "User profile photo";
 
 	return (
 		<div
 			className="p-4 border rounded-lg hover:shadow-md transition-shadow duration-300 animate-fadeIn"
-			role="article">
+			role="article"
+			aria-labelledby={`review-by-${userId._id || "user"}`}>
 			<div className="md:flex items-start gap-3 mb-3">
+				{/* User Avatar */}
 				<img
 					className="h-10 w-10 object-cover rounded-full border border-gray-500"
-					src={review?.userId?.profilePhoto?.url || DUMMY_IMAGE}
-					alt={review?.userId?.profilePhoto?.public_id || "User profile"}
+					src={avatarUrl}
+					alt={avatarAlt}
 					onError={handleFileError}
 					loading="lazy"
 				/>
 				<div className="flex-1 min-w-0">
 					<div className="flex justify-between items-start">
+						{/* Header with Name and Date */}
 						<h3
 							className="font-medium text-gray-800 truncate"
-							aria-label={`Review by ${review.userId.firstName} ${review.userId.lastName}`}>
-							{review.userId.firstName} {review.userId.lastName}
+							aria-label={`Review by ${userFullName}`}>
+							{userFullName}
 						</h3>
 						<time
 							className="text-sm text-gray-500 whitespace-nowrap ml-2"
-							dateTime={review.updatedAt}>
-							{setDateAsDayMonthYear(review.updatedAt)}
+							dateTime={updatedAt}>
+							{setDateAsDayMonthYear(updatedAt)}
 						</time>
 					</div>
+					{/* Star Rating */}
 					<div className="mb-2">
 						<StarRating
-							ratingValue={review.rating}
+							ratingValue={rating}
 							size="sm"
-							ariaLabel={`Rated ${review.rating} out of 5 stars`}
+							ariaLabel={`Rated ${rating} out of 5 stars`}
 						/>
 					</div>
+					{/* Review Message with Toggle */}
 					<Toggler
-						IS_TOG={isToggledState("reviewDetails")}
-						TOG={() => toggleFunction("reviewDetails")}
-						TEXT={review?.review}
+						IS_TOG={isReviewToggle}
+						TOG={toggleReview}
+						TEXT={reviewText}
 						TRIM_LENGTH={50}
 					/>
+					{/* Action Buttons for Current User */}
 					{isCurrentUser && (
 						<div className="flex gap-3">
 							<Button
@@ -140,4 +160,4 @@ Button.propTypes = {
 	icon: PropTypes.element.isRequired,
 };
 
-export default ReviewCard;
+export default React.memo(ReviewCard);

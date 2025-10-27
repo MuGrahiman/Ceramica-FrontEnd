@@ -3,10 +3,11 @@ import PropTypes from "prop-types";
 import InputField from "../../components/InputField";
 import ListOptions from "../../components/ListOptions";
 import { useForm } from "react-hook-form";
-import useSuccessManager from "../../hooks/useSuccessManager";
 import useToast from "../../hooks/useToast";
 import { createDefaultState } from "../../utils/generals";
 import FormSubmitButton from "./FormSubmitButton";
+import useToggle from "../../hooks/useToggle";
+import { PROFILE_USER_NAME_FIELDS } from "../../constants/toggle";
 
 /**
  * Handles the user profile form with validation and success state management.
@@ -17,27 +18,27 @@ import FormSubmitButton from "./FormSubmitButton";
  */
 const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 	const showToast = useToast();
-	const defaultUserValue = {
-		firstName: user?.firstName || null,
-		lastName: user?.lastName || null,
-	};
 
-	const defaultValue = ["firstName", "lastName"];
-	const defaultBoolValue = createDefaultState(defaultValue, false);
-
-	const [isSuccess, setSuccess] = useSuccessManager(defaultBoolValue);
+	const initialUserNames = createDefaultState(Object.values(PROFILE_USER_NAME_FIELDS), null, {
+		[PROFILE_USER_NAME_FIELDS.FIRST_NAME]: user?.firstName || null,
+		[PROFILE_USER_NAME_FIELDS.LAST_NAME]: user?.lastName || null,
+	});
+	const userNamesKeysArray = Object.keys(initialUserNames);
+	const userNamesToggleState = createDefaultState(userNamesKeysArray, false);
+	const [setSuccess, isSuccess] = useToggle(userNamesToggleState);
+	
 	const {
 		handleSubmit,
 		clearErrors,
 		register,
 		formState: { errors, isDirty, isSubmitting, isValid },
-	} = useForm({ defaultValues: defaultUserValue });
+	} = useForm({ defaultValues: initialUserNames });
 
 	const formFields = [
 		{
 			component: InputField,
 			props: {
-				NAME: "firstName",
+				NAME: PROFILE_USER_NAME_FIELDS.FIRST_NAME,
 				LABEL: "First Name",
 				TYPE: "text",
 				PLACEHOLDER: "Enter First Name",
@@ -46,7 +47,7 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 		{
 			component: InputField,
 			props: {
-				NAME: "lastName",
+				NAME: PROFILE_USER_NAME_FIELDS.LAST_NAME,
 				LABEL: "Last Name",
 				TYPE: "text",
 				PLACEHOLDER: "Enter Last Name",
@@ -63,8 +64,8 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 			},
 			onChange: (e) => {
 				const value = e.target.value;
-				clearErrors("firstName");
-				setSuccess("firstName", value.length >= 3 && !errors["firstName"]);
+				clearErrors(PROFILE_USER_NAME_FIELDS.FIRST_NAME);
+				setSuccess(PROFILE_USER_NAME_FIELDS.FIRST_NAME, value.length >= 3 && !errors[PROFILE_USER_NAME_FIELDS.FIRST_NAME]);
 			},
 		},
 		lastName: {
@@ -75,8 +76,8 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 			},
 			onChange: (e) => {
 				const value = e.target.value;
-				clearErrors("lastName");
-				setSuccess("lastName", value.length >= 1 && !errors["lastName"]);
+				clearErrors(PROFILE_USER_NAME_FIELDS.LAST_NAME);
+				setSuccess(PROFILE_USER_NAME_FIELDS.LAST_NAME, value.length >= 1 && !errors[PROFILE_USER_NAME_FIELDS.LAST_NAME]);
 			},
 		},
 	};
@@ -98,7 +99,7 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 						<Component
 							key={index}
 							{...props}
-							IS_SUCCESS={isSuccess[props.NAME] || false}
+							IS_SUCCESS={isSuccess(props.NAME)}
 							ERRORS={errors}
 							REGISTER={register}
 							VALIDATION_RULES={validationRules}
@@ -121,7 +122,7 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 				isLoading={isSubmitting || isUpdating}
 				text={"Save Changes"}
 			/>
- 		</form>
+		</form>
 	);
 };
 

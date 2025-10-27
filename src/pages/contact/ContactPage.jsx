@@ -6,6 +6,7 @@ import HeroSection from "../../components/Hero";
 import heroImage from "../../assets/ceramics/image.png";
 import useApiHandler from "../../hooks/useApiHandler";
 import { useSubmitInquiryMutation } from "../../redux/store";
+import { useMiniToggler } from "../../hooks/useToggle";
 
 /**
  * ContactPage Component
@@ -17,7 +18,8 @@ const ContactPage = () => {
 	const [submitMessage, { isLoading }] = handleMutation(
 		useSubmitInquiryMutation
 	);
-	const [isSubmitted, setIsSubmitted] = useState(false);
+	// const [isSubmitted, setIsSubmitted] = useState(false);
+	const [isSubmitted, , setIsSubmitted] = useMiniToggler();
 
 	const handleFormSubmit = async (formData) => {
 		await submitMessage(formData, {

@@ -9,6 +9,7 @@ import { useUserSlice } from "../../redux/store";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../hooks/useAuth.js";
 import AuthHeader from "./AuthHeader.jsx";
+import { useMiniToggler } from "../../hooks/useToggle.js";
 
 const AdminLoginPage = () => {
 	const { loading } = useSelector((state) => state.auth);
@@ -17,15 +18,15 @@ const AdminLoginPage = () => {
 	const showToast = useToast();
 	const { addUser } = useUserSlice();
 	const [message, setMessage] = useState("");
-	const [isLoading, setIsLoading] = useState(false);
-	const navigate = useNavigate();
+		const [isLoading, , startLoading, stopLoading] = useMiniToggler();
+		const navigate = useNavigate();
 
 	useEffect(() => {
 		if (isAuthorized) navigate("/dashboard");
 	}, [isAuthorized, navigate]);
 
 	const submitFN = async (data) => {
-		setIsLoading(true);
+		startLoading();
 		try {
 			const response = await axios.post(
 				`${getBaseUrl()}/api/admin/sign-in`,
@@ -50,7 +51,7 @@ const AdminLoginPage = () => {
 			);
 			console.error("Login Error:", error);
 		} finally {
-			setIsLoading(false);
+			stopLoading();
 		}
 	};
 

@@ -5,6 +5,7 @@ import {
 	STATS_COLOR_CONFIG,
 	STATS_POSITION_CLASSES,
 } from "../../constants/dashboard";
+import { useMiniToggler } from "../../hooks/useToggle";
 
 /**
  * Tooltip - Accessible tooltip component with keyboard navigation support
@@ -14,15 +15,15 @@ import {
  * @param {string} [props.position] - Tooltip position ('top'|'bottom')
  */
 const Tooltip = ({ children, content = "", position = "bottom" }) => {
-	const [visible, setVisible] = React.useState(false);
+	const [isVisible, , setVisible, closeVisible] = useMiniToggler();
 
 	return (
 		<div
 			className="relative inline-flex group"
-			onMouseEnter={() => setVisible(true)}
-			onMouseLeave={() => setVisible(false)}
-			onFocus={() => setVisible(true)}
-			onBlur={() => setVisible(false)}
+			onMouseEnter={setVisible}
+			onMouseLeave={closeVisible}
+			onFocus={setVisible}
+			onBlur={closeVisible}
 			tabIndex={0}
 			aria-describedby="tooltip-content">
 			{children}
@@ -30,7 +31,7 @@ const Tooltip = ({ children, content = "", position = "bottom" }) => {
 				className="h-4 w-4 text-gray-400 ml-1"
 				aria-hidden="true"
 			/>
-			{visible && (
+			{isVisible && (
 				<div
 					id="tooltip-content"
 					role="tooltip"

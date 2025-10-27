@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { MdDelete, MdMode } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { ImEye, ImSpinner9 } from "react-icons/im";
@@ -17,10 +17,15 @@ import { handleAndShowError } from "../../utils/errorHandlers";
 import { INVENTORY_FILTER_CONTENTS } from "../../constants/inventory";
 import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
 import PageHeader from "../../components/PageHeader";
+import { useMiniToggler } from "../../hooks/useToggle";
 
-// Inventory Component
+/**
+ * InventoryPage - Admin page for managing inventory with full CRUD operations
+ */
 const InventoryPage = () => {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isFilterToggled, toggleFilter, , closeFilter] = useMiniToggler();
+
+	// const [isFilterToggled, setIsOpen] = useState(false);
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
 
 	// Use custom hook to manage inventory data
@@ -130,24 +135,35 @@ const InventoryPage = () => {
 						aria-label="Deleting item..."
 					/>
 				) : (
-					<MdDelete
-						id={inventory._id}
+					<button
+						type="button"
 						onClick={() => handleDelete(inventory._id)}
-						className="h-6 w-6 text-gray-500 cursor-pointer hover:text-red-700"
-						aria-label={`Delete ${inventory.title}`}
-					/>
+						className="text-gray-500 hover:text-red-700 transition-colors duration-200"
+						aria-label={`Delete ${inventory.title}`}>
+						<MdDelete className="h-6 w-6" />
+					</button>
 				),
 		},
 	];
 
-	const onSubmit = (data) => {
-		handleFilter(data);
-		setIsOpen((prev) => !prev);
-	};
-	const onClear = () => {
+	/**
+	 * Handles filter form submission
+	 */
+	const handleFilterSubmit = useCallback(
+		(data) => {
+			handleFilter(data);
+			closeFilter();
+		},
+		[handleFilter, closeFilter]
+	);
+
+	/**
+	 * Handles filter clearance
+	 */
+	const handleFilterClear = useCallback(() => {
 		clearFilter();
-		setIsOpen((prev) => !prev);
-	};
+		closeFilter();
+	}, [clearFilter, closeFilter]);
 
 	return (
 		<LoadingErrorBoundary
@@ -168,8 +184,8 @@ const InventoryPage = () => {
 
 				{/* Filter and Search Section */}
 				<FilterControlsWithSearch
-					isOpen={isOpen}
-					onToggle={() => setIsOpen((prev) => !prev)}
+					isOpen={isFilterToggled}
+					onToggle={toggleFilter}
 					onClearSearch={clearSearch}
 					onSearch={handleSearch}
 					isSearching={isFetching}
@@ -177,9 +193,9 @@ const InventoryPage = () => {
 
 				{/* Inventory Table */}
 				<FilterFormLayout
-					isOpen={isOpen}
-					onSubmit={onSubmit}
-					onClear={onClear}
+					isOpen={isFilterToggled}
+					onSubmit={handleFilterSubmit}
+					onClear={handleFilterClear}
 					defaultValues={FILTER_FORMS_DEFAULT_VALUES}
 					fieldContents={INVENTORY_FILTER_CONTENTS}>
 					<Table

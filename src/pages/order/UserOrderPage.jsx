@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import OrderList from "./OrderList";
 import OrderEmptySpot from "./OrderEmptySpot";
 import useOrder from "../../hooks/useOrder";
@@ -12,18 +12,17 @@ import { USER_ROLES } from "../../constants/app";
 import {
 	USER_ORDER_FILTER_FORMS_DEFAULT_VALUES,
 	USER_ORDER_FIELD_CONTENTS,
-	ORDER_STATUSES,
 } from "../../constants/order";
+import { useMiniToggler } from "../../hooks/useToggle";
+
+const ALL_ORDERS = "All Orders";
 
 /**
- * UserOrderPage - Displays user orders with filter
+ * UserOrderPage - Displays user orders with filtering capabilities
  */
 const UserOrderPage = () => {
-	const [isOpen, setIsOpen] = useState(false);
-
-	const [selectedTab, setSelectedTab] = useState(
-		toPascalCase(ORDER_STATUSES.PROCESSING)
-	);
+	const [selectedTab, setSelectedTab] = useState(ALL_ORDERS);
+	const [isFilterToggled, toggleFilter] = useMiniToggler();
 
 	const {
 		ordersData,
@@ -32,20 +31,8 @@ const UserOrderPage = () => {
 		ordersFetchError,
 		isOrdersLength,
 		filterOrders,
+		clearOrderFilters,
 	} = useOrder(USER_ROLES.CLIENT);
-
-	useEffect(() => {
-		filterOrders({
-			orderStatus: [ORDER_STATUSES.PROCESSING],
-		});
-	}, []);
-
-	/**
-	 * Toggles the filter form visibility
-	 */
-	const toggleFilter = useCallback(() => {
-		setIsOpen((prev) => !prev);
-	}, []);
 
 	/**
 	 * Handles filter form submission
@@ -56,7 +43,7 @@ const UserOrderPage = () => {
 			const { orderStatus } = data;
 			if (orderStatus) {
 				filterOrders({ orderStatus: [orderStatus] });
-				setSelectedTab(toPascalCase(orderStatus));
+				setSelectedTab(orderStatus);
 			}
 			toggleFilter();
 		},
@@ -64,17 +51,30 @@ const UserOrderPage = () => {
 	);
 
 	/**
-	 * Clears filters and resets to default state
+	 * Clears all filters and resets to default state
 	 */
 	const handleFilterClear = useCallback(() => {
-		filterOrders({ orderStatus: [ORDER_STATUSES.PROCESSING] });
-		setSelectedTab(toPascalCase(ORDER_STATUSES.PROCESSING));
+		clearOrderFilters();
+		setSelectedTab(ALL_ORDERS);
 		toggleFilter();
-	}, [filterOrders, toggleFilter]);
+	}, [clearOrderFilters, toggleFilter]);
+
+	/**
+	 * Handles filter toggle with keyboard support
+	 */
+	const handleFilterToggle = useCallback(
+		(e) => {
+			if (e.type === "click" || e.key === "Enter" || e.key === " ") {
+				e.preventDefault();
+				toggleFilter();
+			}
+		},
+		[toggleFilter]
+	);
 
 	return (
 		<div className="max-w-4xl mx-auto p-4 sm:p-6">
-			<AnimatedH1 title={'Your Orders '} />
+			<AnimatedH1 title="Your Orders" />
 
 			<LoadingErrorBoundary
 				isLoading={isOrdersLoading}
@@ -85,19 +85,24 @@ const UserOrderPage = () => {
 				)}>
 				{isOrdersLength ? (
 					<FilterFormLayout
-						isOpen={isOpen}
+						isOpen={isFilterToggled}
 						onSubmit={handleFilterSubmit}
 						onClear={handleFilterClear}
 						defaultValues={USER_ORDER_FILTER_FORMS_DEFAULT_VALUES}
 						fieldContents={USER_ORDER_FIELD_CONTENTS}>
 						<InfoLayout
-							title={selectedTab}
+							title={toPascalCase(selectedTab)}
 							rightComponent={
 								<button
 									type="button"
-									className="inline-flex items-center  text-blue-500 font-medium hover:font-bold  duration-700 "
-									aria-label="Toggle order filters"
-									onClick={toggleFilter}>
+									className="inline-flex items-center text-blue-500 font-medium hover:font-bold duration-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 rounded px-2 py-1"
+									aria-label={
+										isFilterToggled ? "Close filters" : "Open filters"
+									}
+									aria-expanded={isFilterToggled}
+									onClick={handleFilterToggle}
+									onKeyDown={handleFilterToggle}
+									tabIndex={0}>
 									Filter
 								</button>
 							}>

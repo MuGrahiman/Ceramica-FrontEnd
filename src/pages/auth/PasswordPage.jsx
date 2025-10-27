@@ -7,11 +7,13 @@ import useApiHandler from "../../hooks/useApiHandler";
 import PasswordResetNotification from "../../components/PasswordResetNotification";
 import AuthHeader from "./AuthHeader";
 import AuthRedirectMessage from "./AuthRedirectMessage";
+import { useMiniToggler } from "../../hooks/useToggle";
 
 const PasswordPage = () => {
 	const { token } = useParams();
 	const [handleMutation] = useApiHandler();
-	const [showMailLink, setShowMailLink] = useState(false);
+		const [isMailLinkShown, , setMailLinkShown] = useMiniToggler();
+	
 	const [resetPassword, { isLoading, isError, isSuccess }] = handleMutation(
 		useResetPasswordMutation
 	);
@@ -24,7 +26,7 @@ const PasswordPage = () => {
 				onSuccess: () => "Your password has been reset successfully!",
 				onError: (err) => {
 					if (err.data.error.name === "TokenExpiredError")
-						setShowMailLink(true);
+						setMailLinkShown();
 					return (
 						err.data.message ||
 						err.message ||
@@ -54,7 +56,7 @@ const PasswordPage = () => {
 						onSubmit={handleResetPassword}
 						btnText={"Reset Password"}
 					/>
-					{showMailLink && isError && (
+					{isMailLinkShown && isError && (
 						<AuthRedirectMessage
 							message="Your reset link has expired !"
 							linkText=" Verify your email address."

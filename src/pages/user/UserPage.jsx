@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import useSearch from "../../hooks/useSearch";
 import FilterFormLayout from "../../components/FilterFormLayout";
 import Table from "../../components/Table";
@@ -19,17 +19,19 @@ import {
 import useUser from "../../hooks/useUser";
 import { USER_ROLES } from "../../constants/app";
 import Badge from "../../components/Badge";
+import useToggle, { useMiniToggler } from "../../hooks/useToggle";
+import { handleFileError } from "../../utils/fileHandler";
 
 /**
  * User page for listing and managing user accounts on the admin side.
  */
 const UserPage = () => {
-	const [isOpen, setIsOpen] = useState(false);
-	const [id, setId] = useState(null);
+	const [activeUserId, setActiveUserId] = useState(null);
 	const [sort, setSort] = useState("");
 	const [status, setStatus] = useState([]);
 	const { searchTerm, handleSearch, clearSearch } = useSearch();
-
+	const [isFilterToggled, toggleFilter, , closeFilter] = useMiniToggler();
+	const PAGINATION_LIMIT = 5;
 	const {
 		usersData,
 		isUsersLoading,
@@ -46,30 +48,44 @@ const UserPage = () => {
 	});
 
 	const { pageNumbers, currentPage, totalPages, handlePage, currentItems } =
-		usePagination(usersData || [], 5);
+		usePagination(usersData || [], PAGINATION_LIMIT);
 
-	const onSubmit = (data) => {
-		if (data.sort) {
-			setSort(data.sort);
-		}
-		if (data.status) {
-			setStatus(data.status);
-		}
-		setIsOpen((prev) => !prev);
-	};
-
-	const onClear = () => {
+	/**
+	 * Handles user status update
+	 */
+	const handleStatusUpdate = useCallback(
+		async (userId, currentStatus) => {
+			setActiveUserId(userId);
+			await handleUpdateUserStatus(userId, currentStatus);
+			setActiveUserId(null);
+		},
+		[handleUpdateUserStatus]
+	);
+	/**
+	 * Handles filter form submission
+	 */
+	const handleFilterSubmit = useCallback(
+		(data) => {
+			if (data.sort) {
+				setSort(data.sort);
+			}
+			if (data.status) {
+				setStatus(data.status);
+			}
+			closeFilter();
+		},
+		[closeFilter]
+	);
+	/**
+	 * Handles filter clearance
+	 */
+	const handleFilterClear = useCallback(() => {
 		setSort("");
 		setStatus([]);
-		setIsOpen((prev) => !prev);
-	};
+		closeFilter();
+	}, [closeFilter]);
 
-	const handleUpdate = async (id, status) => {
-		setId(id);
-		await handleUpdateUserStatus(id, status);
-		setId(null);
-	};
-
+	// Table headers configuration
 	const headers = [
 		{
 			hide: true,
@@ -79,6 +95,8 @@ const UserPage = () => {
 					className="w-10 h-10 rounded-full"
 					src={user?.profilePhoto?.url}
 					alt={user?._id || "user Image"}
+					onError={handleFileError}
+					loading="lazy"
 				/>
 			),
 			showValue: () => "lg:table-cell",
@@ -104,23 +122,23 @@ const UserPage = () => {
 		},
 		{
 			label: "Action",
-			render: (user) =>
-				isStatusUpdating && user?._id === id ? (
+			render: (user) => {
+				const isUpdating = isStatusUpdating && user?._id === activeUserId;
+				const actionText = user?.status === "blocked" ? "Unblock" : "Block";
+				return isUpdating ? (
 					<span className="flex items-center justify-center">
 						<MiniLoader />
 					</span>
 				) : (
 					<Badge
-						label={user?.status === "blocked" ? "UnBlock" : "Block"}
+						label={actionText}
 						color={"gray"}
 						onClick={() =>
-							handleUpdate(
-								user?._id,
-								user?.status === "blocked" ? "unBlock" : "block"
-							)
+							handleStatusUpdate(user?._id, actionText.toLowerCase())
 						}
 					/>
-				),
+				);
+			},
 		},
 		{
 			label: "Details",
@@ -147,19 +165,20 @@ const UserPage = () => {
 			)}>
 			<React.Fragment>
 				{/* Header Section */}
-				<PageHeader title="Orders" />
+				<PageHeader title="Users" />
 				{/* Filter and Search Section */}
 				<FilterControlsWithSearch
-					isOpen={isOpen}
-					onToggle={() => setIsOpen((prev) => !prev)}
+					isOpen={isFilterToggled}
+					onToggle={toggleFilter}
 					onClearSearch={clearSearch}
 					onSearch={handleSearch}
 					isSearching={isUsersFetching && searchTerm}
 				/>
+				{/* Main Content with Filters and Table */}
 				<FilterFormLayout
-					isOpen={isOpen}
-					onSubmit={onSubmit}
-					onClear={onClear}
+					isOpen={isFilterToggled}
+					onSubmit={handleFilterSubmit}
+					onClear={handleFilterClear}
 					defaultValues={USER_FILTER_FORMS_DEFAULT_VALUES}
 					fieldContents={USER_FILTER_FIELD_CONTENTS}>
 					<Table

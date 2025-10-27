@@ -15,6 +15,8 @@ import useToast from "../../hooks/useToast";
 import getBaseUrl from "../../utils/baseUrl";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import useErrorManager from "../../hooks/useErrorManager";
+import { useMiniToggler } from "../../hooks/useToggle";
+import { BASE_URL } from "../../constants/app";
 
 /**
  * DashboardSection - Reusable dashboard section component
@@ -49,9 +51,12 @@ DashboardSection.propTypes = {
  * @returns {JSX.Element} Admin dashboard layout
  */
 const Dashboard = () => {
+	//https://.../share/zeal27vpre6hdg3hx5
 	const { isAuthorized } = useAuth("admin");
 	const DASHBOARD_ERROR = "DashboardError";
-	const [isLoading, setIsLoading] = useState(true);
+	// const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, , startLoading, stopLoading] = useMiniToggler(true);
+
 	const [isError, setIsError, resetIsError] = useErrorManager();
 
 	const showToast = useToast();
@@ -81,9 +86,9 @@ const Dashboard = () => {
 	 */
 	const fetchDashboardData = async () => {
 		resetIsError();
-		setIsLoading(true);
+		startLoading();
 		try {
-			const { data } = await axios.get(`${getBaseUrl()}/api/admin/`);
+			const { data } = await axios.get(`${BASE_URL}/api/admin/`);
 			setDashboardData((prev) => ({
 				...prev,
 				stats: data.stats,
@@ -101,7 +106,7 @@ const Dashboard = () => {
 			setIsError(DASHBOARD_ERROR, errorMsg);
 			console.error("Dashboard fetch error:", error);
 		} finally {
-			setIsLoading(false);
+			stopLoading();
 		}
 	};
 
@@ -110,7 +115,7 @@ const Dashboard = () => {
 		if (isAuthorized) {
 			fetchDashboardData();
 		}
-	}, [isAuthorized]);
+	}, []);
 
 	const dashboardSections = [
 		{

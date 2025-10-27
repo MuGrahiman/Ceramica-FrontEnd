@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
-import useSuccessManager from "../../hooks/useSuccessManager";
 import { createDefaultState } from "../../utils/generals";
 import { useForm } from "react-hook-form";
 import InputField from "../../components/InputField";
 import ListOptions from "../../components/ListOptions";
 import AuthPasswordComponent from "./AuthPasswordComponent";
 import FormSubmitButton from "./FormSubmitButton";
+import useToggle, { useMiniToggler } from "../../hooks/useToggle";
+import { PASSWORD_NAME_FIELDS } from "../../constants/toggle";
+import {
+	DEFAULT_FORM_VALUE,
+	PASSWORD_NAME_FIELDS_ARRAY,
+} from "../../constants/profile";
 
 /**
  * Handles the change password form with validation and forgot password flow.
@@ -24,16 +29,11 @@ const ChangePasswordForm = ({
 	isSendingResetLink = false,
 	isSendedResetLink = false,
 }) => {
-	const defaultPasswordValue = [
-		"currentPassword",
-		"newPassword",
-		"confirmPassword",
-	];
-	const defaultFormValue = createDefaultState(defaultPasswordValue, "");
-	const [showForgotFlow, setShowForgotFlow] = useState(isSendedResetLink);
+	const [showForgotFlow, setShowForgotFlow, , closeShowForgotFlow] =
+		useMiniToggler(isSendedResetLink);
 	useEffect(() => {
 		setShowForgotFlow(isSendedResetLink);
-	}, [isSendedResetLink]);
+	}, [isSendedResetLink, setShowForgotFlow]);
 
 	const {
 		handleSubmit,
@@ -41,29 +41,30 @@ const ChangePasswordForm = ({
 		clearErrors,
 		register,
 		formState: { errors, isDirty, isSubmitting, isValid },
-	} = useForm({ defaultValues: defaultFormValue });
-	const [isSuccess, setSuccess] = useSuccessManager(
-		createDefaultState(defaultPasswordValue, false)
+	} = useForm({ defaultValues: DEFAULT_FORM_VALUE });
+
+	const [setSuccess, isSuccess] = useToggle(
+		createDefaultState(PASSWORD_NAME_FIELDS_ARRAY, false)
 	);
 
 	const formFields = [
 		{
 			component: AuthPasswordComponent,
 			props: {
-				NAME: "currentPassword",
+				NAME: PASSWORD_NAME_FIELDS.CURRENT_PASSWORD,
 				LABEL: "Current Password",
 				TYPE: "text",
 				PLACEHOLDER: "Enter Current Password",
 				isResetAlerted: showForgotFlow,
 				onClickForgotPassword: handleForgotPassword,
 				isSending: isSendingResetLink,
-				resetCurrentPassword: () => setShowForgotFlow(false),
+				resetCurrentPassword: closeShowForgotFlow,
 			},
 		},
 		{
 			component: InputField,
 			props: {
-				NAME: "newPassword",
+				NAME: PASSWORD_NAME_FIELDS.NEW_PASSWORD,
 				LABEL: "New Password",
 				TYPE: "text",
 				PLACEHOLDER: "Enter New Password",
@@ -72,7 +73,7 @@ const ChangePasswordForm = ({
 		{
 			component: InputField,
 			props: {
-				NAME: "confirmPassword",
+				NAME: PASSWORD_NAME_FIELDS.CONFIRM_PASSWORD,
 				LABEL: "Confirm Password",
 				TYPE: "text",
 				PLACEHOLDER: "Enter Confirm Password",
@@ -81,7 +82,7 @@ const ChangePasswordForm = ({
 	];
 
 	const validationRules = {
-		currentPassword: {
+		[PASSWORD_NAME_FIELDS.CURRENT_PASSWORD]: {
 			required: "Current Password is required.",
 			minLength: {
 				value: 6,
@@ -89,39 +90,42 @@ const ChangePasswordForm = ({
 			},
 			onChange: (e) => {
 				const value = e.target.value;
-				clearErrors("currentPassword");
+				clearErrors(PASSWORD_NAME_FIELDS.CURRENT_PASSWORD);
 				setSuccess(
-					"currentPassword",
-					value.length >= 6 && !errors["currentPassword"]
+					PASSWORD_NAME_FIELDS.CURRENT_PASSWORD,
+					value.length >= 6 && !errors[PASSWORD_NAME_FIELDS.CURRENT_PASSWORD]
 				);
 			},
 		},
-		newPassword: {
+		[PASSWORD_NAME_FIELDS.NEW_PASSWORD]: {
 			required: "New Password is required.",
-			minLength: {
-				value: 6,
-				message: "New Password must be at least 6 characters long.",
-			},
+			// minLength: {
+			// 	value: 6,
+			// 	message: "New Password must be at least 6 characters long.",
+			// },
 			validate: (value) => {
 				const { currentPassword } = getValues();
 				return value !== currentPassword || "Please Enter New Password.";
 			},
-			// minLength: {
-			// 	value: 8,
-			// 	message: "Password must be at least 8 characters", 
-			//   },
-			//   pattern: {
-			// 	value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/,
-			// 	message:
-			// 	  "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character",
-			//   },
+			minLength: {
+				value: 8,
+				message: "Password must be at least 8 characters",
+			},
+			pattern: {
+				value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/,
+				message:
+					"Password must include at least one uppercase letter, one lowercase letter, one number, and one special character",
+			},
 			onChange: (e) => {
 				const value = e.target.value;
-				clearErrors("newPassword");
-				setSuccess("newPassword", value.length >= 6 && !errors["newPassword"]);
+				clearErrors(PASSWORD_NAME_FIELDS.NEW_PASSWORD);
+				setSuccess(
+					PASSWORD_NAME_FIELDS.NEW_PASSWORD,
+					value.length >= 6 && !errors[PASSWORD_NAME_FIELDS.NEW_PASSWORD]
+				);
 			},
 		},
-		confirmPassword: {
+		[PASSWORD_NAME_FIELDS.CONFIRM_PASSWORD]: {
 			required: "Confirm Password is required.",
 			validate: (value) => {
 				const { newPassword } = getValues();
@@ -129,10 +133,11 @@ const ChangePasswordForm = ({
 			},
 			onChange: (e) => {
 				const value = e.target.value;
-				clearErrors("confirmPassword");
+				clearErrors(PASSWORD_NAME_FIELDS.CONFIRM_PASSWORD);
 				setSuccess(
-					"confirmPassword",
-					value === getValues("newPassword") && !errors["confirmPassword"]
+					PASSWORD_NAME_FIELDS.CONFIRM_PASSWORD,
+					value === getValues(PASSWORD_NAME_FIELDS.NEW_PASSWORD) &&
+						!errors[PASSWORD_NAME_FIELDS.CONFIRM_PASSWORD]
 				);
 			},
 		},
@@ -159,7 +164,7 @@ const ChangePasswordForm = ({
 						<Component
 							key={index}
 							{...props}
-							IS_SUCCESS={isSuccess[props.NAME] || false}
+							IS_SUCCESS={isSuccess(props.NAME)}
 							ERRORS={errors}
 							REGISTER={register}
 							VALIDATION_RULES={validationRules}

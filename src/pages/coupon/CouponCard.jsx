@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Toggler from "../../components/Toggler";
-import useToggle from "../../hooks/useToggle";
+import useToggle, { useMiniToggler } from "../../hooks/useToggle";
 import { setDateAsDayMonthYear } from "../../utils/date";
 
 const CouponCard = ({ coupon }) => {
@@ -17,7 +17,7 @@ const CouponCard = ({ coupon }) => {
 		status,
 	} = coupon;
 
-	const [toggle, isToggled] = useToggle();
+	const [isToggled,toggle ] = useMiniToggler();
 
 	return (
 		<div className="bg-white  w-full rounded overflow-hidden shadow transition-transform duration-300 hover:shadow-xl">
@@ -70,8 +70,8 @@ const CouponCard = ({ coupon }) => {
 				<div className="sm:flex justify-between mb-2">
 					<p className="text-gray-700 text-base mb-4">
 						<Toggler
-							IS_TOG={isToggled("couponDescription")}
-							TOG={() => toggle("couponDescription")}
+							IS_TOG={isToggled}
+							TOG={toggle}
 							TEXT={description}
 						/>
 					</p>

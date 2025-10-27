@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
 	useDeleteInquiryMutation,
 	useGetInquiriesQuery,
@@ -10,7 +10,6 @@ import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { ImEye } from "react-icons/im";
 import Badge from "../../components/Badge";
-import { FILTER_FORMS_COMPONENTS } from "../../constants/filter-form";
 import Pagination from "../../components/Pagination";
 import usePagination from "../../hooks/usePagination";
 import useApiHandler from "../../hooks/useApiHandler";
@@ -20,16 +19,21 @@ import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
 import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
 import PageHeader from "../../components/PageHeader";
+import { useMiniToggler } from "../../hooks/useToggle";
+import {
+	INQUIRY_FIELD_CONTENTS,
+	INQUIRY_FILTER_FORMS_DEFAULT_VALUES,
+	INQUIRY_SWAL_CONFIG,
+} from "../../constants/inquiry";
 
 const InquiryPage = () => {
-	const [isOpen, setIsOpen] = useState(false);
-	const [id, setId] = useState(null);
+	const [activeInquiryId, setActiveInquiryId] = useState(null);
 	const [sort, setSort] = useState(null);
 	const [status, setStatus] = useState(null);
-	const { searchTerm, handleSearch, clearSearch } = useSearch();
 	const [handleMutation] = useApiHandler();
+	const { searchTerm, handleSearch, clearSearch } = useSearch();
+	const [isFilterToggled, toggleFilter, , closeFilter] = useMiniToggler();
 
-	// RTK Query hook with all filter parameters
 	const {
 		data: ordersData,
 		isLoading: fetchLoading,
@@ -42,83 +46,56 @@ const InquiryPage = () => {
 		{ refetchOnMountOrArgChange: true }
 	);
 
-	// Mutation for deleting inventory item
 	const [deleteInquiry, { isLoading: deleteLoading }] = handleMutation(
 		useDeleteInquiryMutation
 	);
 
-	// Pagination hook now works directly with API data
 	const { pageNumbers, currentPage, totalPages, handlePage, currentItems } =
 		usePagination(ordersData || [], 5);
 
-	const onSubmit = (data) => {
-		if (data.sort) {
-			setSort(data.sort);
-		}
-		if (data.status) {
-			setStatus(data.status);
-		}
-		refetch();
-		setIsOpen((prev) => !prev);
-	};
+	/**
+	 * Handles filter form submission
+	 */
+	const handleFilterSubmit = useCallback(
+		(data) => {
+			if (data.sort) setSort(data.sort);
 
-	const onClear = () => {
+			if (data.status) setStatus(data.status);
+
+			refetch();
+			closeFilter();
+		},
+		[refetch, closeFilter]
+	);
+
+	/**
+	 * Handles filter clearance
+	 */
+	const handleFilterClear = useCallback(() => {
 		setSort(null);
 		setStatus(null);
-		setIsOpen((prev) => !prev);
-	};
+		closeFilter();
+	}, [closeFilter]);
 
-	const handleDelete = async (id) => {
-		setId(id);
-		const result = await Swal.fire({
-			title: "Are you sure?",
-			text: "You won't be able to revert this!",
-			icon: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#b10202",
-			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Yes, delete it!",
-		});
+	/**
+	 * Handles inquiry deletion with confirmation and error handling
+	 */
+	const handleDelete = useCallback(
+		async (inquiryId) => {
+			setActiveInquiryId(inquiryId);
 
-		if (!result.isConfirmed) return setId(null);
+			const result = await Swal.fire(INQUIRY_SWAL_CONFIG);
 
-		await deleteInquiry(id, {
-			onSuccess: () => "Deleted successfully",
-			onError: (err) =>
-				err.message || "Failed to delete the product. Please try again",
-		});
-		setId(null);
-	};
-
-	const FILTER_FORMS_DEFAULT_VALUES = {
-		status: [],
-		sort: "",
-	};
-
-	const FieldContents = [
-		{
-			title: "Filter by status",
-			type: FILTER_FORMS_COMPONENTS.RADIO,
-			props: {
-				name: "status",
-				options: [
-					{ value: "pending", label: "Pending query" },
-					{ value: "resolved", label: "Resolved query" },
-				],
-			},
+			if (!result.isConfirmed) return setActiveInquiryId(null);
+			await deleteInquiry(inquiryId, {
+				onSuccess: () => "Inquiry deleted successfully",
+				onError: (err) =>
+					err.message || "Failed to delete the product. Please try again",
+				onFinally: () => setActiveInquiryId(null),
+			});
 		},
-		{
-			title: "Sort",
-			type: FILTER_FORMS_COMPONENTS.RADIO,
-			props: {
-				name: "sort",
-				options: [
-					{ value: "newest", label: "Newest query" },
-					{ value: "oldest", label: "Oldest query" },
-				],
-			},
-		},
-	];
+		[deleteInquiry]
+	);
 
 	const headers = [
 		{
@@ -128,7 +105,7 @@ const InquiryPage = () => {
 		{
 			hide: true,
 			label: "Mail",
-			render: (inquiry) => `${inquiry.email}`,
+			render: (inquiry) => inquiry.email || "N/A",
 			showValue: () => "md:table-cell",
 		},
 		{
@@ -148,7 +125,7 @@ const InquiryPage = () => {
 					aria-label={`Item ${inquiry.name}`}>
 					<ImEye
 						className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700"
-						aria-label="Details"
+						aria-label="View inquiry details"
 					/>
 				</Link>
 			),
@@ -156,15 +133,16 @@ const InquiryPage = () => {
 		{
 			label: "Delete",
 			render: (inquiry) =>
-				deleteLoading && inquiry._id === id ? (
+				deleteLoading && inquiry._id === activeInquiryId ? (
 					<MiniLoader />
 				) : (
-					<MdDelete
-						id={inquiry._id}
+					<button
+						type="button"
 						onClick={() => handleDelete(inquiry._id)}
-						className="h-6 w-6 text-gray-500 cursor-pointer hover:text-red-700"
-						aria-label={`Delete ${inquiry.name}`}
-					/>
+						className="text-gray-500 hover:text-red-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-300 rounded"
+						aria-label={`Delete inquiry from ${inquiry.name}`}>
+						<MdDelete className="h-6 w-6" />
+					</button>
 				),
 		},
 	];
@@ -179,22 +157,22 @@ const InquiryPage = () => {
 			)}>
 			<React.Fragment>
 				{/* Header Section */}
-				<PageHeader title="Inquiry" />
+				<PageHeader title="Inquiries"  />
 
 				{/* Filter and Search Section */}
 				<FilterControlsWithSearch
-					isOpen={isOpen}
-					onToggle={() => setIsOpen((prev) => !prev)}
+					isOpen={isFilterToggled}
+					onToggle={toggleFilter}
 					onClearSearch={clearSearch}
 					onSearch={handleSearch}
 					isSearching={isFetching}
 				/>
 				<FilterFormLayout
-					isOpen={isOpen}
-					onSubmit={onSubmit}
-					onClear={onClear}
-					defaultValues={FILTER_FORMS_DEFAULT_VALUES}
-					fieldContents={FieldContents}>
+					isOpen={isFilterToggled}
+					onSubmit={handleFilterSubmit}
+					onClear={handleFilterClear}
+					defaultValues={INQUIRY_FILTER_FORMS_DEFAULT_VALUES}
+					fieldContents={INQUIRY_FIELD_CONTENTS}>
 					<Table
 						CONFIG={headers}
 						DATA={currentItems}
