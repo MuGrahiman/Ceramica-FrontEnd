@@ -4,6 +4,18 @@ import useToast from "./useToast";
 const useApiHandler = () => {
     const navigate = useNavigate();
     const showToast = useToast();
+
+    /**
+     * Validate option parameter types
+     */
+    const validateParam = ( param, expectedType, name ) => {
+        if ( param !== null && typeof param !== expectedType ) {
+            showToast( `Invalid ${ name }: expected a ${ expectedType }.`, "error" );
+            return false;
+        }
+        return true;
+    };
+
     /**
      * Handle API calls with error handling, success messages, and redirects.
      * @param {Function} apiCall - The API call function (e.g., Redux mutation).
@@ -15,63 +27,39 @@ const useApiHandler = () => {
      * @param {Function} options.onFinally - Callback for final update.
      * @returns {Promise<Object|null>} The API response or null if an error occurs.
      */
-    const handleApiCall = async ( apiCall, args = null, {
+    const handleApiCall = async ( apiCall = null, args = null, {
         onSuccess = null,
         redirectPath = null,
         onError = null,
         onFinally = null
     } = {} ) => {
         try {
-            // apiCall validation
-            if ( typeof apiCall !== 'function' ) {
-                const error = "Invalid API call";
-                showToast( error, "error" );
+
+            if ( !apiCall || !validateParam( apiCall, 'function', 'API Call' ) ) {
+                showToast( 'API Call is reqired', "error" );
                 return null;
             }
+            validateParam( onSuccess, 'function', 'onSuccess' );
+            validateParam( onError, 'function', 'onError' );
+            validateParam( onFinally, 'function', 'onFinally' );
+            validateParam( redirectPath, 'string', 'redirectPath' );
 
-            // Parameter validation
-            if ( onSuccess !== null && typeof onSuccess !== 'function' ) {
-                const error = "Invalid onSuccess: expected a function.";
-                showToast( error, "error" );
-            }
+            const rawResult = await apiCall( args );
+            const response =
+                typeof rawResult?.unwrap === "function"
+                    ? await rawResult.unwrap()
+                    : rawResult;
+                    
+            if ( onSuccess ) showToast( onSuccess( response ), "success" );
+            if ( redirectPath ) navigate( redirectPath );
 
-            if ( redirectPath !== null && typeof redirectPath !== 'string' ) {
-                const error = "Invalid redirectPath: expected a string.";
-                showToast( error, "error" );
-            }
-
-            if ( onError !== null && typeof onError !== 'function' ) {
-                const error = "Invalid onError: expected a function.";
-                showToast( error, "error" );
-            }
-
-
-            const res = await apiCall( args ).unwrap();
-
-            // Show success toast
-            if ( onSuccess ) {
-                showToast( onSuccess(res), "success" );
-            }
-
-            // Navigate to redirect path if specified
-            if ( redirectPath ) {
-                navigate( redirectPath );
-            }
-            // Return a success object, including the API result
-            return res;
+            return response;
         } catch ( error ) {
             console.error( "API call error:", error );
-
-            // Show error toast
-            if ( onError ) {
-                showToast( onError( error ), "error" );
-            }
-            return null; // Better to provide an error object
+            if ( onError ) showToast( onError( error ), "error" );
+            return null;
         } finally {
-            // Call the external finally logic if provided
-            if ( onFinally && typeof onFinally === 'function' ) {
-                onFinally();
-            }
+            if ( onFinally ) onFinally();
         }
     };
 

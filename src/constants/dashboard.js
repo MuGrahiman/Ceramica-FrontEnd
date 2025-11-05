@@ -50,3 +50,9 @@ export const INQUIRIES_STATUS_COLORS = {
     resolved: `${ STATS_COLOR_CONFIG.green.bg } ${ STATS_COLOR_CONFIG.green.text }`,
     cancelled: `${ STATS_COLOR_CONFIG.red.bg } ${ STATS_COLOR_CONFIG.red.text }`,
 };
+
+export const INITIAL_DASHBOARD_STATE = {
+    stats: {},
+    lists: {},
+    revenueData: []
+}

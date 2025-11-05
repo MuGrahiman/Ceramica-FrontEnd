@@ -1,7 +1,6 @@
 // components/Dashboard.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 import InfoLayout from "../../components/InfoLayout";
 import OrderList from "../order/OrderList";
 import StatsOverview from "./StatsOverview";
@@ -11,12 +10,12 @@ import LowStockProducts from "./LowStockProducts";
 import CouponList from "./CouponList";
 import ListOptions from "../../components/ListOptions";
 import { useAuth } from "../../hooks/useAuth";
-import useToast from "../../hooks/useToast";
-import getBaseUrl from "../../utils/baseUrl";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import useErrorManager from "../../hooks/useErrorManager";
-import { useMiniToggler } from "../../hooks/useToggle";
-import { BASE_URL } from "../../constants/app";
+import { USER_ROLES } from "../../constants/app";
+import useDashboard from "../../hooks/useDashboard";
+import { Link } from "react-router-dom";
+import { toPascalCase } from "../../utils/generals";
+import { IoIosArrowForward } from "react-icons/io";
 
 /**
  * DashboardSection - Reusable dashboard section component
@@ -33,7 +32,16 @@ const DashboardSection = ({
 	propName = "data",
 	component: Component,
 }) => (
-	<InfoLayout title={title} showLink linkedTo={linkTo}>
+	<InfoLayout
+		title={title}
+		rightComponent={
+			<Link
+				to={`/dashboard${linkTo}`}
+				className="flex items-center justify-between gap-1 text-sm text-blue-600 hover:text-blue-800 hover:font-semibold">
+				{toPascalCase(propName)}
+				<IoIosArrowForward />
+			</Link>
+		}>
 		{React.createElement(Component, { [propName]: data })}
 	</InfoLayout>
 );
@@ -51,69 +59,12 @@ DashboardSection.propTypes = {
  * @returns {JSX.Element} Admin dashboard layout
  */
 const Dashboard = () => {
-	//https://.../share/zeal27vpre6hdg3hx5
-	const { isAuthorized } = useAuth("admin");
-	const DASHBOARD_ERROR = "DashboardError";
-	// const [isLoading, setIsLoading] = useState(true);
-	const [isLoading, , startLoading, stopLoading] = useMiniToggler(true);
+	const { isAuthorized } = useAuth(USER_ROLES.ADMIN);
+	const { data: dashboardData, isLoading, error, refetch } = useDashboard();
 
-	const [isError, setIsError, resetIsError] = useErrorManager();
-
-	const showToast = useToast();
-
-	const [dashboardData, setDashboardData] = useState(() => ({
-		stats: {
-			totalUsers: 0,
-			totalOrders: 0,
-			totalRevenue: 0,
-			lowStockCount: 0,
-			pendingEnquiryCount: 0,
-			pendingOrderCount: 0,
-		},
-		lists: {
-			pendingOrders: [],
-			pendingEnquiries: [],
-			expiredCoupons: [],
-			lowStockItems: [],
-		},
-		revenueData: [],
-	}));
-
-	/**
-	 * Fetches dashboard data from API
-	 * @async
-	 * @returns {Promise<void>}
-	 */
-	const fetchDashboardData = async () => {
-		resetIsError();
-		startLoading();
-		try {
-			const { data } = await axios.get(`${BASE_URL}/api/admin/`);
-			setDashboardData((prev) => ({
-				...prev,
-				stats: data.stats,
-				lists: data.lists,
-				revenueData: data.revenueData,
-			}));
-			showToast("Dashboard data loaded", "success");
-		} catch (error) {
-			const errorMsg =
-				error?.response?.data?.message ||
-				error?.data?.message ||
-				error?.message ||
-				"Failed to load dashboard data";
-			showToast(errorMsg, "error");
-			setIsError(DASHBOARD_ERROR, errorMsg);
-			console.error("Dashboard fetch error:", error);
-		} finally {
-			stopLoading();
-		}
-	};
-
-	// Data fetching effect
 	useEffect(() => {
 		if (isAuthorized) {
-			fetchDashboardData();
+			refetch();
 		}
 	}, []);
 
@@ -151,8 +102,8 @@ const Dashboard = () => {
 	return (
 		<LoadingErrorBoundary
 			isLoading={isLoading}
-			isError={!!isError[DASHBOARD_ERROR]}
-			errorMessage={isError[DASHBOARD_ERROR]}>
+			isError={!!error}
+			errorMessage={error}>
 			<div className="dashboard-container space-y-6">
 				{/* Stats Overview Section */}
 				<StatsOverview {...dashboardData.stats} />
