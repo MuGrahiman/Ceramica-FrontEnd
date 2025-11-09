@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "oderwat.indent-rainbow"
+        "oderwat.indent-rainbow",
+        "mikestead.dotenv"
     ]
 }

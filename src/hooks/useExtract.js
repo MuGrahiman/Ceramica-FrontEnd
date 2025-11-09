@@ -6,9 +6,9 @@ import { useState } from "react";
  * @returns {Object} Object containing the extraction function and states.
  */
 const useExtract = () => {
-    const [loading, setLoading] = useState(false);
-    const [data, setData] = useState(null);
-    const [error, setError] = useState(null);
+    const [ loading, setLoading ] = useState( false );
+    const [ data, setData ] = useState( null );
+    const [ error, setError ] = useState( null );
 
     /**
      * Extracts data by invoking a provided function with given arguments.
@@ -17,28 +17,28 @@ const useExtract = () => {
      * @param {...any} args - The arguments to pass to the function.
      * @returns {Promise<Object>} The extracted data.
      */
-    const extractData = async (fn, ...args) => {
-        setLoading(true);
-        setError(null);
+    const extractData = async ( fn, ...args ) => {
+        setLoading( true );
+        setError( null );
 
         try {
-            if (typeof fn !== 'function') {
-                throw new Error('The provided argument is not a function.');
+            if ( typeof fn !== 'function' ) {
+                throw new Error( 'The provided argument is not a function.' );
             }
-                        const result = await fn(...args).then((res) => res.user);
+            const result = await fn( ...args ).then( ( res ) => res.user );
             const extractedData = {
-                email: result.email || result.providerData?.[0]?.email,
+                email: result.email || result.providerData?.[ 0 ]?.email,
                 uid: result.uid,
             };
 
-            setData(extractedData);
+            setData( extractedData );
             return extractedData;
-        } catch (err) {
-            setError(err);
-            console.error("Error in extracting data:", err);
-            throw err; 
+        } catch ( err ) {
+            setError( err );
+            console.error( "Error in extracting data:", err );
+            throw err;
         } finally {
-            setLoading(false);
+            setLoading( false );
         }
     };
 

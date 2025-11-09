@@ -5,8 +5,7 @@
  * @return {string} errorMessage - Return the error message.
  */
 export const handleAndShowError = ( error = {}, fallbackMessage = '' ) => {
-    if ( error && error.length ) console.error( error );
-
+    console.error( error );
     // Initialize errorMessage with the fallback message 
     let errorMessage = fallbackMessage || "Something went wrong.";
 

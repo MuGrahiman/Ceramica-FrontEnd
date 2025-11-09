@@ -1,78 +1,80 @@
 import React, { useEffect } from "react";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { useDispatch } from "react-redux";
 import { useContextAuth } from "../../context/AuthContext";
-import { addUser, useLoginUserMutation } from "../../redux/store";
+import { useLoginUserMutation, useUserSlice } from "../../redux/store";
 import useToast from "../../hooks/useToast";
 import AuthForm from "../../components/AuthForm";
 import AuthLayout from "../../components/AuthLayout";
 import useApiHandler from "../../hooks/useApiHandler";
 import { useAuth } from "../../hooks/useAuth";
-import useExtract from "../../hooks/useExtract";
 import AuthHeader from "./AuthHeader";
 import AuthRedirectMessage from "./AuthRedirectMessage";
+import { USER_ROLES } from "../../constants/app";
+import { handleAndShowError } from "../../utils/errorHandlers";
+import { useMiniToggler } from "../../hooks/useToggle";
+import SocialSignInButton from "./SocialSignInButton";
 
 const UserLoginPage = () => {
-	const { isAuthorized } = useAuth("client");
+	const { isAuthorized } = useAuth(USER_ROLES.CLIENT);
 	const { signInWithFaceBook, signInWithGoogle } = useContextAuth();
-	const [handleLoginMutation] = useApiHandler();
+	const [handleLoginMutation, handleApiCall] = useApiHandler();
 	const [loginUser, { isLoading }] = handleLoginMutation(useLoginUserMutation);
+	const [socialLoading, , startSocialLoading, closeSocialLoading] =
+		useMiniToggler(false);
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
 	const showToast = useToast();
-	const execute = useExtract();
-
+	const { addUser } = useUserSlice();
 	// Redirect if already logged in
 	useEffect(() => {
 		if (isAuthorized) {
 			navigate("/");
 		}
-	}, [isAuthorized, showToast, navigate]);
+	}, [isAuthorized]);
+	
+	const handleLoginSuccess = (res) => {
+		if (res.success) addUser(res.data);
+
+		return res.message;
+	};
+	const handleLoginError = (err) =>
+		handleAndShowError(err, "User sign-in failed");
 
 	// Handle form submission
 	const handleLogin = async (formData, provider) => {
-		if (!provider) {
-			console.error("Provider is not provided");
-			return;
-		}
-		if (!formData) {
-			showToast("Please enter the credentials", "warning");
-			return;
-		}
+		if (!provider) return console.error("Provider is not provided");
+
+		if (!formData) return showToast("Please enter the credentials", "warning");
+
 		await loginUser(
 			{
 				provider,
 				...formData,
 			},
 			{
-				onSuccess: (res) => {
-					if (res.success) {
-						dispatch(addUser(res.data));
-						showToast(res.message, "success");
-						navigate("/");
-					}
-				},
-				onError: (err) =>
-					showToast(
-						err.data?.message || err?.message || "User sign-in failed",
-						"error"
-					),
+				onSuccess: handleLoginSuccess,
+				redirectPath: "/",
+				onError: handleLoginError,
 			}
 		);
 	};
 
 	// Handle social sign-ins (facebook / google)
 	const handleSocialSignIn = async (signInFunction, provider) => {
-		try {
-			const userData = await execute.extractData(signInFunction);
+		startSocialLoading();
+		await handleApiCall(signInFunction, null, {
+			onSuccess: async (res) => {
+				const email =
+					res?.user?.email ||
+					res?.user?.providerData?.[0]?.email;
+				const uid = res?.user?.uid;
 
-			if (!userData) throw new Error("No user data extracted!");
-			await handleLogin(userData, provider);
-		} catch (error) {
-			showToast(error.message || "Sign-in failed", "error");
-		}
+				await handleLogin({ email, uid }, provider);
+			},
+			onError: handleLoginError,
+			onFinally: closeSocialLoading,
+		});
 	};
 
 	return (
@@ -85,7 +87,7 @@ const UserLoginPage = () => {
 				isLogging
 				onSubmit={(data) => handleLogin(data, "local")}
 				btnText={"Login"}
-				isLoading={isLoading}
+				isLoading={isLoading || socialLoading}
 			/>
 			<AuthRedirectMessage
 				linkText="Forgotten Password?"
@@ -98,20 +100,22 @@ const UserLoginPage = () => {
 			/>
 
 			<div className="mt-4">
-				<button
-					onClick={() => handleSocialSignIn(signInWithGoogle, "google")}
-					className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
-					<FcGoogle className="mr-2" />
-					Sign in with Google
-				</button>
-			</div>
-			<div className="mt-4">
-				<button
-					onClick={() => handleSocialSignIn(signInWithFaceBook, "facebook")}
-					className="w-full flex flex-wrap gap-1 items-center justify-center bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none">
-					<FaFacebook className="mr-2" />
-					Sign in with Facebook
-				</button>
+				<SocialSignInButton
+					onSocialSignIn={handleSocialSignIn}
+					socialSignInMethod={signInWithGoogle}
+					socialPlatform="google"
+					socialIcon={FcGoogle}
+					socialButtonLabel="Sign in with Google"
+					isSigningIn={isLoading || socialLoading}
+				/>
+				<SocialSignInButton
+					onSocialSignIn={handleSocialSignIn}
+					socialSignInMethod={signInWithFaceBook}
+					socialPlatform="facebook"
+					socialIcon={FaFacebook}
+					socialButtonLabel="Sign in with Facebook"
+					isSigningIn={isLoading || socialLoading}
+				/>
 			</div>
 		</AuthLayout>
 	);

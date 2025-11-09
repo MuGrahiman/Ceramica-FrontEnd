@@ -1,3 +1,5 @@
+// src/hooks/useApiHandler.js
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useToast from "./useToast";
 
@@ -5,15 +7,28 @@ const useApiHandler = () => {
     const navigate = useNavigate();
     const showToast = useToast();
 
-    /**
-     * Validate option parameter types
-     */
-    const validateParam = ( param, expectedType, name ) => {
-        if ( param !== null && typeof param !== expectedType ) {
+    /** 
+    * Validate parameter type.
+    * Returns true if valid else false.
+    */
+    const validateParam = useCallback( ( param, expectedType, name ) => {
+        if ( param == null ) return true;
+        if ( typeof param !== expectedType ) {
             showToast( `Invalid ${ name }: expected a ${ expectedType }.`, "error" );
             return false;
         }
         return true;
+    }, [ showToast ] );
+
+    /** 
+     * Normalize RTK Query result.
+     * Unwraps data if available, throws if error, else returns the result.
+     */
+    const normalizeResult = async ( rawResult ) => {
+        if ( typeof rawResult?.unwrap === "function" ) return await rawResult.unwrap();
+        if ( rawResult?.error ) throw rawResult.error;
+        if ( rawResult?.data ) return rawResult.data;
+        return rawResult;
     };
 
     /**
@@ -27,41 +42,54 @@ const useApiHandler = () => {
      * @param {Function} options.onFinally - Callback for final update.
      * @returns {Promise<Object|null>} The API response or null if an error occurs.
      */
-    const handleApiCall = async ( apiCall = null, args = null, {
-        onSuccess = null,
-        redirectPath = null,
-        onError = null,
-        onFinally = null
-    } = {} ) => {
-        try {
+    const handleApiCall = useCallback(
+        async (
+            apiCall = null,
+            args = null, {
+                onSuccess = null,
+                redirectPath = null,
+                onError = null,
+                onFinally = null,
+            } = {}
+        ) => {
+            try {
+                if ( !apiCall || !validateParam( apiCall, "function", "API Call" ) ) {
+                    showToast( "API Call is required", "error" );
+                    return null;
+                }
 
-            if ( !apiCall || !validateParam( apiCall, 'function', 'API Call' ) ) {
-                showToast( 'API Call is reqired', "error" );
+                validateParam( onSuccess, "function", "onSuccess" );
+                validateParam( onError, "function", "onError" );
+                validateParam( onFinally, "function", "onFinally" );
+                validateParam( redirectPath, "string", "redirectPath" );
+
+                const rawResult = await apiCall( args );
+                const response = await normalizeResult( rawResult );
+
+                const successMsg = onSuccess
+                    ? await onSuccess( response )
+                    : null;
+
+                if ( successMsg ) showToast( successMsg, "success" );
+                if ( redirectPath ) navigate( redirectPath );
+
+                return response;
+            } catch ( error ) {
+                console.error( "API Handler Hook error:", error );
+
+                const errMsg = onError
+                    ? await onError( error )
+                    : null;
+                if ( errMsg ) showToast( errMsg, "error" );
+
                 return null;
+            } finally {
+                if ( onFinally ) onFinally();
             }
-            validateParam( onSuccess, 'function', 'onSuccess' );
-            validateParam( onError, 'function', 'onError' );
-            validateParam( onFinally, 'function', 'onFinally' );
-            validateParam( redirectPath, 'string', 'redirectPath' );
+        },
+        [ navigate, showToast, validateParam ]
+    );
 
-            const rawResult = await apiCall( args );
-            const response =
-                typeof rawResult?.unwrap === "function"
-                    ? await rawResult.unwrap()
-                    : rawResult;
-                    
-            if ( onSuccess ) showToast( onSuccess( response ), "success" );
-            if ( redirectPath ) navigate( redirectPath );
-
-            return response;
-        } catch ( error ) {
-            console.error( "API call error:", error );
-            if ( onError ) showToast( onError( error ), "error" );
-            return null;
-        } finally {
-            if ( onFinally ) onFinally();
-        }
-    };
 
     /**
      * Factory function to create mutation handlers.
@@ -70,11 +98,7 @@ const useApiHandler = () => {
      */
     const handleMutation = ( mutationHook ) => {
         const [ mutation, ...rest ] = mutationHook();
-
-        const handler = async ( arg, options ) => {
-            return handleApiCall( mutation, arg, options );
-        };
-
+        const handler = ( arg, options ) => handleApiCall( mutation, arg, options );
         return [ handler, ...rest ];
     };
 

@@ -1,9 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import getBaseUrl from "../../../utils/baseUrl";
-import { APP } from "../../../constants/app";
+import { APP, BASE_URL } from "../../../constants/app";
 
 const baseQuery = fetchBaseQuery( {
-	baseUrl: `${ getBaseUrl() }/api/auth`,
+	baseUrl: `${ BASE_URL }/api/auth`,
 	credentials: "include",
 	prepareHeaders: ( Headers ) => {
 

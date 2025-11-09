@@ -8,7 +8,6 @@ import {
 	signInWithPopup,
 	signOut,
 	FacebookAuthProvider,
-	OAuthProvider,
 } from "firebase/auth";
 
 const AuthContext = createContext();
@@ -46,10 +45,10 @@ export const AuthProvide = ({ children }) => {
 	};
 
 	// logout the user
-	// const logout = () => {
-	// 	setCurrentUser(null  );
-	// 	return signOut(auth);
-	// };
+	const logout = () => {
+		setCurrentUser(null  );
+		return signOut(auth);
+	};
 
 	// manage user
 	useEffect(() => {
@@ -57,10 +56,10 @@ export const AuthProvide = ({ children }) => {
 			if (user) {
 				const email = user.email || user.providerData[0].email;
 				const uid = user.uid;
-				// setCurrentUser({
-				// 	email,
-				// 	uid,
-				// });
+				setCurrentUser({
+					email,
+					uid,
+				});
 				setLoading(false);
 			}
 		});
@@ -75,7 +74,7 @@ export const AuthProvide = ({ children }) => {
 		loginUser,
 		signInWithGoogle,
 		signInWithFaceBook,
-		// logout,
+		logout,
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
