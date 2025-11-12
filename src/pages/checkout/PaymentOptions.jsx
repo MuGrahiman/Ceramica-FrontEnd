@@ -9,17 +9,17 @@ import {
 	useCreateOrderMutation,
 	useOrderSlice,
 } from "../../redux/store";
-import useToast from "../../hooks/useToast";
 import { useCart } from "../../hooks/useCart";
 import { useDispatch, useSelector } from "react-redux";
 import ApplyCoupon from "./ApplyCoupon";
 import useCoupon from "../../hooks/useCoupon";
+import { toast } from "react-toastify";
 
 const PaymentOptions = ({ cartSummary = [], addressId, isLoading = false }) => {
 	const subTotal = useSelector((state) => state.order.subTotal);
 	const appliedCoupon = useSelector((state) => state.coupon.appliedCoupon);
+	const { success: successToast,error: errorToast } = toast;
 
-	const showToast = useToast();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { clearCart } = useCart();
@@ -58,9 +58,9 @@ const PaymentOptions = ({ cartSummary = [], addressId, isLoading = false }) => {
 			return response;
 		} catch (err) {
 			console.error("Failed to create order:", err);
-			showToast(
+			errorToast(
 				err?.data?.message || err?.message || "Failed to create order",
-				"error"
+				
 			);
 			throw err;
 		}
@@ -72,25 +72,25 @@ const PaymentOptions = ({ cartSummary = [], addressId, isLoading = false }) => {
 			// Capture the approved payment
 			const response = await capturePayment(data).unwrap();
 			if (response.status === "Completed") {
-				showToast(`Payment ${response.status}`, "success");
+				successToast(`Payment ${response.status}`);
 				await clearCart();
 				removeCoupon();
 				removeSubTotal();
 				dispatch(addPayment(response));
 				navigate("/success/" + response._id);
 			} else {
-				showToast(`Payment ${response.status}`, "error");
+				errorToast(`Payment ${response.status}`);
 			}
 		} catch (err) {
 			console.error("Payment failed:", err);
-			showToast(err.message || "Payment failed", "error");
+			errorToast(err.message || "Payment failed");
 		}
 	};
 
 	// Handle errors from PayPal SDK
 	const onError = (err) => {
 		console.error(err);
-		showToast(err.message || "Something went wrong", "error");
+		errorToast(err.message || "Something went wrong");
 	};
 
 	return (

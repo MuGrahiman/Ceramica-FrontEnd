@@ -6,12 +6,12 @@ import {
 	useVerifyOTPMutation,
 } from "../../redux/store";
 import { useNavigate, useParams } from "react-router-dom";
-import useToast from "../../hooks/useToast";
 import useApiHandler from "../../hooks/useApiHandler";
 import MiniLoader from "../../components/MiniLoader";
 import AuthHeader from "./AuthHeader";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import { handleAndShowError } from "../../utils/errorHandlers";
+import { toast } from "react-toastify";
 
 // Constants
 const OTP_LENGTH = 4;
@@ -21,7 +21,12 @@ const OtpPage = () => {
 	const { userId } = useParams();
 	const { data, isLoading, isError, error } = useGetOTPQuery(userId);
 	const navigate = useNavigate();
-	const showToast = useToast();
+	const {
+		success: successToast,
+		error: errorToast,
+		warn: warningToast,
+	} = toast;
+
 	const [handleMutation] = useApiHandler();
 	const [verifyOTP, verificationResult] = handleMutation(useVerifyOTPMutation);
 	const [resendOTP, resendResult] = handleMutation(useResendOTPMutation);
@@ -93,15 +98,12 @@ const OtpPage = () => {
 		resendOTP(data.data.otpId, {
 			onSuccess: (res) => {
 				if (res.success) {
-					showToast(res.message, "success");
+					successToast(res.message);
 					setTime(INITIAL_TIMER);
 				} else throw new Error(res.message);
 			},
 			onError: (err) =>
-				showToast(
-					err.data.message || err.message || "Failed to resend OTP",
-					"error"
-				),
+				errorToast(err.data.message || err.message || "Failed to resend OTP"),
 		});
 	};
 
@@ -109,7 +111,7 @@ const OtpPage = () => {
 		e.preventDefault();
 		const otpCode = value.join("");
 		if (otpCode.length !== OTP_LENGTH) {
-			showToast("Please enter a valid OTP", "warning");
+			warningToast("Please enter a valid OTP");
 			return;
 		}
 
@@ -121,14 +123,13 @@ const OtpPage = () => {
 			{
 				onSuccess: (res) => {
 					if (res.success) {
-						showToast(res.message, "success");
+						successToast(res.message);
 						navigate("/login");
 					} else throw new Error(res.message);
 				},
 				onError: (err) =>
-					showToast(
-						err?.data?.message || err.message || "OTP Verification failed",
-						"error"
+					errorToast(
+						err?.data?.message || err.message || "OTP Verification failed"
 					),
 			}
 		);

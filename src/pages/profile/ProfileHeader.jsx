@@ -4,10 +4,10 @@ import { MdEdit } from "react-icons/md";
 import PropTypes from "prop-types";
 import Swal from "sweetalert2";
 import useHandleFiles from "../../hooks/useHandleFiles";
-import useToast from "../../hooks/useToast";
 import MiniLoader from "../../components/MiniLoader";
 import Avatar from "./Avatar";
 import AvatarHandler from "./AvatarHandler";
+import { toast } from "react-toastify";
 
 const dummyImage =
 	"https://img.freepik.com/free-vector/user-blue-gradient_78370-4692.jpg";
@@ -33,6 +33,8 @@ const ProfileHeader = ({
 	onAvatarEditing = () => {},
 	onAvatarSubmit = () => {},
 }) => {
+		const { error: errorToast  } = toast;
+	
 	const [avatarFile, setAvatarFile] = useState({
 		url: user?.profilePhoto?.url || dummyImage,
 		public_id: user?.profilePhoto?.public_id || null,
@@ -40,7 +42,6 @@ const ProfileHeader = ({
 	});
 
 	const { handleFileChange, handleFileRemove, fileLoading } = useHandleFiles();
-	const showToast = useToast();
 
 	const userFullName = useMemo(
 		() => `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || "N/A",
@@ -62,14 +63,14 @@ const ProfileHeader = ({
 		await handleFileRemove({
 			label: "avatar",
 			publicId: avatarFile.public_id,
-			onError: (error) => showToast(error, "error"),
+			onError: (error) => errorToast(error),
 		});
 		setAvatarFile({
 			url: dummyImage,
 			public_id: null,
 			type: null,
 		});
-	}, [avatarFile.public_id, handleFileRemove, showToast]);
+	}, [avatarFile.public_id, errorToast, handleFileRemove]);
 
 	const handleAvatarSubmit = useCallback(async () => {
 		if (!avatarFile || !avatarFile.public_id) {

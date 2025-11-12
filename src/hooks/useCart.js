@@ -8,10 +8,10 @@ import {
     useRemoveFromCartMutation,
     useUpdateCartMutation
 } from "../redux/store";
-import useToast from "./useToast";
 import { handleAndShowError } from "../utils/errorHandlers";
 import { TOAST_MESSAGES } from "../constants/cart";
 import useApiHandler from "./useApiHandler";
+import { toast } from "react-toastify";
 
 /**
  * Custom hook to manage cart operations.
@@ -19,8 +19,11 @@ import useApiHandler from "./useApiHandler";
  */
 export const useCart = () => {
     const { isAuthorized, validateAuthentication } = useAuth( "client" );
-    const showToast = useToast();
-    const [ handleMutation ] = useApiHandler()
+    const {
+        success: successToast,
+        error: errorToast,
+    } = toast;   
+     const [ handleMutation ] = useApiHandler()
     const { addSubTotal } = useOrderSlice()
     const [ cartItems, setCartItems ] = useState( [] );
     const [ activeCartId, setActiveCartId ] = useState( null );
@@ -42,10 +45,10 @@ export const useCart = () => {
     // Update cart items when data changes
     useEffect( () => {
         if ( fetchError ) {
-            showToast( handleAndShowError( fetchError, TOAST_MESSAGES.FETCH_CART_ERROR, ), "error" );
+            errorToast( handleAndShowError( fetchError, TOAST_MESSAGES.FETCH_CART_ERROR, ));
         }
         setCartItems( data?.length ? data : [] );
-    }, [ data, fetchError, showToast ] );
+    }, [ data, fetchError, errorToast ] );
 
     // Calculate subTotal whenever cart items change
     useEffect( () => {
@@ -61,7 +64,7 @@ export const useCart = () => {
         if ( !id ) {
             resetActiveCartId();
             // throw new Error( "ID is required." );
-            showToast( "ID is required.", "error" );
+            errorToast( "ID is required." );
             return false;
         }
         return true;
@@ -79,15 +82,15 @@ export const useCart = () => {
             // validateId( productId );
             await addToCartMutation( { productId, quantity: 1 }, {
                 onSuccess: () =>
-                    showToast( TOAST_MESSAGES.ADD_TO_CART_SUCCESS, "success" ),
+                    successToast( TOAST_MESSAGES.ADD_TO_CART_SUCCESS ),
                 onError: ( err ) =>
-                    showToast( handleAndShowError( err, TOAST_MESSAGES.ADD_TO_CART_ERROR, ), "error" ),
+                    errorToast( handleAndShowError( err, TOAST_MESSAGES.ADD_TO_CART_ERROR, )),
                 onFinally: () =>
                     resetActiveCartId()
             } );
 
         },
-        [ isAuthorized, addToCartMutation, showToast ]
+        [ isAuthorized, addToCartMutation, errorToast ]
     );
 
     /**
@@ -101,14 +104,14 @@ export const useCart = () => {
             validateAuthentication();
             await removeFromCartMutation( productId, {
                 onSuccess: () =>
-                    showToast( TOAST_MESSAGES.REMOVE_FROM_CART_SUCCESS, "success" ),
+                    successToast( TOAST_MESSAGES.REMOVE_FROM_CART_SUCCESS ),
                 onError: ( err ) =>
-                    showToast( handleAndShowError( err, TOAST_MESSAGES.REMOVE_FROM_CART_ERROR ), "error" ),
+                    errorToast( handleAndShowError( err, TOAST_MESSAGES.REMOVE_FROM_CART_ERROR )),
                 onFinally: () =>
                     resetActiveCartId()
             } );
         },
-        [ isAuthorized, removeFromCartMutation, showToast ]
+        [ isAuthorized, removeFromCartMutation, errorToast ]
     );
 
     /**
@@ -136,16 +139,16 @@ export const useCart = () => {
             } else {
                 await updateCartMutation( { productId, quantity: newQuantity }, {
                     onSuccess: () =>
-                        showToast( `Quantity updated to ${ newQuantity }`, "success" ),
+                        successToast( `Quantity updated to ${ newQuantity }` ),
                     onError: ( err ) =>
-                        showToast( handleAndShowError( err, TOAST_MESSAGES.UPDATE_QUANTITY_ERROR ), "error" ),
+                        errorToast( handleAndShowError( err, TOAST_MESSAGES.UPDATE_QUANTITY_ERROR )),
                     onFinally: () =>
                         resetActiveCartId()
                 } );
             }
 
         },
-        [ isAuthorized, updateCartMutation, removeFromCart, showToast ]
+        [ isAuthorized, updateCartMutation, removeFromCart, errorToast ]
     );
 
     /**
@@ -155,14 +158,14 @@ export const useCart = () => {
         validateAuthentication();
         await clearCartMutation( null, {
             onSuccess: () =>
-                showToast( TOAST_MESSAGES.CLEAR_CART_SUCCESS, "success" ),
+                successToast( TOAST_MESSAGES.CLEAR_CART_SUCCESS ),
             onError: ( err ) =>
-                showToast( handleAndShowError( err, TOAST_MESSAGES.CLEAR_CART_ERROR ), "error" ),
+                errorToast( handleAndShowError( err, TOAST_MESSAGES.CLEAR_CART_ERROR )),
             onFinally: () =>
                 resetActiveCartId()
         } )
 
-    }, [ isAuthorized, clearCartMutation, showToast ] );
+    }, [ isAuthorized, clearCartMutation, errorToast ] );
 
 
 

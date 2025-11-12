@@ -1,9 +1,9 @@
 // src/hooks/useAuth.js
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import useToast from "./useToast";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { USER_ROLES } from "../constants/app";
+import { toast } from "react-toastify";
 
 /**
  * Custom authentication hook that handles role-based authorization.
@@ -17,7 +17,9 @@ import { USER_ROLES } from "../constants/app";
  */
 export const useAuth = ( role = USER_ROLES.CLIENT ) => {
   const navigate = useNavigate();
-  const showToast = useToast();
+  const {
+    error: errorToast,
+  } = toast;
   const currentUser = useSelector( ( state ) => state.auth.currentUser );
   const currentUserName = useMemo( () =>
     currentUser ? `${ currentUser.firstName } ${ currentUser.lastName }` : 'Guest',
@@ -63,7 +65,7 @@ export const useAuth = ( role = USER_ROLES.CLIENT ) => {
   ) => {
     if ( !isAuthorized ) {
       navigate( location );
-      showToast( message, 'error' );
+      errorToast( message );
       return isAuthorized;
     }
     return isAuthorized;

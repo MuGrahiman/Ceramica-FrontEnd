@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { formatToLocaleDateString } from "../../utils/date";
 import AnimatedH1 from "../../components/AnimatedH1";
 import { FiCalendar, FiCopy, FiHash } from "react-icons/fi";
-import useToast from "../../hooks/useToast";
+import { toast } from "react-toastify";
 
 /**
  * Displays order header information with order ID and creation date
@@ -13,11 +13,11 @@ import useToast from "../../hooks/useToast";
  * @param {string} props.orderData.createdAt - Order creation timestamp
  */
 const OrderHeader = ({ orderData = {} }) => {
-	const showToast = useToast();
+	const { success: successToast } = toast;
 
 	const handleCopy = async () => {
 		await navigator.clipboard.writeText(orderData._id);
-		showToast("Order ID copied to clipboard", "success");
+		successToast("Order ID copied to clipboard");
 	};
 
 	return (

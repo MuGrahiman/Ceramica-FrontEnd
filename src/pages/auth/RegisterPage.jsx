@@ -1,38 +1,39 @@
 import AuthForm from "../../components/AuthForm";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useRegisterUserMutation } from "../../redux/store";
 import AuthLayout from "../../components/AuthLayout";
-import useToast from "../../hooks/useToast";
 import useApiHandler from "../../hooks/useApiHandler";
 import { useAuth } from "../../hooks/useAuth";
 import { useEffect } from "react";
 import AuthHeader from "./AuthHeader";
 import AuthRedirectMessage from "./AuthRedirectMessage";
+import { toast } from "react-toastify";
 
 const RegisterPage = () => {
 	const { isAuthorized } = useAuth("client");
 	const [handleMutation] = useApiHandler();
 	const [registerUser, { isLoading }] = handleMutation(useRegisterUserMutation);
 	const navigate = useNavigate();
-	const showToast = useToast();
+	const {
+		success: successToast,
+		error: errorToast,
+		warn: warningToast,
+	} = toast;
 
 	const submitFN = async (formData) => {
 		if (!formData) {
-			showToast("Please enter the credentials", "warning");
+			warningToast("Please enter the credentials");
 			return;
 		}
 		await registerUser(formData, {
 			onSuccess: (res) => {
 				if (res.success) {
-					showToast(res.message, "success");
+					successToast(res.message);
 					navigate(`/otp/${res.data._id}`);
 				}
 			},
 			onError: (err) =>
-				showToast(
-					err?.data?.message || err.message || "Registration failed",
-					"error"
-				),
+				errorToast(err?.data?.message || err.message || "Registration failed"),
 		});
 	};
 
@@ -40,7 +41,7 @@ const RegisterPage = () => {
 		if (isAuthorized) {
 			navigate("/");
 		}
-	}, [isAuthorized, navigate]); 
+	}, [isAuthorized, navigate]);
 
 	return (
 		<AuthLayout>

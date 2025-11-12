@@ -3,11 +3,11 @@ import PropTypes from "prop-types";
 import InputField from "../../components/InputField";
 import ListOptions from "../../components/ListOptions";
 import { useForm } from "react-hook-form";
-import useToast from "../../hooks/useToast";
 import { createDefaultState } from "../../utils/generals";
 import FormSubmitButton from "./FormSubmitButton";
 import useToggle from "../../hooks/useToggle";
 import { PROFILE_USER_NAME_FIELDS } from "../../constants/toggle";
+import { toast } from "react-toastify";
 
 /**
  * Handles the user profile form with validation and success state management.
@@ -17,16 +17,20 @@ import { PROFILE_USER_NAME_FIELDS } from "../../constants/toggle";
  * @returns {JSX} - The user profile form.
  */
 const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
-	const showToast = useToast();
+	const { warn: warningToast } = toast;
 
-	const initialUserNames = createDefaultState(Object.values(PROFILE_USER_NAME_FIELDS), null, {
-		[PROFILE_USER_NAME_FIELDS.FIRST_NAME]: user?.firstName || null,
-		[PROFILE_USER_NAME_FIELDS.LAST_NAME]: user?.lastName || null,
-	});
+	const initialUserNames = createDefaultState(
+		Object.values(PROFILE_USER_NAME_FIELDS),
+		null,
+		{
+			[PROFILE_USER_NAME_FIELDS.FIRST_NAME]: user?.firstName || null,
+			[PROFILE_USER_NAME_FIELDS.LAST_NAME]: user?.lastName || null,
+		}
+	);
 	const userNamesKeysArray = Object.keys(initialUserNames);
 	const userNamesToggleState = createDefaultState(userNamesKeysArray, false);
 	const [setSuccess, isSuccess] = useToggle(userNamesToggleState);
-	
+
 	const {
 		handleSubmit,
 		clearErrors,
@@ -65,7 +69,10 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 			onChange: (e) => {
 				const value = e.target.value;
 				clearErrors(PROFILE_USER_NAME_FIELDS.FIRST_NAME);
-				setSuccess(PROFILE_USER_NAME_FIELDS.FIRST_NAME, value.length >= 3 && !errors[PROFILE_USER_NAME_FIELDS.FIRST_NAME]);
+				setSuccess(
+					PROFILE_USER_NAME_FIELDS.FIRST_NAME,
+					value.length >= 3 && !errors[PROFILE_USER_NAME_FIELDS.FIRST_NAME]
+				);
 			},
 		},
 		lastName: {
@@ -77,7 +84,10 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 			onChange: (e) => {
 				const value = e.target.value;
 				clearErrors(PROFILE_USER_NAME_FIELDS.LAST_NAME);
-				setSuccess(PROFILE_USER_NAME_FIELDS.LAST_NAME, value.length >= 1 && !errors[PROFILE_USER_NAME_FIELDS.LAST_NAME]);
+				setSuccess(
+					PROFILE_USER_NAME_FIELDS.LAST_NAME,
+					value.length >= 1 && !errors[PROFILE_USER_NAME_FIELDS.LAST_NAME]
+				);
 			},
 		},
 	};
@@ -86,7 +96,7 @@ const UserProfileForm = ({ user = {}, onSubmit, isUpdating = false }) => {
 		if (isDirty && isValid) {
 			return onSubmit(data);
 		} else {
-			return showToast("Please make any changes", "warning");
+			return warningToast("Please make any changes");
 		}
 	};
 

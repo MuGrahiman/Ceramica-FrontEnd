@@ -1,6 +1,5 @@
 import React, {  useState } from 'react'
 import { useForm } from 'react-hook-form';
-import useToast from './useToast';
 import { getDate } from '../utils/date';
 import {
     useCheckCouponMutation,
@@ -16,6 +15,7 @@ import {
 import useApiHandler from './useApiHandler';
 import { useCart } from './useCart';
 import { useAuth } from './useAuth';
+import { toast } from 'react-toastify';
 
 
 
@@ -28,7 +28,12 @@ import { useAuth } from './useAuth';
  * @returns {Object} An object containing form handlers, validation rules, and API call handlers.
  */
 const useCoupon = ( { DEFAULT_SUCCESS_VALUE = {}, DEFAULT_VALUES = {}, ON_SUBMIT } = {} ) => {
-    const showToast = useToast();
+    const {
+        success: successToast,
+        error: errorToast,
+        info: infoToast,
+        warn: warningToast,
+    } = toast;
     const { getTotal } = useCart()
     const [ handleMutation ] = useApiHandler();
     const { validateAuthentication } = useAuth( "client" )
@@ -264,7 +269,7 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE = {}, DEFAULT_VALUES = {}, ON_SUBMIT
     const checkCoupon = async ( code ) => {
         const totalAmount = getTotal()
         if ( !code ) {
-            showToast( "Please enter the code", "warning" );
+            warningToast( "Please enter the code" );
             return;
         }
         validateAuthentication();
@@ -272,14 +277,14 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE = {}, DEFAULT_VALUES = {}, ON_SUBMIT
         const data = { couponCode: code, purchaseAmount: totalAmount };
         const coupon = await checkCouponMutation( data, {
             onError: ( err ) =>
-                showToast( err.data.message || err.message || "Coupon not found", "error" )
+                errorToast( err.data.message || err.message || "Coupon not found" )
         } );
 
         if ( !coupon || typeof coupon !== "object" || !Object.keys( coupon ).length ) {
-            showToast( "Coupon not found", "error" );
+            errorToast( "Coupon not found" );
             return;
         }
-        showToast( `${ coupon.discount } discount`, "success" );
+        successToast( `${ coupon.discount } discount` );
 
         addCoupon( coupon )
         if ( coupon.discount ) {
@@ -306,7 +311,7 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE = {}, DEFAULT_VALUES = {}, ON_SUBMIT
         if ( isDirty && isValid ) {
             ON_SUBMIT( data );
         } else {
-            showToast( 'Please make changes', 'info' );
+            infoToast( 'Please make changes' );
         }
     };
 

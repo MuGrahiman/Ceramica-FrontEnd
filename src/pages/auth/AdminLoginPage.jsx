@@ -4,22 +4,22 @@ import axios from "axios";
 import getBaseUrl from "../../utils/baseUrl.js";
 import AuthLayout from "../../components/AuthLayout";
 import AuthForm from "../../components/AuthForm";
-import useToast from "../../hooks/useToast";
 import { useUserSlice } from "../../redux/store";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../hooks/useAuth.js";
 import AuthHeader from "./AuthHeader.jsx";
 import { useMiniToggler } from "../../hooks/useToggle.js";
+import { toast } from "react-toastify";
 
 const AdminLoginPage = () => {
 	const { loading } = useSelector((state) => state.auth);
 	const { isAuthorized } = useAuth("admin");
+	const { success: successToast } = toast;
 
-	const showToast = useToast();
 	const { addUser } = useUserSlice();
 	const [message, setMessage] = useState("");
-		const [isLoading, , startLoading, stopLoading] = useMiniToggler();
-		const navigate = useNavigate();
+	const [isLoading, , startLoading, stopLoading] = useMiniToggler();
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (isAuthorized) navigate("/dashboard");
@@ -40,7 +40,7 @@ const AdminLoginPage = () => {
 			const auth = response.data;
 			if (auth.user) {
 				addUser(auth.user);
-				showToast("Admin Login successful!", "success");
+				successToast("Admin Login successful!");
 			}
 		} catch (error) {
 			setMessage(

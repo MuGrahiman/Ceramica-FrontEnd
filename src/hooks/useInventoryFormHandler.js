@@ -1,9 +1,9 @@
 import { useFieldArray, useForm } from "react-hook-form";
-import useToast from "./useToast";
 import { useEffect, useState } from "react";
 import useHandleFiles from "./useHandleFiles";
 import useColorValidator from "./useColorValidator";
 import { handleFieldsValidation, iterateFiles } from "../utils/fileHandler";
+import { toast } from "react-toastify";
 
 /**
  * Custom hook to manage the inventory form.
@@ -37,9 +37,8 @@ const useInventoryFormHandler = ( { DEFAULT_VALUES, DEFAULT_SUCCESS_VALUE, ON_SU
         control,
         name: "files",
     } );
-
+    const { info: infoToast } = toast;
     // Custom Hooks
-    const showToast = useToast();
     const { handleFileChange, handleFileRemove, fileLoading } = useHandleFiles();
     const {
         validateColor,
@@ -128,7 +127,7 @@ const useInventoryFormHandler = ( { DEFAULT_VALUES, DEFAULT_SUCCESS_VALUE, ON_SU
         if ( isDirty && isValid ) {
             return ON_SUBMIT( data );
         } else {
-            return showToast( "Please make changes", "info" );
+            return infoToast( "Please make changes" );
         }
     };
 

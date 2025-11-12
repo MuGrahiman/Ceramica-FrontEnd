@@ -1,17 +1,20 @@
 import { useForm } from "react-hook-form";
 import { useAddAddressMutation, useDeleteAddressMutation, useGetAddressesQuery, useUpdateAddressMutation } from "../redux/store";
-import useToast from "../hooks/useToast";
 import { useAuth } from "./useAuth";
 import { useCallback, useEffect, useState } from "react";
 import { createDefaultState } from "../utils/generals";
 import { ADDRESS_FIELDS } from "../constants/address";
 import useApiHandler from "./useApiHandler";
 import { USER_ROLES } from "../constants/app";
+import { toast } from "react-toastify";
 
 const useAddress = () => {
-    const showToast = useToast();
+    const {
+        error: errorToast,
+        warn: warningToast,
+    } = toast;
     const { isAuthorized, currentUser } = useAuth( USER_ROLES.CLIENT );
-    if ( !isAuthorized ) showToast( 'Please Login', 'error' )
+    if ( !isAuthorized ) errorToast( 'Please Login' )
     // State for managing selected address ID and address list
     const [ addressId, setAddressId ] = useState( null );
     const [ addressList, setAddressList ] = useState( [] );
@@ -58,7 +61,7 @@ const useAddress = () => {
     useEffect( () => {
         if ( fetchError ) {
             console.error( fetchError );
-            showToast( "Failed to fetch addresses. Please try again.", "error" );
+            errorToast( "Failed to fetch addresses. Please try again." );
         }
 
         if ( data && data.length ) {
@@ -74,7 +77,7 @@ const useAddress = () => {
 
             setAddressList( sortedAddresses );
         }
-    }, [ data, fetchError, showToast ] );
+    }, [ data, fetchError, errorToast ] );
 
 
     /**
@@ -85,11 +88,11 @@ const useAddress = () => {
         clearErrors()
         trigger()
         if ( !isDirty ) {
-            showToast( "Make any changes before submitting", "error" );
+            errorToast( "Make any changes before submitting" );
             return false;
         }
         if ( !isValid ) {
-            showToast( "Form data is not valid", "error" );
+            errorToast( "Form data is not valid" );
             return false;
         }
         return true;
@@ -120,7 +123,7 @@ const useAddress = () => {
      */
     const onEditAddress = async () => {
         if ( !validateForm() ) return;
-        if ( !addressId ) return showToast( "Please choose any address for edit.", "warning" );
+        if ( !addressId ) return warningToast( "Please choose any address for edit." );
 
         const currentFormValues = watch();
         await updateAddress( { addressId, data: currentFormValues }, {
@@ -142,7 +145,7 @@ const useAddress = () => {
      * Handles delete an existing address.
      */
     const onDeleteAddress = async ( id ) => {
-        if ( !id ) return showToast( "Address id is required for delete", "warning" );
+        if ( !id ) return warningToast( "Address id is required for delete" );
         await deleteAddress( id, {
             onSuccess: () => "Address deleted successfully ",
             onError: ( err ) =>
@@ -167,7 +170,7 @@ const useAddress = () => {
      */
     const onSelection = ( address ) => {
         if ( !address ) {
-            showToast( "Failed to select address", "error" );
+            errorToast( "Failed to select address" );
             return;
         }
         if ( addressId === address._id ) return; // Prevent redundant updates
@@ -192,7 +195,7 @@ const useAddress = () => {
         register,
         errors,
         isAddressLoading: isFetching || isAddingAddress || isUpdatingAddress || isSubmitting || isDeletingAddress,
-        isAddressFetching:isFetching,
+        isAddressFetching: isFetching,
         isAddingAddress,
         isUpdatingAddress,
         isDeletingAddress,

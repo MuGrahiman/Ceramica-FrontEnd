@@ -1,11 +1,11 @@
 // src/hooks/useApiHandler.js
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import useToast from "./useToast";
+import { toast } from "react-toastify";
 
 const useApiHandler = () => {
     const navigate = useNavigate();
-    const showToast = useToast();
+    const {success:successToast, error:errorToast } = toast;
 
     /** 
     * Validate parameter type.
@@ -14,11 +14,11 @@ const useApiHandler = () => {
     const validateParam = useCallback( ( param, expectedType, name ) => {
         if ( param == null ) return true;
         if ( typeof param !== expectedType ) {
-            showToast( `Invalid ${ name }: expected a ${ expectedType }.`, "error" );
+            errorToast( `Invalid ${ name }: expected a ${ expectedType }.` );
             return false;
         }
         return true;
-    }, [ showToast ] );
+    }, [ errorToast ] );
 
     /** 
      * Normalize RTK Query result.
@@ -54,7 +54,7 @@ const useApiHandler = () => {
         ) => {
             try {
                 if ( !apiCall || !validateParam( apiCall, "function", "API Call" ) ) {
-                    showToast( "API Call is required", "error" );
+                    errorToast( "API Call is required" );
                     return null;
                 }
 
@@ -70,7 +70,7 @@ const useApiHandler = () => {
                     ? await onSuccess( response )
                     : null;
 
-                if ( successMsg ) showToast( successMsg, "success" );
+                if ( successMsg ) successToast( successMsg );
                 if ( redirectPath ) navigate( redirectPath );
 
                 return response;
@@ -80,14 +80,14 @@ const useApiHandler = () => {
                 const errMsg = onError
                     ? await onError( error )
                     : null;
-                if ( errMsg ) showToast( errMsg, "error" );
+                if ( errMsg ) errorToast( errMsg );
 
                 return null;
             } finally {
                 if ( onFinally ) onFinally();
             }
         },
-        [ navigate, showToast, validateParam ]
+        [errorToast, navigate, successToast, validateParam]
     );
 
 

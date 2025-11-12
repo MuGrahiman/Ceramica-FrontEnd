@@ -1,9 +1,9 @@
 import TextArea from "../../components/TextArea";
 import { useForm } from "react-hook-form";
 import StarRatingField from "../../components/StarRatingField";
-import useToast from "../../hooks/useToast";
 import { REVIEW_FORM_ACTIONS } from "../../constants/product";
 import PropTypes from "prop-types";
+import { toast } from "react-toastify";
 
 /**
  * Form for submitting or editing product reviews with validation.
@@ -20,7 +20,8 @@ const ReviewFormTab = ({
 	onCancel = () => {},
 	defaultFormValues = { rating: 0, review: "" },
 }) => {
-	const showToast = useToast();
+    const { warn: warningToast } = toast;
+
 	const {
 		handleSubmit,
 		register,
@@ -39,7 +40,7 @@ const ReviewFormTab = ({
 	 */
 	const atSubmit = async (formData) => {
 		if (!isDirty || !isValid) {
-			return showToast("Please Make Changes", "warning");
+			return warningToast("Please Make Changes");
 		}
 		await onSubmit(
 			formData,
