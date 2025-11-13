@@ -8,7 +8,7 @@ import UserInfoSection from "./UserInfoSection";
 import RecentActivity from "./RecentActivity";
 import AuthProviderSection from "./AuthProviderSection";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 import useUser from "../../hooks/useUser";
 
 /**
@@ -31,7 +31,7 @@ const UserDetailPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isUserLoading}
 			isError={isUserError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				userError,
 				"Failed to fetch user details"
 			)}>

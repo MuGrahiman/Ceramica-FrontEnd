@@ -6,7 +6,7 @@ import AnimatedH1 from "../../components/AnimatedH1";
 import InfoLayout from "../../components/InfoLayout";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
 import FilterFormLayout from "../../components/FilterFormLayout";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 import { toPascalCase } from "../../utils/generals";
 import { USER_ROLES } from "../../constants/app";
 import {
@@ -79,7 +79,7 @@ const UserOrderPage = () => {
 			<LoadingErrorBoundary
 				isLoading={isOrdersLoading}
 				isError={ordersFetchIsError}
-				errorMessage={handleAndShowError(
+				errorMessage={extractErrorMessage(
 					ordersFetchError,
 					"Failed to fetch your orders."
 				)}>

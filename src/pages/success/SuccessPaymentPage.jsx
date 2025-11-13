@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addPayment, useGetOrderPaymentByIdQuery } from "../../redux/store";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 const SuccessPaymentPage = () => {
 	const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const SuccessPaymentPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isLoading}
 			isError={isError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				error,
 				"Failed to fetch Success Payment data"
 			)}>

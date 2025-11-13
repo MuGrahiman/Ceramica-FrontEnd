@@ -17,7 +17,7 @@ import {
 	ORDER_STATUSES,
 } from "../../constants/order";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
 import PageHeader from "../../components/PageHeader";
 import { USER_ROLES } from "../../constants/app";
@@ -152,7 +152,7 @@ const OrderPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isOrdersLoading}
 			isError={ordersFetchIsError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				ordersFetchError,
 				"Failed to fetch order data"
 			)}>

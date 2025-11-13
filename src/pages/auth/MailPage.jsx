@@ -7,6 +7,7 @@ import useApiHandler from "../../hooks/useApiHandler";
 import PasswordResetNotification from "../../components/PasswordResetNotification";
 import AuthHeader from "./AuthHeader";
 import AuthRedirectMessage from "./AuthRedirectMessage";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 const MailPage = () => {
 	const [handleMutation] = useApiHandler();
@@ -22,9 +23,10 @@ const MailPage = () => {
 			{
 				onSuccess: () => "Email verified successfully ",
 				onError: (err) =>
-					err.data.message ||
-					err.message ||
-					"Failed to Email verification. Please try again.",
+					extractErrorMessage(
+						err,
+						"Failed to Email verification. Please try again."
+					),
 			}
 		);
 	};

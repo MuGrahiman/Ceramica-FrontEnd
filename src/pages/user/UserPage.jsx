@@ -8,7 +8,7 @@ import Pagination from "../../components/Pagination";
 import usePagination from "../../hooks/usePagination";
 import MiniLoader from "../../components/MiniLoader";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
 import PageHeader from "../../components/PageHeader";
 import {
@@ -159,7 +159,7 @@ const UserPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isUsersLoading}
 			isError={isUsersError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				usersError,
 				"Failed to fetch users data"
 			)}>

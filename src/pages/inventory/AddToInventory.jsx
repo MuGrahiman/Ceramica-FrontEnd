@@ -7,11 +7,14 @@ import {
 	INVENTORY_URL,
 } from "../../constants/inventory";
 import useApiHandler from "../../hooks/useApiHandler";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 // Page Component: Handles adding a product to the inventory
 const AddToInventory = () => {
-    const [ handleMutation ] = useApiHandler();
-	const [addToInventory, { isLoading }] = handleMutation(useAddToInventoryMutation);
+	const [handleMutation] = useApiHandler();
+	const [addToInventory, { isLoading }] = handleMutation(
+		useAddToInventoryMutation
+	);
 
 	const Title = "Add To Inventory";
 
@@ -57,10 +60,10 @@ const AddToInventory = () => {
 	const handleSubmit = async (formData) => {
 		const { image, images, colorInput, file, files, ...rest } = formData;
 		const newData = { ...rest, coverImage: file, images: files };
-		await addToInventory( newData, {
-			onSuccess:()=> "Product added to inventory successfully",
+		await addToInventory(newData, {
+			onSuccess: () => "Product added to inventory successfully",
 			onError: (err) =>
-				err.message || "Failed to add product. Please try again.",
+				extractErrorMessage(err, "Failed to add product. Please try again."),
 			redirectPath: INVENTORY_URL,
 		});
 	};

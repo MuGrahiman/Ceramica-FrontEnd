@@ -8,6 +8,7 @@ import {
 import useApiHandler from './useApiHandler';
 import { INVENTORY_URL } from '../constants/inventory';
 import generatePageNumbers from '../utils/pagination';
+import { extractErrorMessage } from '../utils/errorHandlers';
 
 // Custom hook to manage inventory
 const useInventory = ( searchTerm = '' ) => {
@@ -77,7 +78,8 @@ const useInventory = ( searchTerm = '' ) => {
             { id: inventory._id, status: inventory?.status === 'active' ? 'inActive' : 'active' },
             {
                 onSuccess: () => "inventory status updated successfully ",
-                onError: ( err ) => err.message || "Failed to update product. Please try again.",
+                onError: ( err ) =>
+                    extractErrorMessage( err, "Failed to update product. Please try again." )
             }
         );
         setPatchId( null )
@@ -100,7 +102,8 @@ const useInventory = ( searchTerm = '' ) => {
 
         await deleteInventory( id, {
             onSuccess: () => "Product deleted successfully",
-            onError: ( err ) => err.message || "Failed to delete the product .Please try again",
+            onError: ( err ) =>
+                extractErrorMessage( err, "Failed to delete the product .Please try again" ),
             redirectPath: INVENTORY_URL
         } );
         setId( null );

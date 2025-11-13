@@ -10,6 +10,7 @@ import { useAuth } from "../../hooks/useAuth.js";
 import AuthHeader from "./AuthHeader.jsx";
 import { useMiniToggler } from "../../hooks/useToggle.js";
 import { toast } from "react-toastify";
+import { extractErrorMessage } from "../../utils/errorHandlers.js";
 
 const AdminLoginPage = () => {
 	const { loading } = useSelector((state) => state.auth);
@@ -44,10 +45,7 @@ const AdminLoginPage = () => {
 			}
 		} catch (error) {
 			setMessage(
-				error?.response?.data?.message ||
-					error?.data?.message ||
-					error?.message ||
-					"Please provide a valid email and password"
+				extractErrorMessage(error, "Please provide a valid email and password")
 			);
 			console.error("Login Error:", error);
 		} finally {

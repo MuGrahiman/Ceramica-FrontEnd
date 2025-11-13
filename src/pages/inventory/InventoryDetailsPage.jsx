@@ -7,7 +7,7 @@ import useInventory from "../../hooks/useInventory";
 import { INVENTORY_BREAD_CRUMB_ITEMS } from "../../constants/inventory";
 import PageTitle from "../../components/PageTitle";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 const InventoryDetailsPage = () => {
 	const { id } = useParams();
@@ -28,7 +28,7 @@ const InventoryDetailsPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				error,
 				"Failed to fetch product details"
 			)}>

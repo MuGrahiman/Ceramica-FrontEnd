@@ -10,7 +10,7 @@ import useApiHandler from "../../hooks/useApiHandler";
 import BreadCrumb from "../../components/BreadCrumb";
 import PageTitle from "../../components/PageTitle";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 /**
  * InquiryDetailPage - Displays customer inquiry details and reply form
@@ -44,7 +44,7 @@ const InquiryDetailsPage = () => {
 			{
 				onSuccess: () => "Replied successfully",
 				onError: (err) =>
-					err.data.message || "Failed to reply. Please try again",
+					extractErrorMessage(err, "Failed to reply. Please try again"),
 			}
 		);
 	};
@@ -53,7 +53,7 @@ const InquiryDetailsPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				fetchError,
 				"Failed to fetch inquiry details "
 			)}>

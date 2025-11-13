@@ -10,7 +10,7 @@ import CouponForm from "./CouponForm";
 import { setDateAsMonthDayYear } from "../../utils/date";
 import useCoupon from "../../hooks/useCoupon";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 const UpdateCoupon = () => {
 	const Title = "Update Coupon";
@@ -38,9 +38,10 @@ const UpdateCoupon = () => {
 				onSuccess: () => "Coupon updated successfully",
 				redirectPath: COUPON_URL,
 				onError: (error) =>
-					error.message ||
-					error.data.message ||
-					"Failed to update coupon. Please try again.",
+					extractErrorMessage(
+						error,
+						"Failed to update coupon. Please try again."
+					),
 			}
 		);
 	};
@@ -49,7 +50,7 @@ const UpdateCoupon = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				error,
 				"Failed to fetch coupon details "
 			)}>

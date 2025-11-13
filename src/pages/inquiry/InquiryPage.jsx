@@ -16,7 +16,7 @@ import useApiHandler from "../../hooks/useApiHandler";
 import Swal from "sweetalert2";
 import MiniLoader from "../../components/MiniLoader";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
 import PageHeader from "../../components/PageHeader";
 import { useMiniToggler } from "../../hooks/useToggle";
@@ -89,8 +89,8 @@ const InquiryPage = () => {
 			if (!result.isConfirmed) return setActiveInquiryId(null);
 			await deleteInquiry(inquiryId, {
 				onSuccess: () => "Inquiry deleted successfully",
-				onError: (err) =>
-					err.message || "Failed to delete the product. Please try again",
+				onError: (err) =>				
+					extractErrorMessage(err, "Failed to delete Inquiry. Please try again."),
 				onFinally: () => setActiveInquiryId(null),
 			});
 		},
@@ -151,7 +151,7 @@ const InquiryPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={fetchIsError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				fetchError,
 				"Failed to fetch inquiries"
 			)}>

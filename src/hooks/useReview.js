@@ -10,6 +10,7 @@ import useApiHandler from './useApiHandler';
 import { useAuth } from './useAuth';
 import { REVIEW_FORM_ACTIONS } from '../constants/product';
 import { isValidId } from '../utils/generals';
+import { extractErrorMessage } from '../utils/errorHandlers';
 
 /**
  * Custom hook for managing product reviews
@@ -89,7 +90,8 @@ const useReview = ( productId = null ) => {
                 {
                     onSuccess: () => onSuccess( 'Review updated successfully' ),
                     onError: ( err ) =>
-                        err.data?.message || err?.message || "Failed to update review",
+                        extractErrorMessage( err, "Failed to update review" )
+
                 }
             );
         }
@@ -102,7 +104,7 @@ const useReview = ( productId = null ) => {
                 {
                     onSuccess: () => onSuccess( 'Review added successfully' ),
                     onError: ( err ) =>
-                        err.data?.message || err?.message || "Failed to update review",
+                        extractErrorMessage( err, "Failed to add review" )
                 }
             );
         }
@@ -121,7 +123,7 @@ const useReview = ( productId = null ) => {
             {
                 onSuccess: () => 'Review deleted successfully',
                 onError: ( err ) =>
-                    err.data?.message || err?.message || "Failed to delete review",
+                    extractErrorMessage( err, "Failed to delete review" )
             }
         );
     }

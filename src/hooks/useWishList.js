@@ -6,6 +6,7 @@ import {
 } from "../redux/store";
 import { useAuth } from "./useAuth";
 import useApiHandler from "./useApiHandler";
+import { extractErrorMessage } from "../utils/errorHandlers";
 // import { EMPTY_WISHLIST_MESSAGE } from "../constants/messages";
 
 
@@ -69,14 +70,14 @@ const useWishList = ( showWishlist = false ) => {
                 itemId,
                 {
                     onError: ( err ) =>
-                        err.data?.message || err?.message || "Failed to remove from wishlist",
+                        extractErrorMessage( err, "Failed to remove from wishlist" )
                 }
             );
         } else {
             await addToWishList( itemId,
                 {
                     onError: ( err ) =>
-                        err.data?.message || err?.message || "Failed to add to wishlist",
+                        extractErrorMessage( err, "Failed to add to wishlist" )
                 }
             );
         }
@@ -93,7 +94,7 @@ const useWishList = ( showWishlist = false ) => {
         wishlistId,
         wishlistUser: currentUserName,
         wishListItems,
-        isWishListLoading,WishListError,
+        isWishListLoading, WishListError,
         isWishListError,
         isWishListFetching,
         refetchWishList,

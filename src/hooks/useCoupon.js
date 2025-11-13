@@ -1,4 +1,4 @@
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { getDate } from '../utils/date';
 import {
@@ -16,6 +16,7 @@ import useApiHandler from './useApiHandler';
 import { useCart } from './useCart';
 import { useAuth } from './useAuth';
 import { toast } from 'react-toastify';
+import { extractErrorMessage } from '../utils/errorHandlers';
 
 
 
@@ -277,7 +278,9 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE = {}, DEFAULT_VALUES = {}, ON_SUBMIT
         const data = { couponCode: code, purchaseAmount: totalAmount };
         const coupon = await checkCouponMutation( data, {
             onError: ( err ) =>
-                errorToast( err.data.message || err.message || "Coupon not found" )
+                errorToast(
+                    extractErrorMessage( err, "Coupon not found" )
+                )
         } );
 
         if ( !coupon || typeof coupon !== "object" || !Object.keys( coupon ).length ) {
@@ -296,7 +299,7 @@ const useCoupon = ( { DEFAULT_SUCCESS_VALUE = {}, DEFAULT_VALUES = {}, ON_SUBMIT
 
 
     };
-    
+
     /**
       * Handle form submission.
       * @param {Object} data - The form data.

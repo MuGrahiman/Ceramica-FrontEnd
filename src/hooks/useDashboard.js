@@ -3,7 +3,7 @@ import { useMiniToggler } from "./useToggle";
 import useApiHandler from "./useApiHandler";
 import { BASE_URL } from "../constants/app";
 import axios from "axios";
-import { handleAndShowError } from "../utils/errorHandlers";
+import { extractErrorMessage } from "../utils/errorHandlers";
 import { INITIAL_DASHBOARD_STATE } from "../constants/dashboard";
 
 
@@ -45,7 +45,7 @@ const useDashboard = () => {
                     return "Dashboard data loaded";
                 },
                 onError: ( err ) => {
-                    const errorMsg = handleAndShowError(
+                    const errorMsg = extractErrorMessage(
                         err,
                         "Failed to load dashboard data. Please try again."
                     );

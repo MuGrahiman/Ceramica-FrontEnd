@@ -10,7 +10,7 @@ import useApiHandler from "../../hooks/useApiHandler";
 import MiniLoader from "../../components/MiniLoader";
 import AuthHeader from "./AuthHeader";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 import { toast } from "react-toastify";
 
 // Constants
@@ -20,10 +20,7 @@ const INITIAL_TIMER = 19;
 const OtpPage = () => {
 	const { userId } = useParams();
 	const { data, isLoading, isError, error } = useGetOTPQuery(userId);
-	const navigate = useNavigate();
 	const {
-		success: successToast,
-		error: errorToast,
 		warn: warningToast,
 	} = toast;
 
@@ -98,12 +95,11 @@ const OtpPage = () => {
 		resendOTP(data.data.otpId, {
 			onSuccess: (res) => {
 				if (res.success) {
-					successToast(res.message);
 					setTime(INITIAL_TIMER);
+					return res.message;
 				} else throw new Error(res.message);
 			},
-			onError: (err) =>
-				errorToast(err.data.message || err.message || "Failed to resend OTP"),
+			onError: (err) => extractErrorMessage(err, "Failed to resend OTP"),
 		});
 	};
 
@@ -122,15 +118,11 @@ const OtpPage = () => {
 			},
 			{
 				onSuccess: (res) => {
-					if (res.success) {
-						successToast(res.message);
-						navigate("/login");
-					} else throw new Error(res.message);
+					if (res.success) return res.message;
+					else throw new Error(res.message);
 				},
-				onError: (err) =>
-					errorToast(
-						err?.data?.message || err.message || "OTP Verification failed"
-					),
+				onError: (err) => extractErrorMessage(err, "OTP Verification failed"),
+				redirectPath: "/login",
 			}
 		);
 	};
@@ -142,7 +134,7 @@ const OtpPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isLoading}
 			isError={isError}
-			errorMessage={handleAndShowError(error, "Failed to check otp ")}>
+			errorMessage={extractErrorMessage(error, "Failed to check otp ")}>
 			<AuthLayout>
 				<div className=" text-center">
 					<AuthHeader

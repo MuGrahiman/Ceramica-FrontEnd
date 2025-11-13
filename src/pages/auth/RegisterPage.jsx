@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import AuthHeader from "./AuthHeader";
 import AuthRedirectMessage from "./AuthRedirectMessage";
 import { toast } from "react-toastify";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 const RegisterPage = () => {
 	const { isAuthorized } = useAuth("client");
@@ -16,7 +17,6 @@ const RegisterPage = () => {
 	const navigate = useNavigate();
 	const {
 		success: successToast,
-		error: errorToast,
 		warn: warningToast,
 	} = toast;
 
@@ -32,8 +32,7 @@ const RegisterPage = () => {
 					navigate(`/otp/${res.data._id}`);
 				}
 			},
-			onError: (err) =>
-				errorToast(err?.data?.message || err.message || "Registration failed"),
+			onError: (err) => extractErrorMessage(err, "Registration failed"),
 		});
 	};
 

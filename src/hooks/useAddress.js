@@ -7,6 +7,7 @@ import { ADDRESS_FIELDS } from "../constants/address";
 import useApiHandler from "./useApiHandler";
 import { USER_ROLES } from "../constants/app";
 import { toast } from "react-toastify";
+import { extractErrorMessage } from "../utils/errorHandlers";
 
 const useAddress = () => {
     const {
@@ -112,9 +113,9 @@ const useAddress = () => {
                 ) ); return "Address added successfully"
             },
             onError: ( err ) =>
-                err.data.message ||
-                err.message ||
-                "Failed to add address. Please try again.",
+                extractErrorMessage( err, "Failed to add address. Please try again." )
+
+
         } );
     };
 
@@ -135,9 +136,8 @@ const useAddress = () => {
                 return "Address updated successfully"
             },
             onError: ( err ) =>
-                err.data.message ||
-                err.message ||
-                "Failed to update address. Please try again."
+                extractErrorMessage( err, "Failed to update address. Please try again." )
+
         } );
 
     };
@@ -149,9 +149,8 @@ const useAddress = () => {
         await deleteAddress( id, {
             onSuccess: () => "Address deleted successfully ",
             onError: ( err ) =>
-                err.data.message ||
-                err.message ||
-                "Failed to delete address. Please try again.",
+                extractErrorMessage( err, "Failed to delete address. Please try again." )
+            ,
         } );
     };
 

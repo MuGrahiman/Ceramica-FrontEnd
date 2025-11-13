@@ -11,7 +11,7 @@ import Pagination from "../../components/Pagination";
 import useSearch from "../../hooks/useSearch";
 import ListOptions from "../../components/ListOptions";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 import { INVENTORY_FILTER_CONTENTS } from "../../constants/inventory";
 /**
  * ProductPage - Main product listing page with search, filter, and pagination
@@ -103,7 +103,7 @@ const ProductPage = () => {
 					<LoadingErrorBoundary
 						isLoading={fetchLoading || isFetching}
 						isError={fetchIsError}
-						errorMessage={handleAndShowError(
+						errorMessage={extractErrorMessage(
 							fetchError,
 							"Failed to fetch products data"
 						)}>

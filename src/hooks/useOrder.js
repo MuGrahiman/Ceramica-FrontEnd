@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useGetOrdersByRoleQuery, useUpdateOrderStatusMutation } from '../redux/store';
 import useApiHandler from './useApiHandler';
-import { handleAndShowError } from '../utils/errorHandlers';
+import { extractErrorMessage } from '../utils/errorHandlers';
 
 const useOrder = ( role = 'client' ) => {
     const [ ordersData, setOrdersData ] = useState( [] );
@@ -35,7 +35,7 @@ const useOrder = ( role = 'client' ) => {
             { orderId: id, orderStatus: value },
             {
                 onSuccess: () => "updated order status successfully",
-                onError: ( err ) => handleAndShowError(
+                onError: ( err ) => extractErrorMessage(
                     err,
                     "Order not found"
                 ),

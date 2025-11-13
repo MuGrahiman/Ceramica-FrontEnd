@@ -14,11 +14,12 @@ import { useDispatch, useSelector } from "react-redux";
 import ApplyCoupon from "./ApplyCoupon";
 import useCoupon from "../../hooks/useCoupon";
 import { toast } from "react-toastify";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 const PaymentOptions = ({ cartSummary = [], addressId, isLoading = false }) => {
 	const subTotal = useSelector((state) => state.order.subTotal);
 	const appliedCoupon = useSelector((state) => state.coupon.appliedCoupon);
-	const { success: successToast,error: errorToast } = toast;
+	const { success: successToast, error: errorToast } = toast;
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -58,10 +59,7 @@ const PaymentOptions = ({ cartSummary = [], addressId, isLoading = false }) => {
 			return response;
 		} catch (err) {
 			console.error("Failed to create order:", err);
-			errorToast(
-				err?.data?.message || err?.message || "Failed to create order",
-				
-			);
+			errorToast(extractErrorMessage(err, "Failed to create order"));
 			throw err;
 		}
 	};
@@ -83,59 +81,59 @@ const PaymentOptions = ({ cartSummary = [], addressId, isLoading = false }) => {
 			}
 		} catch (err) {
 			console.error("Payment failed:", err);
-			errorToast(err.message || "Payment failed");
+			errorToast(extractErrorMessage(err, "Payment failed"));
 		}
 	};
 
 	// Handle errors from PayPal SDK
 	const onError = (err) => {
 		console.error(err);
-		errorToast(err.message || "Something went wrong");
+		errorToast(extractErrorMessage(err, "Something went wrong"));
 	};
 
 	return (
 		// <div className="w-full lg:w-1/3 bg-white p-6">
 		// 	<h2 className="text-xl font-semibold mb-6">Payment</h2>
-			<div className="space-y-4">
-				<div className="flex justify-between font-medium">
-					<p className="text-gray-700">Subtotal</p>
-					<p className="font-bold">${subTotal}</p>
-				</div>
-				<ApplyCoupon onSubmit={checkCoupon} />
-
-				<div className="md:col-span-5 pt-9 text-sm">
-					<div className="inline-flex items-center mb-3">
-						<input
-							type="checkbox"
-							name="billing_same"
-							id="billing_same"
-							className="form-checkbox"
-							aria-label="I agree to the terms and conditions"
-						/>
-						<label htmlFor="billing_same" className="ml-2">
-							I agree to the{" "}
-							<Link
-								to="/terms"
-								className="underline underline-offset-2 text-blue-600">
-								Terms & Conditions
-							</Link>{" "}
-							and{" "}
-							<Link
-								to="/policy"
-								className="underline underline-offset-2 text-blue-600">
-								Shopping Policy.
-							</Link>
-						</label>
-					</div>
-					<PayPal
-						isLoading={isLoading}
-						createOrder={createOrder}
-						onApprove={handlePayment}
-						onCancel={handlePayment}
-						onError={onError}
-					/>
-				</div>
+		<div className="space-y-4">
+			<div className="flex justify-between font-medium">
+				<p className="text-gray-700">Subtotal</p>
+				<p className="font-bold">${subTotal}</p>
 			</div>
+			<ApplyCoupon onSubmit={checkCoupon} />
+
+			<div className="md:col-span-5 pt-9 text-sm">
+				<div className="inline-flex items-center mb-3">
+					<input
+						type="checkbox"
+						name="billing_same"
+						id="billing_same"
+						className="form-checkbox"
+						aria-label="I agree to the terms and conditions"
+					/>
+					<label htmlFor="billing_same" className="ml-2">
+						I agree to the{" "}
+						<Link
+							to="/terms"
+							className="underline underline-offset-2 text-blue-600">
+							Terms & Conditions
+						</Link>{" "}
+						and{" "}
+						<Link
+							to="/policy"
+							className="underline underline-offset-2 text-blue-600">
+							Shopping Policy.
+						</Link>
+					</label>
+				</div>
+				<PayPal
+					isLoading={isLoading}
+					createOrder={createOrder}
+					onApprove={handlePayment}
+					onCancel={handlePayment}
+					onError={onError}
+				/>
+			</div>
+		</div>
 		// </div>
 	);
 };

@@ -8,7 +8,7 @@ import {
     useRemoveFromCartMutation,
     useUpdateCartMutation
 } from "../redux/store";
-import { handleAndShowError } from "../utils/errorHandlers";
+import { extractErrorMessage } from "../utils/errorHandlers";
 import { TOAST_MESSAGES } from "../constants/cart";
 import useApiHandler from "./useApiHandler";
 import { toast } from "react-toastify";
@@ -45,7 +45,7 @@ export const useCart = () => {
     // Update cart items when data changes
     useEffect( () => {
         if ( fetchError ) {
-            errorToast( handleAndShowError( fetchError, TOAST_MESSAGES.FETCH_CART_ERROR, ));
+            errorToast( extractErrorMessage( fetchError, TOAST_MESSAGES.FETCH_CART_ERROR, ));
         }
         setCartItems( data?.length ? data : [] );
     }, [ data, fetchError, errorToast ] );
@@ -84,7 +84,7 @@ export const useCart = () => {
                 onSuccess: () =>
                     successToast( TOAST_MESSAGES.ADD_TO_CART_SUCCESS ),
                 onError: ( err ) =>
-                    errorToast( handleAndShowError( err, TOAST_MESSAGES.ADD_TO_CART_ERROR, )),
+                    errorToast( extractErrorMessage( err, TOAST_MESSAGES.ADD_TO_CART_ERROR, )),
                 onFinally: () =>
                     resetActiveCartId()
             } );
@@ -106,7 +106,7 @@ export const useCart = () => {
                 onSuccess: () =>
                     successToast( TOAST_MESSAGES.REMOVE_FROM_CART_SUCCESS ),
                 onError: ( err ) =>
-                    errorToast( handleAndShowError( err, TOAST_MESSAGES.REMOVE_FROM_CART_ERROR )),
+                    errorToast( extractErrorMessage( err, TOAST_MESSAGES.REMOVE_FROM_CART_ERROR )),
                 onFinally: () =>
                     resetActiveCartId()
             } );
@@ -141,7 +141,7 @@ export const useCart = () => {
                     onSuccess: () =>
                         successToast( `Quantity updated to ${ newQuantity }` ),
                     onError: ( err ) =>
-                        errorToast( handleAndShowError( err, TOAST_MESSAGES.UPDATE_QUANTITY_ERROR )),
+                        errorToast( extractErrorMessage( err, TOAST_MESSAGES.UPDATE_QUANTITY_ERROR )),
                     onFinally: () =>
                         resetActiveCartId()
                 } );
@@ -160,7 +160,7 @@ export const useCart = () => {
             onSuccess: () =>
                 successToast( TOAST_MESSAGES.CLEAR_CART_SUCCESS ),
             onError: ( err ) =>
-                errorToast( handleAndShowError( err, TOAST_MESSAGES.CLEAR_CART_ERROR )),
+                errorToast( extractErrorMessage( err, TOAST_MESSAGES.CLEAR_CART_ERROR )),
             onFinally: () =>
                 resetActiveCartId()
         } )

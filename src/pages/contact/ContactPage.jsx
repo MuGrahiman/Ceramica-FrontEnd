@@ -7,6 +7,7 @@ import heroImage from "../../assets/ceramics/image.png";
 import useApiHandler from "../../hooks/useApiHandler";
 import { useSubmitInquiryMutation } from "../../redux/store";
 import { useMiniToggler } from "../../hooks/useToggle";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 /**
  * ContactPage Component
@@ -25,7 +26,10 @@ const ContactPage = () => {
 		await submitMessage(formData, {
 			onSuccess: () => "Message submitted successfully",
 			onError: (error) =>
-				error.message || "Failed to submit message. Please try again.",
+				extractErrorMessage(
+					error,
+					"Failed to submit message. Please try again."
+				),
 			onFinally: setIsSubmitted(true),
 		});
 	};

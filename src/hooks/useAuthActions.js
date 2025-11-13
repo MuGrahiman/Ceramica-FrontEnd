@@ -3,7 +3,7 @@ import { useContextAuth } from "../context/AuthContext";
 import { useLoginUserMutation, useUserSlice } from "../redux/store";
 import useApiHandler from "./useApiHandler";
 import { useMiniToggler } from "./useToggle";
-import { handleAndShowError } from "../utils/errorHandlers";
+import { extractErrorMessage } from "../utils/errorHandlers";
 
 const AUTH_PROVIDERS = {
     GOOGLE: 'google',
@@ -32,7 +32,7 @@ export const useAuthActions = () => {
      * Handles login errors
      */
     const handleLoginError = useCallback( ( error ) =>
-        handleAndShowError( error, "Login failed. Please try again." ),
+        extractErrorMessage( error, "Login failed. Please try again." ),
         [] );
 
     /**

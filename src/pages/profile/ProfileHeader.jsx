@@ -33,8 +33,8 @@ const ProfileHeader = ({
 	onAvatarEditing = () => {},
 	onAvatarSubmit = () => {},
 }) => {
-		const { error: errorToast  } = toast;
-	
+	const { error: errorToast } = toast;
+
 	const [avatarFile, setAvatarFile] = useState({
 		url: user?.profilePhoto?.url || dummyImage,
 		public_id: user?.profilePhoto?.public_id || null,
@@ -63,8 +63,9 @@ const ProfileHeader = ({
 		await handleFileRemove({
 			label: "avatar",
 			publicId: avatarFile.public_id,
-			onError: (error) => errorToast(error),
+			onError: errorToast,
 		});
+
 		setAvatarFile({
 			url: dummyImage,
 			public_id: null,
@@ -98,7 +99,7 @@ const ProfileHeader = ({
 				maxFiles: 1,
 				minFile: 1,
 				currentFields: [],
-				onError: (error) => error.message || "Upload failed",
+				onError: errorToast,
 				appendData: ({ public_id, url, type, format }) =>
 					setAvatarFile({
 						public_id,
@@ -107,7 +108,7 @@ const ProfileHeader = ({
 					}),
 			});
 		},
-		[handleFileChange]
+		[errorToast, handleFileChange]
 	);
 
 	return (

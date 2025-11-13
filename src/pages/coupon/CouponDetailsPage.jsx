@@ -7,7 +7,7 @@ import CouponUsersList from "./CouponUsersList";
 import useCoupon from "../../hooks/useCoupon";
 import PageTitle from "../../components/PageTitle";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 const CouponDetailsPage = () => {
 	const { id } = useParams();
@@ -25,7 +25,10 @@ const CouponDetailsPage = () => {
 			onSuccess: () => "Coupon delete successfully",
 			redirectPath: COUPON_URL,
 			onError: (error) =>
-				error.message || "Failed to delete coupon. Please try again.",
+				extractErrorMessage(
+					error,
+					"Failed to delete coupon. Please try again."
+				),
 		});
 	};
 
@@ -34,7 +37,7 @@ const CouponDetailsPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={isError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				error,
 				"Failed to fetch coupon details "
 			)}>

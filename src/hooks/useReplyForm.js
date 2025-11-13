@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useApiHandler from './useApiHandler';
 import { useReplyInquiryMutation } from '../redux/store';
+import { extractErrorMessage } from '../utils/errorHandlers';
 
 /**
  * useReplyForm - Custom hook for managing reply form state
@@ -36,7 +37,7 @@ const useReplyForm = ( defaultSubject ) => {
     await replyToInquiry( id, {
       onSuccess: () => "Deleted successfully",
       onError: ( err ) =>
-        err.message || "Failed to delete the product. Please try again",
+        extractErrorMessage( err, "Failed to delete the product. Please try again" )
     } );
     // Simulate API call
     setTimeout( () => {
@@ -61,7 +62,7 @@ const useReplyForm = ( defaultSubject ) => {
     formState,
     handleChange,
     handleSubmit,
-    resetForm,
+    resetForm, isReplying
   };
 };
 

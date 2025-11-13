@@ -4,7 +4,7 @@ import CartSummary from "./CartSummary";
 import CartHeader from "./CartHeader";
 import { useSelector } from "react-redux";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 import ListContainer from "../../components/ListContainer";
 import ListOptions from "../../components/ListOptions";
 import ItemInfoIndicator from "../../components/ItemInfoIndicator";
@@ -47,7 +47,7 @@ const CartPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isFetching}
 			isError={isFetchError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				fetchError,
 				"Unable to load your shopping cart. Please try again later."
 			)}

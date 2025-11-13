@@ -17,7 +17,7 @@ import Swal from "sweetalert2";
 import useOrder from "../../hooks/useOrder";
 import { USER_ROLES } from "../../constants/app";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 import UserOrderSummary from "./UserOrderSummary";
 import UserOrderItemsList from "./UserOrderItemsList";
 import { useMiniToggler } from "../../hooks/useToggle";
@@ -64,7 +64,7 @@ const UserOrderDetailsPage = () => {
 		<LoadingErrorBoundary
 			isLoading={isUserOrderDetailsLoading}
 			isError={isError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				error,
 				"Failed to fetch your order details"
 			)}

@@ -1,10 +1,10 @@
 /**
- * Handles an error and displays a toast message.
+ * Extracts a user-friendly error message from an error object.
  * @param {Error|Object} error - The error object.
  * @param {string} fallbackMessage - The fallback message to display if the error message is not available.
  * @return {string} errorMessage - Return the error message.
  */
-export const handleAndShowError = ( error = {}, fallbackMessage = '' ) => {
+export const extractErrorMessage = ( error = {}, fallbackMessage = '' ) => {
     console.error( error );
     // Initialize errorMessage with the fallback message 
     let errorMessage = fallbackMessage || "Something went wrong.";

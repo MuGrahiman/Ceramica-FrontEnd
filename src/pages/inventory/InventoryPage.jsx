@@ -13,7 +13,7 @@ import useSearch from "../../hooks/useSearch";
 import { FILTER_FORMS_DEFAULT_VALUES } from "../../constants/filter-form";
 import FilterFormLayout from "../../components/FilterFormLayout";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 import { INVENTORY_FILTER_CONTENTS } from "../../constants/inventory";
 import FilterControlsWithSearch from "../../components/FilterControlsWithSearch";
 import PageHeader from "../../components/PageHeader";
@@ -169,7 +169,7 @@ const InventoryPage = () => {
 		<LoadingErrorBoundary
 			isLoading={fetchLoading}
 			isError={fetchIsError}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				fetchError,
 				"Failed to fetch product data"
 			)}>

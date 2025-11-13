@@ -8,12 +8,13 @@ import PasswordResetNotification from "../../components/PasswordResetNotificatio
 import AuthHeader from "./AuthHeader";
 import AuthRedirectMessage from "./AuthRedirectMessage";
 import { useMiniToggler } from "../../hooks/useToggle";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 const PasswordPage = () => {
 	const { token } = useParams();
 	const [handleMutation] = useApiHandler();
-		const [isMailLinkShown, , setMailLinkShown] = useMiniToggler();
-	
+	const [isMailLinkShown, , setMailLinkShown] = useMiniToggler();
+
 	const [resetPassword, { isLoading, isError, isSuccess }] = handleMutation(
 		useResetPasswordMutation
 	);
@@ -25,11 +26,9 @@ const PasswordPage = () => {
 			{
 				onSuccess: () => "Your password has been reset successfully!",
 				onError: (err) => {
-					if (err.data.error.name === "TokenExpiredError")
-						setMailLinkShown();
-					return (
-						err.data.message ||
-						err.message ||
+					if (err.data.error.name === "TokenExpiredError") setMailLinkShown();
+					return extractErrorMessage(
+						err,
 						"Failed to reset Your password. Please try again."
 					);
 				},

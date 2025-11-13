@@ -5,7 +5,7 @@ import ShowcaseWishlist from "./ShowcaseWishlist";
 import useWishList from "../../hooks/useWishList";
 import UserNameHeader from "../../components/UserNameHeader";
 import LoadingErrorBoundary from "../../components/LoadingErrorBoundary";
-import { handleAndShowError } from "../../utils/errorHandlers";
+import { extractErrorMessage } from "../../utils/errorHandlers";
 
 const WishlistPage = () => {
 	const {
@@ -25,7 +25,7 @@ const WishlistPage = () => {
 			isLoading={isWishListLoading}
 			isError={isWishListError}
 			CustomErrorTemplate={WishListErrorTemplate}
-			errorMessage={handleAndShowError(
+			errorMessage={extractErrorMessage(
 				WishListError,
 				"Failed to fetch wishlist data"
 			)}
